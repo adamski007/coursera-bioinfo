@@ -29,3 +29,35 @@ class AdamskiClass:
                 listPosition.append(idx)
             idx = idx + 1
         return listPosition
+
+    def find_x_kmers(self,str_kmers,len_kmers):
+        idx = 0;
+        count = 0;
+        while idx <= ( len(self.genome)-len_kmers):
+            if ( self.genome[idx:(idx+len_kmers)] == str_kmers ):
+                count = count + 1;
+            idx = idx +1;
+        return count;
+
+    def findMostFrequentKMers(self,length1):
+        # For historic reasons...
+        len_kmers = length1
+        idx	=	0;
+        list_kmers = [];
+        most_present_kmers	= 0;
+        max_count	= 0;
+        while idx <= ( (len(self.genome)) - len_kmers ):
+            str_kmers = self.genome[idx:(idx+len_kmers)];
+            count = self.find_x_kmers(str_kmers,len_kmers);
+            if ( count > max_count ):
+                # Re-init the list as we got more a bigger k-mers in this attempt.
+                list_kmers = [];
+                list_kmers.append(str_kmers);
+                max_count = count
+            elif ( count == max_count ):
+                if not str_kmers in list_kmers:
+                    list_kmers.append(str_kmers);
+                    # Next line probably not needed. TO DO [ to check actually. ]
+                    max_count = count;
+            idx = idx + 1;
+        return list_kmers
