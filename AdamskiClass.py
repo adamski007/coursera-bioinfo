@@ -94,11 +94,18 @@ class AdamskiClass:
         idx = 0
         list_kmers = []
         globalGenome = self.genome
-        while idx <= ( len(self.genome) - size_window ):
+        while idx <= ( len(globalGenome) - size_window ):
             window = self.genome[idx:(idx+size_window)]
             self.genome = window
             # Doing the computation temporarily
             list_kmers_in_window = self.findMostFrequentKMers(size_kmers)
-            # Wouah difficult !!!!!!!!!!!!
-            # Work still need to be done here...
+            # Checking if these kmers are present enough in the window.
+            for kmers in list_kmers_in_window:
+                if self.find_x_kmers(kmers,len(kmers)) >= number:
+                    # It does means that we found at least the requested number of kmers in
+                    # the specified window. We got one candidate for the the kmers.
+                    if not kmers in list_kmers:
+                        list_kmers.append(kmers)
+            idx = idx + 1
             self.genome = globalGenome
+        return list_kmers

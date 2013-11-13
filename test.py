@@ -8,6 +8,8 @@ nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 #complement = genomeClass.buildReverseComplement()
-length = 13
-list = genomeClass.findMostFrequentKMers(length)
+size_kmers = 11
+size_window = 566
+num_kmers = 18
+list = genomeClass.findClump(size_window,size_kmers,num_kmers)
 print list
