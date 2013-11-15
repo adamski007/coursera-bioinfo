@@ -109,3 +109,46 @@ class AdamskiClass:
             idx = idx + 1
             self.genome = globalGenome
         return list_kmers
+
+    """
+        Input   : 1. a genome
+        Output  : a list containing at each idx of the genome, the current skew
+            The skew is defined as the defirence between G and C at each indices of the genome.
+    """
+    def computeSkewGC(self):
+        skewGC = [0]
+        curSkew = 0
+        for char in self.genome:
+            if char == 'C':
+                curSkew = skewGC[-1]-1
+                skewGC.append(curSkew)
+            elif char == 'G':
+                skewGC.append(skewGC[-1]+1)
+            else:
+                skewGC.append(skewGC[-1])
+        return skewGC
+
+    """
+        Input   : the skew of a genome
+        Output  : a list containing the index where the skew is the minimum.
+    """
+
+    def getIdxMinSkewGC(self,listSkew):
+        idxMinSkewGC = []
+        # Making a copy because the sort is done in place.
+        skewCopy = []
+        skewCopy.extend(listSkew)
+        skewCopy.sort()
+        smalestItem = skewCopy[0]
+        count = skewCopy.count(smalestItem)
+        idx = 0
+        # Re resseting the skewCopy for the next while
+        skewCopy = []
+        skewCopy.extend(listSkew)
+        while idx < count:
+            # Getting all the indices where the skew is the smallest.
+            idxItem = skewCopy.index(smalestItem)
+            idxMinSkewGC.append(idxItem+idx)
+            skewCopy.remove(smalestItem)
+            idx = idx + 1
+        return idxMinSkewGC

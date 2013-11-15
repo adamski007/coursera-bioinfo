@@ -11,5 +11,7 @@ genomeClass = AdamskiClass(nucleotide)
 size_kmers = 11
 size_window = 566
 num_kmers = 18
-list = genomeClass.findClump(size_window,size_kmers,num_kmers)
-print list
+list = genomeClass.computeSkewGC()
+idxMinSkew = genomeClass.getIdxMinSkewGC(list)
+print idxMinSkew
+
