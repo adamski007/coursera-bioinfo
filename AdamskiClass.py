@@ -152,3 +152,11 @@ class AdamskiClass:
             skewCopy.remove(smalestItem)
             idx = idx + 1
         return idxMinSkewGC
+
+    """
+        Input   :   1. a genome
+                    2. a kmers
+                    3. the maximum number of miss match agains the kmers
+        Output  :   All the position where kmers appears in genome with at most x missmatches.
+    """
+ #   def approxPatternMatching(self,kmers,missMatche):
