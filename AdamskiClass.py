@@ -1,9 +1,11 @@
 class AdamskiClass:
     """ This is a test for the documentation """
     genome = ""
+    codonTable = {}
 
     def __init__(self, strGenome):
         self.genome = strGenome
+        self.codonTable = {}
 
     """
         Input : 1. a letter in the genome.
@@ -194,6 +196,33 @@ class AdamskiClass:
                     return 0
                 idx = idx + 1
         return 1
+
+    def loadCodonTable(self,fileCodonTable):
+        """
+            Input   :   the file containing the codon table for the genome.
+            Output  :   an hash table as key the 3-mers, and as value the amino acids.
+        """
+        infile  =   open(fileCodonTable,'r')
+        listToken   =   []
+        for line in infile:
+            line = line.replace('\n','')
+            listToken = line.split(' ')
+            if len(listToken) > 1:
+                # We got an amino acids for the codon
+                # inserting into the hash table.
+                self.codonTable[listToken[0]] =   listToken[1]
+            else:
+                self.codonTable[listToken[0]] =   '*'
+
+    def translateRNAIntoAcido(self,rna):
+        idx = 0
+        aminoAcid = ""
+        while idx <= ( len(rna) - 3 ):
+            codon   =   rna[idx:idx+3]
+            acido   =   self.codonTable[codon]
+            aminoAcid = aminoAcid + acido
+            idx = idx + 3
+        return aminoAcid
 
 
 
