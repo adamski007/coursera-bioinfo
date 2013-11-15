@@ -11,7 +11,12 @@ genomeClass = AdamskiClass(nucleotide)
 size_kmers = 11
 size_window = 566
 num_kmers = 18
-list = genomeClass.findClump(self,size_window,size_kmers,num_kmers)
+kmers = "GAAATACTATA"
+xMissMatches = 6
+list = genomeClass.computeSkewGC()
+out = genomeClass.getIdxMinSkewGC(list)
 print list
+print out
+#list = genomeClass.findClump(size_window,size_kmers,num_kmers)
 
 

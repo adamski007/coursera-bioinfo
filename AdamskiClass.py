@@ -159,4 +159,60 @@ class AdamskiClass:
                     3. the maximum number of miss match agains the kmers
         Output  :   All the position where kmers appears in genome with at most x missmatches.
     """
- #   def approxPatternMatching(self,kmers,missMatche):
+    def approxPatternMatching(self,kmers,missMatche):
+        idx = 0
+        listIdx = []
+        globalGenome = self.genome
+        while idx <= ( len(globalGenome) - len(kmers)):
+            subGenome = globalGenome[idx:(len(kmers)+idx)]
+            if subGenome == kmers:
+                # We got a match, append this indices to the list.
+                # and continuing processing the rest of the genome.
+                listIdx.append(idx)
+            elif self.isXAtMostMissMatches(subGenome,kmers,missMatche) == 1:
+                # checking if this sub-genome has at most x missmatches.
+                # YES this subgenome got at most x missmatches, append to the list of indexes.
+                listIdx.append(idx)
+            idx = idx + 1
+        return listIdx
+
+    """
+        Input   :   1. a sub-genome
+                    2. a kmers
+                    3. the max number of miss match between sub-genome and kmers
+        Output  :   true if at most x missmatches between sub-genome and kmers
+    """
+    def isXAtMostMissMatches(self,subGenome,kmers,xMissMatches):
+        missMatches = 0
+        idx = 0
+        for char in subGenome:
+            if char == kmers[idx]:
+                idx = idx + 1
+            else:
+                missMatches = missMatches + 1
+                if missMatches > xMissMatches:
+                    return 0
+                idx = idx + 1
+        return 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
