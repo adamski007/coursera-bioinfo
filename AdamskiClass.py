@@ -225,7 +225,7 @@ class AdamskiClass:
         return aminoAcid
 
 
-    def transcriptionDNAToRNA(self):
+    def transcribeDNAToRNA(self):
         """
             Input   :   1. the genome it-self.
             Output  :   The transcription of this genome [ DNA ] into is equivalent RNA.
@@ -237,3 +237,10 @@ class AdamskiClass:
             else:
                 rna = rna + char
         return rna
+
+    def findSubStringAcido(self,acido):
+        """
+            Input   :   1. the genome
+                        2. the acido which was encoded from a sub-string of the genome.
+            Output  :   a list of idx of all sub-string of the genome which encode a particular acido amids.
+        """

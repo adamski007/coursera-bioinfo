@@ -23,7 +23,7 @@ xMissMatches = 6
 #list    = genomeClass.translateRNAIntoAcido(genomeClass.genome)
 #print rna
 #print list
-print genomeClass.transcriptionDNAToRNA()
+print genomeClass.transcribeDNAToRNA()
 
 
 
