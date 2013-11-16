@@ -18,11 +18,12 @@ xMissMatches = 6
 #print list
 #print out
 #list = genomeClass.findClump(size_window,size_kmers,num_kmers)
-genomeClass.loadCodonTable(sys.argv[2])
-rna =   "AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA"
-list    = genomeClass.translateRNAIntoAcido(genomeClass.genome)
-print rna
-print list
+#genomeClass.loadCodonTable(sys.argv[2])
+#rna =   "AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA"
+#list    = genomeClass.translateRNAIntoAcido(genomeClass.genome)
+#print rna
+#print list
+print genomeClass.transcriptionDNAToRNA()
 
 
 

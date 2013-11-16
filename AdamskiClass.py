@@ -225,23 +225,15 @@ class AdamskiClass:
         return aminoAcid
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def transcriptionDNAToRNA(self):
+        """
+            Input   :   1. the genome it-self.
+            Output  :   The transcription of this genome [ DNA ] into is equivalent RNA.
+        """
+        rna = ""
+        for char in self.genome:
+            if char == 'T':
+                rna = rna + 'U'
+            else:
+                rna = rna + char
+        return rna
