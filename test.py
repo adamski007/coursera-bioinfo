@@ -13,17 +13,12 @@ size_window = 566
 num_kmers = 18
 kmers = "GAAATACTATA"
 xMissMatches = 6
-#list = genomeClass.computeSkewGC()
-#out = genomeClass.getIdxMinSkewGC(list)
-#print list
-#print out
-#list = genomeClass.findClump(size_window,size_kmers,num_kmers)
-#genomeClass.loadCodonTable(sys.argv[2])
-#rna =   "AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA"
-#list    = genomeClass.translateRNAIntoAcido(genomeClass.genome)
-#print rna
-#print list
-print genomeClass.transcribeDNAToRNA()
-
-
-
+genomeClass.loadCodonTable(sys.argv[2])
+print genomeClass.genome
+rna = genomeClass.transcribeDNAToRNA()
+print genomeClass.translateRNAIntoAcido(rna)
+reverseComplement = genomeClass.buildReverseComplement()
+print reverseComplement
+genomeClass.genome = reverseComplement
+rna = genomeClass.transcribeDNAToRNA()
+print genomeClass.translateRNAIntoAcido(rna)

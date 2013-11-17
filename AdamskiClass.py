@@ -244,3 +244,7 @@ class AdamskiClass:
                         2. the acido which was encoded from a sub-string of the genome.
             Output  :   a list of idx of all sub-string of the genome which encode a particular acido amids.
         """
+        idx = 0
+        counting the size of the acido
+        check the first acido
+        if the first 3 char get the first acido, continue checking , otherwise, next up to number of acido x 3 further in the genome.
