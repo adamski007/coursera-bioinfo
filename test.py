@@ -14,6 +14,13 @@ num_kmers = 18
 kmers = "GAAATACTATA"
 xMissMatches = 6
 genomeClass.loadCodonTable(sys.argv[2])
+#print genomeClass.codonTable['UGC']
+acido = 'IQDHYAMH'
+x = genomeClass.findSubStringAcido(acido)
+print x,
+
+
+"""
 print genomeClass.genome
 rna = genomeClass.transcribeDNAToRNA()
 print genomeClass.translateRNAIntoAcido(rna)
@@ -22,3 +29,4 @@ print reverseComplement
 genomeClass.genome = reverseComplement
 rna = genomeClass.transcribeDNAToRNA()
 print genomeClass.translateRNAIntoAcido(rna)
+"""
