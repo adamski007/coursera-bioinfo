@@ -274,3 +274,14 @@ class AdamskiClass:
                 listMatches.append(subStr)
             idx = idx + 1
         return listMatches
+
+    def generateCycloSpectrum(self,amino):
+        """
+            Out comment here...
+            the pseudo algo should be something like that...
+            1. from 0 -> len , find the spectruym
+               len of 2 , for the last one idx[len-1,len] + len[0:1]
+               from 3 -> x :
+
+            2. and for each sub-peptide of len x , give his spectrum, to be done in another function....
+        """

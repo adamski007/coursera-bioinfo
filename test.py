@@ -15,7 +15,7 @@ kmers = "GAAATACTATA"
 xMissMatches = 6
 genomeClass.loadCodonTable(sys.argv[2])
 #print genomeClass.codonTable['UGC']
-acido = 'IQDHYAMH'
+acido = 'ATTACCAAGGCAAATATCCCCATAAAACTATTTCCC'
 x = genomeClass.findSubStringAcido(acido)
 print x,
 
