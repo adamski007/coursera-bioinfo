@@ -1,11 +1,10 @@
 class AdamskiClass:
     """ This is a test for the documentation """
-    genome = ""
-    codonTable = {}
 
     def __init__(self, strGenome):
         self.genome = strGenome
         self.codonTable = {}
+        self.massTable  =  {}
 
 
     def give_complement(self, letter):
@@ -285,3 +284,27 @@ class AdamskiClass:
 
             2. and for each sub-peptide of len x , give his spectrum, to be done in another function....
         """
+
+    def loadTableSpectrum(self,fileSpectrum):
+        """
+            It will load the file [ fileSpectrum ] as the basic spectrum needed
+            to generate the spectrum of any amino acid.
+            Input   :   the file containing the table of each basic mass spectrum
+            Output  :   the hashtable containng all mass spectrum
+        """
+        infile = open(fileSpectrum, 'r')
+        listToken = []
+        for line in infile:
+            line = line.replace('\n', '')
+            listToken = line.split(' ')
+            if len(listToken) > 1:
+                # We got an amino acids for the codon
+                # inserting into the hash table.
+                self.massTable[listToken[0]] = listToken[1]
+            else:
+                self.massTable[listToken[0]] = '*'
+
+
+
+
+
