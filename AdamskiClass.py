@@ -284,6 +284,26 @@ class AdamskiClass:
 
             2. and for each sub-peptide of len x , give his spectrum, to be done in another function....
         """
+        # This list will contains all the mass of the subpeptide of amino.
+        listSpectrum = []
+        # max len of any subpeptide.
+        maxLenSubPep    =   len(amino)-1
+        # we must begin with a lenth of subpeptide of min 1.
+        curLenSubPep    =   1
+        idx     =   0
+        while curLenSubPep <= maxLenSubPep:
+            while idx <= maxLenSubPep:
+                if curLenSubPep == 1:
+                    subStr  =   amino[idx:idx+curLenSubPep]
+                else:
+
+                listSpectrum.append(subStr)
+                idx     =   idx + 1
+            curLenSubPep    =   curLenSubPep + 1
+            idx =   0
+
+
+
 
     def loadTableSpectrum(self,fileSpectrum):
         """
