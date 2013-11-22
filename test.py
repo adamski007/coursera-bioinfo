@@ -13,8 +13,10 @@ size_window = 566
 num_kmers = 18
 kmers = "GAAATACTATA"
 xMissMatches = 6
-genomeClass.loadCodonTable(sys.argv[1])
-genomeClass.loadTableSpectrum(sys.argv[2])
+genomeClass.loadCodonTable(sys.argv[2])
+genomeClass.loadTableSpectrum(sys.argv[3])
 #print genomeClass.codonTable['UGC']
-acido = 'ATTACCAAGGCAAATATCCCCATAAAACTATTTCCC'
-x = genomeClass.findSubStringAcido(acido)
+amino = 'YMRPTMNVQEPEAFP'
+listSubPep = genomeClass.generateListSubPep(amino)
+listMassSpectrum = genomeClass.computeMassSpectrum(listSubPep)
+print listMassSpectrum

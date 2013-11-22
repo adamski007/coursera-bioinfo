@@ -274,7 +274,7 @@ class AdamskiClass:
             idx = idx + 1
         return listMatches
 
-    def generateCycloSpectrum(self,amino):
+    def generateListSubPep(self,amino):
         """
             Out comment here...
             the pseudo algo should be something like that...
@@ -284,26 +284,50 @@ class AdamskiClass:
 
             2. and for each sub-peptide of len x , give his spectrum, to be done in another function....
         """
-        # This list will contains all the mass of the subpeptide of amino.
-        listSpectrum = []
+        # This list will contains all the subpeptide of amino.
+        listSubPep = []
+        # Adding the acido amino it-self, and all it's char.
+        # Then, we will need to add all sub-pep possible.
+        listSubPep.append(amino)
+        for char in amino:
+            listSubPep.append(char)
         # max len of any subpeptide.
         maxLenSubPep    =   len(amino)-1
         # we must begin with a lenth of subpeptide of min 1.
-        curLenSubPep    =   1
+        curLenSubPep    =   2
         idx     =   0
         while curLenSubPep <= maxLenSubPep:
-            while idx <= maxLenSubPep:
-                if curLenSubPep == 1:
-                    subStr  =   amino[idx:idx+curLenSubPep]
+            # Doing all the length possible for sub-pep.
+            while idx < len(amino):
+                if idx > len(amino)-curLenSubPep:
+                    # do special processing
+                    remain = len(amino) - idx
+                    subPepRear = amino[idx:idx+remain]
+                    addFront = curLenSubPep - remain
+                    subPepFront = amino[0:addFront]
+                    subPepAll = subPepRear + subPepFront
+                    listSubPep.append(subPepAll)
                 else:
+                    listSubPep.append(amino[idx:idx+curLenSubPep])
+                idx =   idx + 1
+            curLenSubPep = curLenSubPep + 1
+            idx = 0
+        return listSubPep
 
-                listSpectrum.append(subStr)
-                idx     =   idx + 1
-            curLenSubPep    =   curLenSubPep + 1
-            idx =   0
-
-
-
+    def computeMassSpectrum(self,listSubPep):
+        listMassSpectrum = []
+        currentMass = 0
+        # We always need to add a mass of zero in the spectrum.
+        listMassSpectrum.append(currentMass)
+        for subPep in listSubPep:
+            # compute the mass spectrum of each elem of the list.
+            for char in subPep:
+                massElem    =   self.massTable[char]
+                currentMass =   currentMass + int(massElem)
+            listMassSpectrum.append(currentMass)
+            currentMass = 0
+        listMassSpectrum.sort()
+        return listMassSpectrum
 
     def loadTableSpectrum(self,fileSpectrum):
         """
