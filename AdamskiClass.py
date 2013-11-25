@@ -348,6 +348,39 @@ class AdamskiClass:
             else:
                 self.massTable[listToken[0]] = '*'
 
+    def computeSpectralConvolution(self,spectrum):
+        """
+        We build a matrix, where each point i , j is a difference between two masses of a spectrum.
+        Intput  :   a mass spectrum
+        Output  :   a list of element between 57 and 200 DA.
+        """
+        idxHoriz=   0
+        # On the horizontale idx, the last value [ the complete mass of the peptide ] is not present.
+        idxVert =   1 + idxHoriz
+        # We don't need the elem of the diagonal of the matrix, that's why idxVert begins with 1.
+        # As for the computation in the matrix on the right side, we always need less point, we increase the
+        # idxVert by one each time.
+        listElem    =   []
+        while idxHoriz <= len(spectrum)-2:
+            while idxVert <= len(spectrum)-1:
+                difference  =   int(spectrum[idxVert])-int(spectrum[idxHoriz])
+                #print "Verticale : ", spectrum[idxVert]," horizontale : ",spectrum[idxHoriz]
+                listElem.append(difference)
+                # computing next elem verticaly.
+                idxVert =   idxVert + 1
+            # computing next elem horizontaly
+            idxHoriz    =   idxHoriz + 1
+            # re-setting the vertical indexe for the next iteration, and increasing the value by idxHoriz
+            # because next time we compute [ next column ] , the computation occured one element lower in the matrix,
+            # do a picture and you will understand...
+            # This is because we compute only the elements under the diagonale of the matrix.
+            idxVert =   1 + idxHoriz
+        return listElem
+
+
+
+
+
 
 
 
