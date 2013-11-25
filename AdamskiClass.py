@@ -364,8 +364,9 @@ class AdamskiClass:
         while idxHoriz <= len(spectrum)-2:
             while idxVert <= len(spectrum)-1:
                 difference  =   int(spectrum[idxVert])-int(spectrum[idxHoriz])
-                #print "Verticale : ", spectrum[idxVert]," horizontale : ",spectrum[idxHoriz]
-                listElem.append(difference)
+                if difference > 0:
+                    # A spectrum of zero is not relevant, that is why we add only the element where is above 0
+                    listElem.append(difference)
                 # computing next elem verticaly.
                 idxVert =   idxVert + 1
             # computing next elem horizontaly
