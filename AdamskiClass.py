@@ -5,6 +5,16 @@ class AdamskiClass:
         self.genome = strGenome
         self.codonTable = {}
         self.massTable  =  {}
+        self.allMassValue = []
+
+    def buildAllMassValue(self):
+        """
+        Building a list with all the mass possible.
+        Easier to check if a mass exist.
+        """
+        for mass in self.massTable:
+            # As all mass are an integer, we convert directly to integer, otherwise python think that it is a string.
+            self.allMassValue.append(int(self.massTable[mass]))
 
 
     def give_complement(self, letter):
@@ -377,6 +387,58 @@ class AdamskiClass:
             # This is because we compute only the elements under the diagonale of the matrix.
             idxVert =   1 + idxHoriz
         return listElem
+
+    def cyclopeptideSequencing(self,spectrum):
+        firstList   =   self.findOneMers(spectrum)
+        firstList.append(0)
+        while len(firstList) > 0:
+            print 'toto'
+        return 0
+
+    def findOneMers(self,spectrum):
+        """
+        Find all the 1-mers compatible with the spectrum
+        """
+        listOneMers = []
+        for mass in spectrum:
+            if mass in self.allMassValue:
+                # this is a starting point...
+                listOneMers.append([mass])
+        return listOneMers
+
+    def expandList(self,listMass):
+        newListMass = []
+        for elem in listMass:
+            for mass in self.allMassValue:
+                # extending all peptide with each acido.
+                tmpList =   elem.append(mass)
+                newListMass.append(tmpList)
+        return newListMass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
