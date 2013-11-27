@@ -7,6 +7,24 @@ infile = open(sys.argv[1],'r')
 nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
+listKmers = genomeClass.mostFrequentKmersXMissMatche(4,1)
+print listKmers
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 #complement = genomeClass.buildReverseComplement()
 size_kmers = 11
 size_window = 566
@@ -34,11 +52,4 @@ for elem in spectrumList:
     spectrumListInt.append(int(elem))
 spectrumListInt.sort()
 test = genomeClass.findOneMers(spectrumListInt)
-
-
-
-
-print type(test[1])
-test.append(0)
-print type(test[2])
-print "this was the 1-mers"
+"""

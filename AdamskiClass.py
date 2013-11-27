@@ -192,6 +192,34 @@ class AdamskiClass:
         return listIdx
 
 
+    def mostFrequentKmersXMissMatche(self,len_kmers,xmissMatches):
+        """
+            Will find the most present kmers present in the DNA, with at most x miss-matches.
+            Input   :   1. The genome it-self
+                        2. the choosen len of a kmers
+                        3. the max number of miss-matches agains the kmers.
+            Output  :   The most frequent kmers with at most x miss-matches.
+        """
+        idx = 0
+        countKMersPresent = 0
+        listKmersMostPresent = []
+        while idx <= len(self.genome)-len_kmers:
+            currentKMers    = self.genome[idx:idx+len_kmers]
+            listIdx = self.approxPatternMatching(currentKMers,xmissMatches)
+            print currentKMers,listIdx
+            if len(listIdx) > countKMersPresent:
+                # We got a new record for the most present kmers.
+                listKmersMostPresent = []
+                kmers = self.genome[listIdx[0]:listIdx[0]+len_kmers]
+                listKmersMostPresent.append(kmers)
+            elif len(listIdx) == countKMersPresent and len(listIdx) > 0:
+                # We got a [new] kmers
+                kmers = self.genome[listIdx[0]:listIdx[0]+len_kmers]
+                if kmers not in listKmersMostPresent:
+                    listKmersMostPresent.append(kmers)
+            idx = idx + 1
+        return listKmersMostPresent
+
     def isXAtMostMissMatches(self, subGenome, kmers, xMissMatches):
         """
             Input   :   1. a sub-genome
