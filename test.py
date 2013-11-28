@@ -7,9 +7,12 @@ infile = open(sys.argv[1],'r')
 nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
-listKmers = genomeClass.mostFrequentKmersXMissMatche(4,1)
+listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 print listKmers
 
+
+# GCT GGT TGGT
+# GCG CAC ACAC
 
 
 

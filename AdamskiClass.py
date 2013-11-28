@@ -206,19 +206,53 @@ class AdamskiClass:
         while idx <= len(self.genome)-len_kmers:
             currentKMers    = self.genome[idx:idx+len_kmers]
             listIdx = self.approxPatternMatching(currentKMers,xmissMatches)
-            print currentKMers,listIdx
+            print currentKMers,len(listIdx),listIdx
             if len(listIdx) > countKMersPresent:
                 # We got a new record for the most present kmers.
                 listKmersMostPresent = []
-                kmers = self.genome[listIdx[0]:listIdx[0]+len_kmers]
-                listKmersMostPresent.append(kmers)
+                #kmers = self.genome[listIdx[0]:listIdx[0]+len_kmers]
+                listKmersMostPresent.append(currentKMers)
+                countKMersPresent   = len(listIdx)
             elif len(listIdx) == countKMersPresent and len(listIdx) > 0:
                 # We got a [new] kmers
                 kmers = self.genome[listIdx[0]:listIdx[0]+len_kmers]
-                if kmers not in listKmersMostPresent:
-                    listKmersMostPresent.append(kmers)
+                if currentKMers not in listKmersMostPresent:
+                    listKmersMostPresent.append(currentKMers)
             idx = idx + 1
         return listKmersMostPresent
+
+    def mostFrequentKmersXMissMatches2(self,len_kmers,xMissMatches):
+        """
+            Will find the most present kmers present in the DNA, with at most x miss-matches.
+            Input   :   1. The genome it-self
+                        2. the choosen len of a kmers
+                        3. the max number of miss-matches agains the kmers.
+            Output  :   The most frequent kmers with at most x miss-matches.
+        """
+        # This version will take into account the kmers that even not present in the DNA it-self.
+        print 'Generating all kmers of length : ',len_kmers
+        all_kmers = self.generateAllKmers(len_kmers)
+        print all_kmers[0]
+        print 'Generation of all the kmers done.'
+        countKMersPresent = 0
+        listKmersMostPresent = []
+        print len(all_kmers)
+        for kmers in all_kmers:
+            #print kmers
+            listIdx = self.approxPatternMatching(kmers,xMissMatches)
+            #print listIdx
+            if len(listIdx) > countKMersPresent:
+                # We got a new record for the most present kmers.
+                listKmersMostPresent = []
+                #kmers = self.genome[listIdx[0]:listIdx[0]+len_kmers]
+                listKmersMostPresent.append(kmers)
+                countKMersPresent   = len(listIdx)
+            elif len(listIdx) == countKMersPresent and len(listIdx) > 0:
+                # We got a [new] kmers
+                if kmers not in listKmersMostPresent:
+                    listKmersMostPresent.append(kmers)
+        return listKmersMostPresent
+
 
     def isXAtMostMissMatches(self, subGenome, kmers, xMissMatches):
         """
@@ -443,8 +477,29 @@ class AdamskiClass:
                 newListMass.append(tmpList)
         return newListMass
 
-
-
+    def generateAllKmers(self,length):
+        """
+        Will generate a list containing all the kmers of length LENGTH.
+        Needed for one exercice in coursera.
+        Input   :   the length wanted of a kmers
+        Output  :   a list with all kmers possible of this length.
+        """
+        idx = 1
+        listKmers = []
+        listKmers2 = []
+        # Initializing the list with one letter.
+        for char in 'ATCG':
+            listKmers.append([char])
+        idx = idx + 1
+        while idx <= length:
+            for list in listKmers:
+                for char in 'ATCG':
+                    newList = list + [char]
+                    listKmers2.append(newList)
+            listKmers = listKmers2
+            listKmers2 = []
+            idx = idx + 1
+        return listKmers
 
 
 
