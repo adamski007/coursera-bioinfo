@@ -7,9 +7,19 @@ infile = open(sys.argv[1],'r')
 nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
-listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
-print listKmers
+#listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
+#print listKmers
+kmres = 'AAAAA'
+listKmers = []
+listKmers2 = genomeClass.generateAllKmersXMissMatches(kmres,listKmers,3)
+#print listKmers
 
+print '++++++++'
+print ''
+listKmers.sort()
+print 'sorted list...'
+#print listKmers
+print 'Size of the list is : ',len(listKmers)
 
 # GCT GGT TGGT
 # GCG CAC ACAC

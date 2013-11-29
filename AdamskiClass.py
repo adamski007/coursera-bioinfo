@@ -501,6 +501,72 @@ class AdamskiClass:
             idx = idx + 1
         return listKmers
 
+    def generateAllKmersXMissMatches(self,kmers,listKmers, xMissMatches):
+        """
+            Given a kmers KMERS , we will generate all the kmers that differ with KMERS
+            with at most X miss-matches.
+        """
+        idx = 0
+        listKmersRecursion = []
+        newKmers = []
+        print 'In generate all x mismatches'
+        while idx <= len(kmers)-1:
+            # Doing the computation
+            # Three case possible, idx == 0 , idx in the middle , idx == last
+            if idx == 0:
+                #Changing only the first character.
+                for char in 'ATCG':
+                    newKmers.append(char)
+                    newKmers.extend(kmers[idx+1:])
+                    if xMissMatches == 1:
+                        if newKmers not in listKmers:
+                            listKmers.append(newKmers)
+                    else:
+                        # Beginning recursion,
+                        print 'Before recursion'
+                        if newKmers != kmers:
+                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,listKmers,xMissMatches-1)
+                            listKmers.extend(listKmersRecursion)
+                        #print listKmersRecursion
+                    newKmers = []
+            elif idx < len(kmers)-1:
+                # we are in the middle
+                print 'in the second else...'
+                for char in 'ATCG':
+                    newKmers.extend(kmers[:idx])
+                    newKmers.append(char)
+                    newKmers.extend(kmers[idx+1:])
+                    if xMissMatches == 1:
+                        if newKmers not in listKmers:
+                            listKmers.append(newKmers)
+                    else:
+                        # Beginning recursion,
+                        print 'Before recursion'
+                        if newKmers != kmers:
+                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,listKmers,xMissMatches-1)
+                            listKmers.extend(listKmersRecursion)
+                        #print listKmersRecursion
+                    newKmers = []
+            else:
+                print 'we should arrive here...'
+                # we are at the last elem.
+                for char in 'ATCG':
+                    newKmers.extend(kmers[:idx])
+                    newKmers.append(char)
+                    if xMissMatches == 1:
+                        if newKmers not in listKmers:
+                            listKmers.append(newKmers)
+                    else:
+                        # Beginning recursion,
+                        print 'Before recursion'
+                        if newKmers != kmers:
+                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,listKmers,xMissMatches-1)
+                            listKmers.extend(listKmersRecursion)
+                        #print listKmersRecursion
+                    newKmers = []
+            print idx
+            idx = idx + 1
+        return listKmers
 
 
 
