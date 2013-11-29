@@ -9,9 +9,9 @@ nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 #print listKmers
-kmres = 'AAAAA'
+kmres = 'AAA'
 listKmers = []
-listKmers2 = genomeClass.generateAllKmersXMissMatches(kmres,listKmers,3)
+listKmers2 = genomeClass.generateAllKmersXMissMatches(kmres,listKmers,2)
 #print listKmers
 
 print '++++++++'

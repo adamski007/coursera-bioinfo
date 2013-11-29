@@ -1,3 +1,6 @@
+import sys
+import os
+
 class AdamskiClass:
     """ This is a test for the documentation """
 
@@ -525,8 +528,16 @@ class AdamskiClass:
                         # Beginning recursion,
                         print 'Before recursion'
                         if newKmers != kmers:
+                            print 'xmissMatches',xMissMatches, 'listKmers', listKmers
                             listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,listKmers,xMissMatches-1)
+                            print listKmersRecursion
+                            print listKmers
+                            # The problem is here , actually, listKmers is already initialize with the function it-seflm
+                            # as given to the function each time... it is an ever growning list ...
+                            ######
                             listKmers.extend(listKmersRecursion)
+                            print listKmers
+                            sys.exit(0)
                         #print listKmersRecursion
                     newKmers = []
             elif idx < len(kmers)-1:
