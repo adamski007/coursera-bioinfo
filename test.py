@@ -9,20 +9,10 @@ nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 #print listKmers
-kmres = 'AAA'
-listKmers = []
-listKmers2 = genomeClass.generateAllKmersXMissMatches(kmres,listKmers,2)
+#kmres = 'AAAA'
+#listBuilded = []
+#listKmers = genomeClass.generateAllKmersXMissMatches(kmres,2,listBuilded)
 #print listKmers
-
-print '++++++++'
-print ''
-listKmers.sort()
-print 'sorted list...'
-#print listKmers
-print 'Size of the list is : ',len(listKmers)
-
-# GCT GGT TGGT
-# GCG CAC ACAC
 
 
 

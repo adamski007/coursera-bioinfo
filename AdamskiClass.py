@@ -233,8 +233,7 @@ class AdamskiClass:
             Output  :   The most frequent kmers with at most x miss-matches.
         """
         # This version will take into account the kmers that even not present in the DNA it-self.
-        print 'Generating all kmers of length : ',len_kmers
-        all_kmers = self.generateAllKmers(len_kmers)
+        all_kmers = self.gene
         print all_kmers[0]
         print 'Generation of all the kmers done.'
         countKMersPresent = 0
@@ -504,15 +503,16 @@ class AdamskiClass:
             idx = idx + 1
         return listKmers
 
-    def generateAllKmersXMissMatches(self,kmers,listKmers, xMissMatches):
+    def generateAllKmersXMissMatches(self,kmers, xMissMatches,listAlreadyBuilded):
         """
             Given a kmers KMERS , we will generate all the kmers that differ with KMERS
             with at most X miss-matches.
         """
         idx = 0
         listKmersRecursion = []
+        listKmers = []
         newKmers = []
-        print 'In generate all x mismatches'
+        #print 'In generate all x mismatches'
         while idx <= len(kmers)-1:
             # Doing the computation
             # Three case possible, idx == 0 , idx in the middle , idx == last
@@ -522,44 +522,41 @@ class AdamskiClass:
                     newKmers.append(char)
                     newKmers.extend(kmers[idx+1:])
                     if xMissMatches == 1:
-                        if newKmers not in listKmers:
+                        if newKmers not in listAlreadyBuilded:
                             listKmers.append(newKmers)
+                            listAlreadyBuilded.append(newKmers)
                     else:
                         # Beginning recursion,
-                        print 'Before recursion'
-                        if newKmers != kmers:
-                            print 'xmissMatches',xMissMatches, 'listKmers', listKmers
-                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,listKmers,xMissMatches-1)
-                            print listKmersRecursion
-                            print listKmers
-                            # The problem is here , actually, listKmers is already initialize with the function it-seflm
-                            # as given to the function each time... it is an ever growning list ...
-                            ######
-                            listKmers.extend(listKmersRecursion)
-                            print listKmers
-                            sys.exit(0)
-                        #print listKmersRecursion
+                        #print 'Before recursion'
+                        if newKmers != kmers and newKmers not in listAlreadyBuilded:
+                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
+                            for elem in listKmersRecursion:
+                                if elem not in listKmers:
+                                    listKmers.append(elem)
                     newKmers = []
             elif idx < len(kmers)-1:
                 # we are in the middle
-                print 'in the second else...'
+                #print 'in the second else...'
                 for char in 'ATCG':
                     newKmers.extend(kmers[:idx])
                     newKmers.append(char)
                     newKmers.extend(kmers[idx+1:])
                     if xMissMatches == 1:
-                        if newKmers not in listKmers:
+                        if newKmers not in listAlreadyBuilded:
                             listKmers.append(newKmers)
+                            listAlreadyBuilded.append(newKmers)
                     else:
                         # Beginning recursion,
-                        print 'Before recursion'
-                        if newKmers != kmers:
-                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,listKmers,xMissMatches-1)
-                            listKmers.extend(listKmersRecursion)
+                        #print 'Before recursion'
+                        if newKmers != kmers and newKmers not in listAlreadyBuilded:
+                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
+                            for elem in listKmersRecursion:
+                                if elem not in listKmers:
+                                    listKmers.append(elem)
                         #print listKmersRecursion
                     newKmers = []
             else:
-                print 'we should arrive here...'
+                #print 'we should arrive here...'
                 # we are at the last elem.
                 for char in 'ATCG':
                     newKmers.extend(kmers[:idx])
@@ -567,17 +564,57 @@ class AdamskiClass:
                     if xMissMatches == 1:
                         if newKmers not in listKmers:
                             listKmers.append(newKmers)
+                            listAlreadyBuilded.append(newKmers)
                     else:
                         # Beginning recursion,
-                        print 'Before recursion'
                         if newKmers != kmers:
-                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,listKmers,xMissMatches-1)
-                            listKmers.extend(listKmersRecursion)
+                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
+                            for elem in listKmersRecursion:
+                                if elem not in listKmers:
+                                    listKmers.append(elem)
                         #print listKmersRecursion
                     newKmers = []
-            print idx
+            #print idx
             idx = idx + 1
         return listKmers
+
+    def motifEnumeration(self,listDNA,length,xMissMatches):
+        """
+        Find all the kmers of length length with at most xMissMatches in each DNA present in listDNA.
+        """
+        listBuildedKmers = []
+        listKmersXmutated = []
+        listKMers = []
+        listIdxKmers = []
+        kmersFound = 0
+        kmersInAllDNA = []
+        for dna in listDNA:
+            # Looping over all DNA present in this list, and searching for any kmers.
+            idx = 0
+            while idx <= length:
+                # each kmers of length length in the current DNA
+                kmers = dna[idx:idx+length]
+                listKmersXmutated = self.generateAllKmersXMissMatches(kmers,xMissMatches,listBuildedKmers)
+                for elemKmers in listKmersXmutated:
+                    for dna in listDNA:
+                        kmersPresent = []
+                        globalGenome = self.genome
+                        self.genome = dna
+                        listIdxKmers = self.approxPatternMatching(elemKmers,xMissMatches)
+                        if len(listIdxKmers) == 0:
+                            # Stop searching this kners in other DNA, as not even found in this current DNA.
+                            # Resetting the list as in one DNA , nothing found.
+                            kmersPresent = []
+                            break
+                        else:
+                            kmersPresent.append(elemKmers)
+                    if len(kmersPresent) > 0:
+                        # The current elemKmers is present in each DNA with at most d miss-matches.
+                        # inserting this kmers in our list.
+                        kmersInAllDNA.append(elemKmers)
+                idx = idx + 1
+        return kmersInAllDNA
+
 
 
 
