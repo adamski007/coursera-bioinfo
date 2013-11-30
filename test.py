@@ -14,17 +14,38 @@ genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.generateAllKmersXMissMatches(kmres,2,listBuilded)
 #print listKmers
 
+x='ATTTGGC'
+y='TGCCTTA'
+w='CGGTATC'
+z='GAAAATT'
+a='TCTGAGCTTGCGTTATTTTTAGACC'
+b='GTTTGACGGGAACCCGACGCCTATA'
+c='TTTTAGATTTCCTCAGTCCACTATA'
+d='CTTACAATTTCGTTATTTATCTAAT'
+e='CAGTAGGAATAGCCACTTTGTTGTA'
+f='AAATCCATTAAGGAAAGACGACCGT'
+listKmers = []
+listKmers.append(a)
+listKmers.append(b)
+listKmers.append(c)
+listKmers.append(d)
+listKmers.append(e)
+listKmers.append(f)
+lenKmers=5
+missMatches=2
+#print listKmers
+kmersPresent = genomeClass.motifEnumeration(listKmers,lenKmers,missMatches)
+#print kmersPresent
+#print len(kmersPresent)
+newList = AdamskiClass.rebuildList(kmersPresent)
+#print newList
 
 
-
-
-# This comment should leave after git command...
-# should remains only one line of comment...
-
-
-
-
-
+kmers='AAAA'
+output = genomeClass.generateAllKmersXMissMatches(kmers,2,[])
+rebuildedList =  AdamskiClass.rebuildList(output)
+print len(output)
+print rebuildedList.count('TATA')
 
 
 

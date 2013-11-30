@@ -507,6 +507,10 @@ class AdamskiClass:
         """
             Given a kmers KMERS , we will generate all the kmers that differ with KMERS
             with at most X miss-matches.
+            ATTENTION : In the recursion, there is no adjacent char in the genome which differ.
+            ATTA
+            ACCA
+            Does not appear in AAAA with at most 2 miss-matches. Why ????!!!!???????
         """
         idx = 0
         listKmersRecursion = []
@@ -527,7 +531,6 @@ class AdamskiClass:
                             listAlreadyBuilded.append(newKmers)
                     else:
                         # Beginning recursion,
-                        #print 'Before recursion'
                         if newKmers != kmers and newKmers not in listAlreadyBuilded:
                             listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
                             for elem in listKmersRecursion:
@@ -536,7 +539,6 @@ class AdamskiClass:
                     newKmers = []
             elif idx < len(kmers)-1:
                 # we are in the middle
-                #print 'in the second else...'
                 for char in 'ATCG':
                     newKmers.extend(kmers[:idx])
                     newKmers.append(char)
@@ -547,7 +549,6 @@ class AdamskiClass:
                             listAlreadyBuilded.append(newKmers)
                     else:
                         # Beginning recursion,
-                        #print 'Before recursion'
                         if newKmers != kmers and newKmers not in listAlreadyBuilded:
                             listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
                             for elem in listKmersRecursion:
@@ -556,7 +557,6 @@ class AdamskiClass:
                         #print listKmersRecursion
                     newKmers = []
             else:
-                #print 'we should arrive here...'
                 # we are at the last elem.
                 for char in 'ATCG':
                     newKmers.extend(kmers[:idx])
@@ -574,7 +574,6 @@ class AdamskiClass:
                                     listKmers.append(elem)
                         #print listKmersRecursion
                     newKmers = []
-            #print idx
             idx = idx + 1
         return listKmers
 
@@ -608,15 +607,29 @@ class AdamskiClass:
                             break
                         else:
                             kmersPresent.append(elemKmers)
-                    if len(kmersPresent) > 0:
+                    if len(kmersPresent) > 0 and elemKmers not in kmersInAllDNA:
                         # The current elemKmers is present in each DNA with at most d miss-matches.
                         # inserting this kmers in our list.
                         kmersInAllDNA.append(elemKmers)
                 idx = idx + 1
         return kmersInAllDNA
 
-
-
+    @staticmethod
+    def rebuildList(listKmers):
+        """
+        In some cases, we got a list where each element is also a list. This is not quite convenient to paste the result
+        back in the field as answer. This function will rebuild as a string each list within this list.
+        Finally, we will got a list where each elem is a string of nucleotide.
+        This is much better, and easier to paste in the answer field.
+        """
+        newList = []
+        newStr = ''
+        for x in listKmers:
+            for y in x:
+                newStr = newStr + y
+            newList.append(newStr)
+            newStr = ''
+        return newList
 
 
 
