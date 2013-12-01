@@ -479,7 +479,8 @@ class AdamskiClass:
                 newListMass.append(tmpList)
         return newListMass
 
-    def generateAllKmers(self,length):
+    @staticmethod
+    def generateAllKmers(length):
         """
         Will generate a list containing all the kmers of length LENGTH.
         Needed for one exercice in coursera.
@@ -666,7 +667,7 @@ class AdamskiClass:
     @staticmethod
     def computeSumHammingDistance(kmers,listDNA):
         """
-        For each DNA in listDNA, it will compute the hamming distance against kmers, and we will
+        For each DNA in listDNA, it will compute the min hamming distance against kmers, and we will
         return the sum of all this.
         """
         distance = 0
@@ -676,11 +677,41 @@ class AdamskiClass:
             # computing the hamming distance in each of these DNA.
             distance,motif  = AdamskiClass.findMotif(kmers,dna)
             sum = sum + distance
-        return sum
+        return sum,motif
 
+    @staticmethod
+    def findMedianString(listDNA,lengthKmers):
+        """
+        The function will find the kmers pattern that minimize distance(pattern,dna) among all
+        kmers in each dna of listDNA.
+        """
+        allkmers = AdamskiClass.generateAllKmers(lengthKmers)
+        # We need to rebuild the list,to get a string in each elem of the list.
+        allkmersrebuilded = AdamskiClass.rebuildList(allkmers)
+        bestpattern  = ''
+        currpattern = ''
+        bestscore    = sys.maxsize
+        currentscore    =   0
+        for kmers in allkmersrebuilded:
+            currentscore,currpattern = AdamskiClass.computeSumHammingDistance(kmers,listDNA)
+            if currentscore < bestscore:
+                bestscore   = currentscore
+                bestpattern = currpattern
+        return bestpattern,bestscore
 
-
-
+    @staticmethod
+    def readAndBuildListFromFile(nameFile):
+        """
+        As we now sometime, need to build a list with a DNA in each elem of the list.
+        This function will do the trick.
+        Building this list manually take too much time, and it is less error prune doing automatically.
+        """
+        listDNA = []
+        infile = open(nameFile,'r')
+        for line in infile:
+            line = line.replace('\n', '')
+            listDNA.append(line)
+        return listDNA
 
 
 

@@ -15,11 +15,11 @@ genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.generateAllKmersXMissMatches(kmres,2,listBuilded)
 #print listKmers
 
-x='ttaccttAAc'
-y='gAtAtctgtc'
-w='Acggcgttcg'
-z='ccctAAAgag'
-v='cgtcAgAggt'
+x='CCAGGTATCACATAGACACCGCACAAGGATACAGAGAAGCGC'
+y='AACCAGAAACGCGTAAATCCACGGTAGCGTGAGTGATAACGC'
+w='AAGCGCACTTTAACCTGGGAGGCTTGGGTGCTAGCCCAGAAC'
+z='ACCTGAAAACGCCGCACACTATGAGGGTACGCGAGGTCTGTC'
+v='TAGTTTGTCCGTAGATGTAAGCGCAGGCCAAATTTCCTGTTT'
 listDNA = []
 listDNA.append(x)
 listDNA.append(y)
@@ -32,8 +32,9 @@ DNA='GCAATCCTCAGC'
 diff,motif =  AdamskiClass.findMotif(kmers,DNA)
 print 'The hammind distance is : ',diff, 'and the kers with this count is : ',motif
 
-total = AdamskiClass.computeSumHammingDistance('AAA',listDNA)
-print total
+total,dna = AdamskiClass.computeSumHammingDistance('AAA',listDNA)
+print total,dna
 
-allKmers = genomeClass.generateAllKmers(3)
-print allKmers
+print AdamskiClass.findMedianString(listDNA,3)
+listDNA2 = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
+print AdamskiClass.findMedianString(listDNA2,6)
