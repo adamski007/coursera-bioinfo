@@ -631,7 +631,52 @@ class AdamskiClass:
             newStr = ''
         return newList
 
+    @staticmethod
+    def findMotif(pattern,DNA):
+        """
+            The hamming distance is the number of different nucleotide between pattern and any kmers
+            in DNA. pattern is smaller than DNA.
+        """
+        idx = 0
+        motif = 0
+        minDiff = len(DNA)
+        currDiff = 0
+        while idx <= len(DNA)-len(pattern):
+            currDiff = AdamskiClass.computeHammingDistance(pattern,DNA[idx:idx+len(pattern)])
+            if currDiff < minDiff:
+                minDiff = currDiff
+                motif = DNA[idx:idx+len(pattern)]
+            idx+=1
+        return minDiff,motif
 
+    @staticmethod
+    def computeHammingDistance(pattern,DNA):
+        """
+        The hamming distance is the number of differente nucleotide between DNA and a kmers.
+        """
+        idx = 0
+        difference = 0
+        while idx < len(pattern):
+            if pattern[idx] != DNA[idx]:
+                difference+=1
+            idx+=1
+        return difference
+
+
+    @staticmethod
+    def computeSumHammingDistance(kmers,listDNA):
+        """
+        For each DNA in listDNA, it will compute the hamming distance against kmers, and we will
+        return the sum of all this.
+        """
+        distance = 0
+        motif =''
+        sum = 0
+        for dna in listDNA:
+            # computing the hamming distance in each of these DNA.
+            distance,motif  = AdamskiClass.findMotif(kmers,dna)
+            sum = sum + distance
+        return sum
 
 
 
