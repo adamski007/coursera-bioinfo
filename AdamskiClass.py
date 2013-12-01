@@ -684,6 +684,9 @@ class AdamskiClass:
         """
         The function will find the kmers pattern that minimize distance(pattern,dna) among all
         kmers in each dna of listDNA.
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        CODE NOT ALWAYS WORKING SUCESSFULLY , TO RE IMPLEMENT AND CHECK.
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         """
         allkmers = AdamskiClass.generateAllKmers(lengthKmers)
         # We need to rebuild the list,to get a string in each elem of the list.
