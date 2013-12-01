@@ -45,6 +45,7 @@ kmers='AAAA'
 output = genomeClass.generateAllKmersXMissMatches(kmers,2,[])
 rebuildedList =  AdamskiClass.rebuildList(output)
 print len(output)
+print rebuildedList
 print rebuildedList.count('TATA')
 
 
