@@ -596,18 +596,17 @@ class AdamskiClass:
         return minDiff,motif
 
     @staticmethod
-    def computeHammingDistance(pattern,DNA):
+    def computeHammingDistance(pattern,kmers):
         """
-        The hamming distance is the number of differente nucleotide between DNA and a kmers.
+        The hamming distance is the number of differente nucleotide between pattern and a kmers.
         """
         idx = 0
         difference = 0
         while idx < len(pattern):
-            if pattern[idx] != DNA[idx]:
+            if pattern[idx] != kmers[idx]:
                 difference+=1
             idx+=1
         return difference
-
 
     @staticmethod
     def computeSumHammingDistance(kmers,listDNA):

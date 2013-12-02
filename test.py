@@ -12,5 +12,5 @@ genomeClass = AdamskiClass(nucleotide)
 
 listDNA = genomeClass.readAndBuildListFromFile("listDNA.txt")
 print listDNA
-allmotif = genomeClass.motifEnumeration(listDNA,5,2)
+allmotif = genomeClass.motifEnumeration(listDNA,15,4)
 print allmotif.keys()
