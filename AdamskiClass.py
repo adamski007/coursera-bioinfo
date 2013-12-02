@@ -9,6 +9,7 @@ class AdamskiClass:
         self.codonTable = {}
         self.massTable  =  {}
         self.allMassValue = []
+        self.listxmutationkmers = []
 
     def buildAllMassValue(self):
         """
@@ -726,14 +727,61 @@ class AdamskiClass:
 
 
 
+    @staticmethod
+    def rebuildKmersWithMutation(kmers,newnucleotide,idxnucleotide):
+        """
+        To re-construct the kmers with his mutated nucleotide,
+        we can see 3 different way of doing that.
+        # 1. nucleotide mutated is in first place of the kmers.
+        # 2. nucleotide mutated is in the middle place of the kmers
+        # 3. nucleotide mutated is in the last place of the kmers
+        """
+        newkmers = ''
+        if idxnucleotide == 0:
+            newkmers = newkmers + newnucleotide
+            newkmers = newkmers + kmers[1:]
+        elif idxnucleotide == len(kmers)-1:
+            newkmers = newkmers + kmers[:idxnucleotide]
+            newkmers = newkmers + newnucleotide
+        else:
+            # we are in the middle of the kmers
+            newkmers = newkmers + kmers[:idxnucleotide]
+            newkmers = newkmers + newnucleotide
+            newkmers = newkmers + kmers[idxnucleotide+1:]
+        return newkmers
+
+    def checkAndInsertNewKmers(self,kmers):
+        """
+        Function needed with generateAllKmersWithXmutation, with the recursion of the code,
+        each time we insert a new kmers, we first check if it is alreaad present, and if not
+        we insert the kmers in the list.
+        """
+        if kmers not in self.listxmutationkmers:
+            self.listxmutationkmers.append(kmers)
 
 
-
-
-
-
-
-
-
-
-
+    def generateAllKmersWithXMutation(self,kmers,xmutation):
+        """
+        Another methode to try to generate all the kmers that differ from kmers with at most
+        x nucleotide mutated.
+        PS : probably a more efficient way to implement this, would be to have a global
+            newkmers list in the object it-self. This way, a reference to each call to the function
+            is easier.
+        """
+        newkmers = ''
+        for char in 'ATCG':
+            newxmutation = xmutation
+            idx = 0
+            print char
+            while idx < len(kmers):
+                print idx
+                # Mutating a nucleotide in each position of the original kmers.
+                newkmers = AdamskiClass.rebuildKmersWithMutation(kmers,char,idx)
+                print newkmers,' and newxmutation  is : ',newxmutation
+                self.checkAndInsertNewKmers(newkmers)
+                if newxmutation > 1:
+                    print 'doing recursion with kmers : ',newkmers
+                    newxmutation = xmutation - 1
+                    print 'newxmutation value : ',newxmutation
+                    self.generateAllKmersWithXMutation(newkmers,xmutation-1)
+                idx+=1

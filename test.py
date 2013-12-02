@@ -30,11 +30,19 @@ listDNA.append(v)
 kmers='AAG'
 DNA='GCAATCCTCAGC'
 diff,motif =  AdamskiClass.findMotif(kmers,DNA)
-print 'The hammind distance is : ',diff, 'and the kers with this count is : ',motif
+#print 'The hammind distance is : ',diff, 'and the kers with this count is : ',motif
 
 total,dna = AdamskiClass.computeSumHammingDistance('AAA',listDNA)
-print total,dna
+#print total,dna
 
-print AdamskiClass.findMedianString(listDNA,3)
-listDNA2 = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
-print AdamskiClass.findMedianString(listDNA2,6)
+#print AdamskiClass.findMedianString(listDNA,3)
+#listDNA2 = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
+#print AdamskiClass.findMedianString(listDNA2,6)
+
+kmers='AAAA'
+#print AdamskiClass.rebuildKmersWithMutation(kmers,'T',2)
+listNew = []
+genomeClass.generateAllKmersWithXMutation(kmers,4)
+print genomeClass.listxmutationkmers
+print len(genomeClass.listxmutationkmers)
+
