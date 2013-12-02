@@ -505,68 +505,36 @@ class AdamskiClass:
             idx = idx + 1
         return listKmers
 
-    def motifEnumeration(self,listDNA,length,xMissMatches):
-        """
-        Find all the kmers of length length with at most xMissMatches in each DNA present in listDNA.
-
-
-        PS :
-            Getting first all the kmers for each DNA, and from that, build all the kmers with x mutation.
-        """
-        listBuildedKmers = []
-        listKmersXmutated = []
-        listKMers = []
-        listIdxKmers = []
-        kmersFound = 0
-        kmersInAllDNA = []
-        for dna in listDNA:
-            # Looping over all DNA present in this list, and searching for any kmers.
-            idx = 0
-            while idx <= length:
-                # each kmers of length length in the current DNA
-                kmers = dna[idx:idx+length]
-                self.generateAllKmersWithXMutation(kmers,xMissMatches)
-                listKmersXmutated = self.listxmutationkmers
-                for elemKmers in listKmersXmutated:
-                    for dna in listDNA:
-                        kmersPresent = []
-                        globalGenome = self.genome
-                        self.genome = dna
-                        listIdxKmers = self.approxPatternMatching(elemKmers,xMissMatches)
-                        if len(listIdxKmers) == 0:
-                            # Stop searching this kners in other DNA, as not even found in this current DNA.
-                            # Resetting the list as in one DNA , nothing found.
-                            kmersPresent = []
-                            break
-                        else:
-                            kmersPresent.append(elemKmers)
-                    if len(kmersPresent) > 0 and elemKmers not in kmersInAllDNA:
-                        # The current elemKmers is present in each DNA with at most d miss-matches.
-                        # inserting this kmers in our list.
-                        kmersInAllDNA.append(elemKmers)
-                idx = idx + 1
-        return kmersInAllDNA
-
-
-    def motifEnumeration3(self,listDNA,lengthkmers,xmissmatches):
+    def motifEnumeration(self,listDNA,lengthkmers,xmissmatches):
         """
         Will get an enumeration of the kmers of length lengthkmers
         with at most xmisstaches and present in each dna from listDNA.
+
+        Output : a dictionnary
+                    - keys = kmers
+                    - values = number of times this kmers was present as a motif.
         """
         allkmersDNA = self.buildingAllKmersFromDna(listDNA,lengthkmers)
-        allmotif = []
+        allmotif = {}
         for kmers in allkmersDNA.keys():
             # Iterating over the kmers [ key ] from all dna from listDNA.
             self.generateAllKmersWithXMutation(kmers,xmissmatches)
             allkmersmutated = self.listxmutationkmers[:]
             for kmersmutated in allkmersmutated:
                 count = 0
+                listIdx = []
                 for dna in listDNA:
-                    if dna.find(kmersmutated) > 0:
+                    self.genome = dna
+                    listIdx = self.approxPatternMatching(kmersmutated,xmissmatches)
+                    if len(listIdx) > 0:
                         count+=1
                 if count == len(listDNA):
                     # It means that we found the kmers mutated in each dna from listDNA.
-                    allmotif.append(kmersmutated)
+                    if allmotif.get(kmersmutated) == None:
+                        # the kmers-mutated is not present in the dic, inserting it...
+                        allmotif[kmersmutated] = 1
+                    else:
+                        allmotif[kmersmutated]+=1
         return allmotif
 
 
@@ -588,7 +556,7 @@ class AdamskiClass:
                     allkmers[newkmers] = 1
                 else:
                     # Adding 1
-                    allkmers+=1
+                    allkmers[newkmers]+=1
                 idx+=1
         return allkmers
 
