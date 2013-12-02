@@ -1,4 +1,5 @@
 import sys
+import numpy
 import os
 
 class AdamskiClass:
@@ -638,13 +639,15 @@ class AdamskiClass:
         bestpattern  = ''
         currpattern = ''
         bestscore    = sys.maxsize
-        currentscore    =   0
+        currentscore    =   sys.maxsize
+        bestkmers   = ''
         for kmers in allkmersrebuilded:
             currentscore,currpattern = AdamskiClass.computeSumHammingDistance(kmers,listDNA)
             if currentscore < bestscore:
                 bestscore   = currentscore
                 bestpattern = currpattern
-        return bestpattern,bestscore
+                bestkmers = kmers
+        return bestkmers
 
     @staticmethod
     def readAndBuildListFromFile(nameFile):
@@ -710,3 +713,83 @@ class AdamskiClass:
                     #print 'doing recursion with kmers : ',newkmers
                     self.generateAllKmersWithXMutation(newkmers,xmutation-1)
                 idx+=1
+
+    @staticmethod
+    def buildMatrixProfile(matrixfile):
+        """
+        We will read the file give as input, and build
+        his matrix profile. Each line, will represent his vector of proba.
+        """
+        infile = open(matrixfile)
+        listProba = []
+        for line in infile:
+            line = line.replace('\n','')
+            listProba.append(line)
+        # We now known the dimensions of the matrix. It will always be 4 column [ A,C,T,G ]
+        # and the number of elem in listProba.
+        # Initializing the matrix.
+        matrixproba = numpy.zeros( (len(listProba),4) )
+        # Filling the matrix with elemn in listProba.
+        listtoken = []
+        idx = 0
+        for elem in listProba:
+            listtoken = elem.split(' ')
+            matrixproba[idx] = listtoken
+            idx+=1
+        return matrixproba
+
+    @staticmethod
+    def getYValueForMatrixProba(nucleotide):
+        """
+        As in our matrix proba, each column represent a proba for a nucleotide.
+        We need to get a way, to get the index according to the nucleotide.
+        A -> 0 ; C -> 1 ; G -> 2 ; T -> 3
+        The x index is easy, because we parse the file line by line, and hence increase the idx
+        x always by one.
+        """
+        if nucleotide == 'A':
+            return 0
+        elif nucleotide == 'C':
+            return 1
+        elif nucleotide == 'G':
+            return 2
+        elif nucleotide == 'T':
+            return 3
+
+    @staticmethod
+    def computeProbaKmers(matrixProba, kmers):
+        """
+        Will compute the proba of this kmers, with the proba of matrixProba
+        Example of matrix proba of a kmers of length 3
+        A   C   G T
+        0   0   0 1     -> proba of 1 for T
+        0   1   0 0     -> proba of 1 for C
+        0.5 0.5 0 0     -> proba of 0.5 for A , proba of 0.5 for C
+        """
+        idx = 0
+        proba = 1
+        for nucleotide in kmers:
+            y_idx = AdamskiClass.getYValueForMatrixProba(nucleotide)
+            proba = proba * matrixProba[idx][y_idx]
+            idx+=1
+        return proba
+
+
+    def findMostProbableKmers(self,length_kmers,matrixproba):
+        """
+        The function will the most probably kmers, according to the
+        matrix of proba that we already build.
+        """
+        bestproba = 0
+        currentproba = 0
+        currentkmers = ''
+        bestkmers = ''
+        idx = 0
+        while idx <= len(self.genome)-length_kmers:
+            currentkmers = self.genome[idx:idx+length_kmers]
+            currentproba = AdamskiClass.computeProbaKmers(matrixproba, currentkmers)
+            if currentproba > bestproba:
+                bestkmers = currentkmers
+                bestproba = currentproba
+            idx+=1
+        return bestkmers
