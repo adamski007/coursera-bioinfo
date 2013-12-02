@@ -12,3 +12,6 @@ genomeClass = AdamskiClass(nucleotide)
 
 listDNA = genomeClass.readAndBuildListFromFile("listDNA.txt")
 print listDNA
+allmotif = genomeClass.motifEnumeration(listDNA,3,1)
+rebuildedList = genomeClass.rebuildList(allmotif)
+print rebuildedList

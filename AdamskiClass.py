@@ -505,83 +505,13 @@ class AdamskiClass:
             idx = idx + 1
         return listKmers
 
-    def generateAllKmersXMissMatches(self,kmers, xMissMatches,listAlreadyBuilded):
-        """
-            Given a kmers KMERS , we will generate all the kmers that differ with KMERS
-            with at most X miss-matches.
-            ATTENTION : In the recursion, there is no adjacent char in the genome which differ.
-            ATTA
-            ACCA
-            Does not appear in AAAA with at most 2 miss-matches. Why ????!!!!???????
-        """
-        idx = 0
-        listKmersRecursion = []
-        listKmers = []
-        newKmers = []
-        #print 'In generate all x mismatches'
-        while idx <= len(kmers)-1:
-            # Doing the computation
-            # Three case possible, idx == 0 , idx in the middle , idx == last
-            if idx == 0:
-                #Changing only the first character.
-                for char in 'ATCG':
-                    newKmers.append(char)
-                    newKmers.extend(kmers[idx+1:])
-                    if xMissMatches == 1:
-                        if newKmers not in listAlreadyBuilded:
-                            listKmers.append(newKmers)
-                            listAlreadyBuilded.append(newKmers)
-                    else:
-                        # Beginning recursion,
-                        if newKmers != kmers and newKmers not in listAlreadyBuilded:
-                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
-                            for elem in listKmersRecursion:
-                                if elem not in listKmers:
-                                    listKmers.append(elem)
-                    newKmers = []
-            elif idx < len(kmers)-1:
-                # we are in the middle
-                for char in 'ATCG':
-                    newKmers.extend(kmers[:idx])
-                    newKmers.append(char)
-                    newKmers.extend(kmers[idx+1:])
-                    if xMissMatches == 1:
-                        if newKmers not in listAlreadyBuilded:
-                            listKmers.append(newKmers)
-                            listAlreadyBuilded.append(newKmers)
-                    else:
-                        # Beginning recursion,
-                        if newKmers != kmers and newKmers not in listAlreadyBuilded:
-                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
-                            for elem in listKmersRecursion:
-                                if elem not in listKmers:
-                                    listKmers.append(elem)
-                        #print listKmersRecursion
-                    newKmers = []
-            else:
-                # we are at the last elem.
-                for char in 'ATCG':
-                    newKmers.extend(kmers[:idx])
-                    newKmers.append(char)
-                    if xMissMatches == 1:
-                        if newKmers not in listKmers:
-                            listKmers.append(newKmers)
-                            listAlreadyBuilded.append(newKmers)
-                    else:
-                        # Beginning recursion,
-                        if newKmers != kmers:
-                            listKmersRecursion = self.generateAllKmersXMissMatches(newKmers,xMissMatches-1,listAlreadyBuilded)
-                            for elem in listKmersRecursion:
-                                if elem not in listKmers:
-                                    listKmers.append(elem)
-                        #print listKmersRecursion
-                    newKmers = []
-            idx = idx + 1
-        return listKmers
-
     def motifEnumeration(self,listDNA,length,xMissMatches):
         """
         Find all the kmers of length length with at most xMissMatches in each DNA present in listDNA.
+
+
+        PS :
+            Getting first all the kmers for each DNA, and from that, build all the kmers with x mutation.
         """
         listBuildedKmers = []
         listKmersXmutated = []
@@ -595,7 +525,8 @@ class AdamskiClass:
             while idx <= length:
                 # each kmers of length length in the current DNA
                 kmers = dna[idx:idx+length]
-                listKmersXmutated = self.generateAllKmersXMissMatches(kmers,xMissMatches,listBuildedKmers)
+                self.generateAllKmersWithXMutation(kmers,xMissMatches)
+                listKmersXmutated = self.listxmutationkmers
                 for elemKmers in listKmersXmutated:
                     for dna in listDNA:
                         kmersPresent = []
@@ -616,6 +547,51 @@ class AdamskiClass:
                 idx = idx + 1
         return kmersInAllDNA
 
+
+    def motifEnumeration3(self,listDNA,lengthkmers,xmissmatches):
+        """
+        Will get an enumeration of the kmers of length lengthkmers
+        with at most xmisstaches and present in each dna from listDNA.
+        """
+        allkmersDNA = self.buildingAllKmersFromDna(listDNA,lengthkmers)
+        allmotif = []
+        for kmers in allkmersDNA.keys():
+            # Iterating over the kmers [ key ] from all dna from listDNA.
+            self.generateAllKmersWithXMutation(kmers,xmissmatches)
+            allkmersmutated = self.listxmutationkmers[:]
+            for kmersmutated in allkmersmutated:
+                count = 0
+                for dna in listDNA:
+                    if dna.find(kmersmutated) > 0:
+                        count+=1
+                if count == len(listDNA):
+                    # It means that we found the kmers mutated in each dna from listDNA.
+                    allmotif.append(kmersmutated)
+        return allmotif
+
+
+    def buildingAllKmersFromDna(self,listDNA, length):
+        """
+        As now, we got a DNA from a list, and not anymore from a single line.
+        We need a way to get all the possible kmers of a length LENGTH in all dna.
+        With a dictionnary, it is faster, because if a kmers already exist, we can find it in O(1)
+        the value in each of the key , is the number of kmers we found with his key.
+        """
+        allkmers = {}
+        newkmers = ''
+        for dna in listDNA:
+            idx = 0
+            while idx < len(dna)-length:
+                newkmers = dna[idx:idx+length]
+                if allkmers.get(newkmers) == None:
+                    # kmers not alredy present in the dictionnary, inserting...
+                    allkmers[newkmers] = 1
+                else:
+                    # Adding 1
+                    allkmers+=1
+                idx+=1
+        return allkmers
+
     @staticmethod
     def rebuildList(listKmers):
         """
@@ -632,14 +608,6 @@ class AdamskiClass:
             newList.append(newStr)
             newStr = ''
         return newList
-
-
-    def motifEnumeration2(self,listDNA,lengthkmers,xmutation):
-        """
-        The method will enumerate all the motif that appears in list dna agains kmers with at most
-        d mutation nucleotide.
-        """
-        return 0
 
     @staticmethod
     def findMotif(pattern,DNA):
