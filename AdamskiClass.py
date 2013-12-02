@@ -633,6 +633,14 @@ class AdamskiClass:
             newStr = ''
         return newList
 
+
+    def motifEnumeration2(self,listDNA,lengthkmers,xmutation):
+        """
+        The method will enumerate all the motif that appears in list dna agains kmers with at most
+        d mutation nucleotide.
+        """
+        return 0
+
     @staticmethod
     def findMotif(pattern,DNA):
         """
@@ -718,15 +726,6 @@ class AdamskiClass:
         return listDNA
 
 
-
-
-
-
-
-
-
-
-
     @staticmethod
     def rebuildKmersWithMutation(kmers,newnucleotide,idxnucleotide):
         """
@@ -764,24 +763,15 @@ class AdamskiClass:
         """
         Another methode to try to generate all the kmers that differ from kmers with at most
         x nucleotide mutated.
-        PS : probably a more efficient way to implement this, would be to have a global
-            newkmers list in the object it-self. This way, a reference to each call to the function
-            is easier.
         """
         newkmers = ''
         for char in 'ATCG':
-            newxmutation = xmutation
             idx = 0
-            print char
             while idx < len(kmers):
-                print idx
                 # Mutating a nucleotide in each position of the original kmers.
                 newkmers = AdamskiClass.rebuildKmersWithMutation(kmers,char,idx)
-                print newkmers,' and newxmutation  is : ',newxmutation
                 self.checkAndInsertNewKmers(newkmers)
-                if newxmutation > 1:
-                    print 'doing recursion with kmers : ',newkmers
-                    newxmutation = xmutation - 1
-                    print 'newxmutation value : ',newxmutation
+                if xmutation > 1:
+                    #print 'doing recursion with kmers : ',newkmers
                     self.generateAllKmersWithXMutation(newkmers,xmutation-1)
                 idx+=1
