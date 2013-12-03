@@ -12,12 +12,16 @@ genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 
 
-#a = numpy.array
-#print a
+listSubStr = genomeClass.findStringComposition(100)
+for elem in listSubStr:
+    print elem
+
+
+"""
+EX : Find most probable kmers in a list of kmers
 matrixproba = AdamskiClass.buildMatrixProfile('matrixproba.txt')
-
 print genomeClass.findMostProbableKmers(6,matrixproba)
-
+"""
 
 """
 FIND MOTIF EXERCICE

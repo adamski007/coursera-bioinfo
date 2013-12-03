@@ -793,3 +793,54 @@ class AdamskiClass:
                 bestproba = currentproba
             idx+=1
         return bestkmers
+
+    def findStringComposition(self,lengthkmers):
+        """
+        This function will output [ in a list ] all the kmers [ sub-string ] of DNA,
+        even the one repeated, in a lexicographic order.
+        """
+        kmerssorted = []
+        idx = 0
+        newkmers = ''
+        while idx <= len(self.genome)-lengthkmers:
+            newkmers = self.genome[idx:idx+lengthkmers]
+            kmerssorted.append(newkmers)
+            idx+=1
+        kmerssorted.sort()
+        return kmerssorted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
