@@ -12,10 +12,18 @@ genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 
 
+
+list_kmers = genomeClass.readAndBuildListFromFile("listDNA.txt")
+genomeClass.build_Overlap_Graph(list_kmers)
+#print genomeClass.overlap_graph
+genomeClass.print_edge_overlap_graph()
+
+"""
+EX : FIND COMPOSITION OF A DNA
 listSubStr = genomeClass.findStringComposition(100)
 for elem in listSubStr:
     print elem
-
+"""
 
 """
 EX : Find most probable kmers in a list of kmers

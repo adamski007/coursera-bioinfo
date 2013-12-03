@@ -11,6 +11,7 @@ class AdamskiClass:
         self.massTable  =  {}
         self.allMassValue = []
         self.listxmutationkmers = []
+        self.overlap_graph = {}
 
     def buildAllMassValue(self):
         """
@@ -549,7 +550,7 @@ class AdamskiClass:
         allkmers = {}
         newkmers = ''
         for dna in listDNA:
-            idx = 0
+            tes = 0
             while idx < len(dna)-length:
                 newkmers = dna[idx:idx+length]
                 if allkmers.get(newkmers) == None:
@@ -809,20 +810,69 @@ class AdamskiClass:
         kmerssorted.sort()
         return kmerssorted
 
+    @staticmethod
+    def get_prefixe_kmers(kmers):
+        """
+        The prefixe of a kmers is all it's character except the last one.
+        """
+        return kmers[:len(kmers)-1]
+
+    @staticmethod
+    def get_suffix_kmers(kmers):
+        """
+        The suffixe of a kmers is all it's character except the first one.
+        """
+        return kmers[1:]
 
 
+    def build_Overlap_Graph(self,list_kmers):
+        """
+        With all the kmers present in list_kmers , we will construct a dictionnary where :
+            key     : is a kmers
+            value   : another kmers who prefixe is the suffixe of the kmers as the key
+        By instance :
+        ATGCG       AGGCA
+        GCATG       GGCAT
+        CATGC
+        Dictionnary key         dictionnary value
+        AGGCA           ->      GGCAT
+        CATGC           ->      ATGCG
+        GCATG           ->      CATGC
+        GGCAT           ->      GCATG
+        """
+        # For each kmers_suf in list_kmers , we need to find another kmers_pre
+        # which got Suffixe( kmers_suf ) = Prefixe( kmers_pre )
+        # and add that to the dictionnary, if not already present.
+        for kmers_suf in list_kmers:
+            for kmers_pre in list_kmers:
+                if self.get_suffix_kmers(kmers_suf) == self.get_prefixe_kmers(kmers_pre):
+                    # Checking and inserting.
+                    if self.overlap_graph.get(kmers_suf) == None:
+                        # Value does not exist, inserting...
+                        self.overlap_graph[kmers_suf] = [kmers_pre]
+                    else:
+                        # Value does already exist, so getting the present value
+                        new_list = self.overlap_graph[kmers_suf]
+                        new_list.append(kmers_pre)
+                        self.overlap_graph[kmers_suf] = new_list
 
-
-
-
-
-
-
-
-
-
-
-
+    def print_edge_overlap_graph(self):
+        """
+        This is the function used to print the overlap grapth
+        the way bio-informatics courses want us to do.
+        KMERS_1 -> KMERS_2
+        """
+        # We first need all the key of the dic in a list, this way we will be able
+        # to sort that list, and print it in a lexicograph way. Like string composition.
+        all_keys = list(self.overlap_graph.keys())
+        all_keys.sort()
+        for key in all_keys:
+            all_kmers_values_list = self.overlap_graph[key]
+            all_kmers_values_str  = ''
+            for kmers in all_kmers_values_list:
+                all_kmers_values_str = all_kmers_values_str + ' ' + kmers
+            # We now got all the value of a particular keys in a simple string
+            print key,'->',all_kmers_values_str
 
 
 
