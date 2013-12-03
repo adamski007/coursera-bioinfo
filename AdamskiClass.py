@@ -870,7 +870,7 @@ class AdamskiClass:
             all_kmers_values_list = self.overlap_graph[key]
             all_kmers_values_str  = ''
             for kmers in all_kmers_values_list:
-                all_kmers_values_str = all_kmers_values_str + ' ' + kmers
+                all_kmers_values_str = kmers + ' ' + all_kmers_values_str
             # We now got all the value of a particular keys in a simple string
             print key,'->',all_kmers_values_str
 
