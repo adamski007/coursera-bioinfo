@@ -12,11 +12,19 @@ genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 
 
+list_kmers = genomeClass.readAndBuildListFromFile("listDNA.txt")
 
+matrix = AdamskiClass.get_Count_Matrix_Motifs(list_kmers)
+print AdamskiClass.get_Count_Matrix_Motifs(list_kmers)
+print AdamskiClass.get_Profil_Matrix_Motifs(matrix)
+
+"""
+EX : OVERLAPPING GRAPH AND PRINTING ALL HIS EDGES.
 list_kmers = genomeClass.readAndBuildListFromFile("listDNA.txt")
 genomeClass.build_Overlap_Graph(list_kmers)
 #print genomeClass.overlap_graph
 genomeClass.print_edge_overlap_graph()
+"""
 
 """
 EX : FIND COMPOSITION OF A DNA

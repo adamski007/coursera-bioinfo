@@ -795,6 +795,169 @@ class AdamskiClass:
             idx+=1
         return bestkmers
 
+
+    @staticmethod
+    def get_Count_Matrix_Motifs(list_kmers):
+        """
+        Input   : a simple list with all the kmers.
+        Output  : a simple matrix computed as describe below.
+
+        It will compute the matrix count of each nucleotide of motifs.
+        Motifs        T   C   G   G   G   G   g   T   T   T   t   t
+                      c   C   G   G   t   G   A   c   T   T   a   C
+                      a   C   G   G   G   G   A   T   T   T   t   C
+                      T   t   G   G   G   G   A   c   T   T   t   t
+                      a   a   G   G   G   G   A   c   T   T   C   C
+                      T   t   G   G   G   G   A   c   T   T   C   C
+                      T   C   G   G   G   G   A   T   T   c   a   t
+                      T   C   G   G   G   G   A   T   T   c   C   t
+                      T   a   G   G   G   G   A   a   c   T   a   C
+                      T   C   G   G   G   t   A   T   a   a   C   C
+
+        Count   A:    2   2   0   0   0   0   9   1   1   1   3   0
+                C:    1   6   0   0   0   0   0   4   1   2   4   6
+                G:    0   0  10  10   9   9   1   0   0   0   0   0
+                T:    7   2   0   0   1   1   0   5   8   7   3   4
+        """
+        # Initializing the matrix, and each kmers in list_kmers should have the same length.
+        matrix_count = numpy.zeros( (4,len(list_kmers[0])) )
+        counter_nucleotide = {}
+        idx_vert = 0
+        length_kmers = len(list_kmers[0])
+        while idx_vert < length_kmers:
+            for kmers in list_kmers:
+                current_nucleotide = kmers[idx_vert]
+                if counter_nucleotide.get(current_nucleotide) == None:
+                    # Inserting the count of this new nucleotide
+                    counter_nucleotide[current_nucleotide] = 1
+                else:
+                    # Nucleotide was already present, adding 1 to his count.
+                    counter_nucleotide[current_nucleotide]+=1
+                # Inserting now the count of each nucleotide to the matrix count.
+                for nucleotide in list(counter_nucleotide.keys()):
+                    idx_horiz = AdamskiClass.translate_Nucleotide_To_Horiz_Idx(nucleotide)
+                    matrix_count[idx_horiz][idx_vert] = counter_nucleotide[nucleotide]
+                # We should clear the dict for the next cycle.
+            counter_nucleotide.clear()
+            idx_vert+=1
+        return matrix_count
+
+    @staticmethod
+    def get_Profil_Matrix_Motifs(matrix_count):
+        """
+        It will compute the profile matrix with the frequency count of the matrix received
+        as input.
+        Input   :   a matrix with frequency count for each nucleotide
+        Output  :   a matrix where each elem is a proba of this count, relative to each column.
+        Count Matrix    A:   2   2   0   0   0   0   9   1   1   1   3   0
+                        C:   1   6   0   0   0   0   0   4   1   2   4   6
+                        G:   0   0  10  10   9   9   1   0   0   0   0   0
+                        T:   7   2   0   0   1   1   0   5   8   7   3   4
+
+        Profile Matrix  A:  .2  .2   0   0   0   0  .9  .1  .1  .1  .3   0
+                        C:  .1  .6   0   0   0   0   0  .4  .1  .2  .4  .6
+                        G:   0   0   1   1  .9  .9  .1   0   0   0   0   0
+                        T:  .7  .2   0   0  .1  .1   0  .5  .8  .7  .3  .4
+        """
+        # We will count one time the total nucleotide per column,
+        # as each time it will be the same.
+        total_count = 0
+        idx = 0
+        # We known in advance that the matrix is max 4 line horizontale , because of ACGT
+        while idx < 4:
+            total_count+=matrix_count[idx][0]
+            idx+=1
+        # Normalizing the matrix to get proba instead of frequency count.
+        return matrix_count/total_count
+
+    @staticmethod
+    def translate_Nucleotide_To_Horiz_Idx(nucleotide):
+        """
+        In the matrix count, or profile matrix, the horizontal idx are :
+        A -> 0
+        C -> 1
+        G -> 2
+        T -> 3
+        and the vertical idx are increased as we parse the kmers.
+        """
+        if nucleotide == 'A':
+            return 0
+        elif nucleotide == 'C':
+            return 1
+        elif nucleotide == 'G':
+            return 2
+        elif nucleotide == 'T':
+            return 3
+
+    @staticmethod
+    def score_Motifs(list_kmers):
+        """
+        If kmers are put in a line, a score of a list of kmers is defined as :
+        the sum of the number of un-popular nucleotide in each column.
+        Motifs   [    T   C   G   G   G   G   g   T   T   T   t   t
+                      c   C   G   G   t   G   A   c   T   T   a   C
+                      a   C   G   G   G   G   A   T   T   T   t   C
+                      T   t   G   G   G   G   A   c   T   T   t   t
+                      a   a   G   G   G   G   A   c   T   T   C   C
+                      T   t   G   G   G   G   A   c   T   T   C   C
+                      T   C   G   G   G   G   A   T   T   c   a   t
+                      T   C   G   G   G   G   A   T   T   c   C   t
+                      T   a   G   G   G   G   A   a   c   T   a   C
+                      T   C   G   G   G   t   A   T   a   a   C   C     ]
+
+        Score         3 + 4 + 0 + 0 + 1 + 1 + 1 + 5 + 2 + 3 + 6 + 4 = 30
+        The best score, would be the list of kmers that minimize this sum.
+        PS : There is the same number of nucleotide in each kmers of the list.
+        """
+        length_kmers = len(list_kmers[0])
+        idx = 0
+        counter_nucleotide = {}
+        list_unpopular_count = []
+        while idx < length_kmers:
+            # we will scan each kmers, and compute the popular nucleotide in each column.
+            for kmers in list_kmers:
+                current_nucleotide = kmers[idx]
+                if counter_nucleotide.get(current_nucleotide) == None:
+                    # Inserting the count of this new nucleotide
+                    counter_nucleotide[current_nucleotide] = 1
+                else:
+                    # Nucleotide was already present, adding a 1 to his count.
+                    counter_nucleotide[current_nucleotide]+=1
+            # Adding the count of un-popular nucleotide in this column in a list
+            count_unpopular_nucleotide = AdamskiClass.counting_UnPopular_Nucleotide(counter_nucleotide)
+            list_unpopular_count.append(count_unpopular_nucleotide)
+            # Clear the dict for the next column
+            counter_nucleotide.clear()
+            idx+=1
+        # Adding all the un-popular count in the list to get the score of the motifs.
+        sum = 0
+        for unpopular_count in list_unpopular_count:
+            sum+=unpopular_count
+        return sum
+
+
+    @staticmethod
+    def counting_UnPopular_Nucleotide(counter_nucleotide):
+        """
+        Method used for scoring a list of motif.
+        In the dictionnary [ counter_nucleotide ], there is a count for each
+        nucleotide, and the method will return the number of un-popular nucleotide.
+        """
+        total_count_nucleotide = 0
+        popular_nucleotide_count = 0
+        popular_nucleotide = ''
+        # 1. Find the most popular nucleotide.
+        for key in list(counter_nucleotide.keys()):
+            total_count_nucleotide+=counter_nucleotide[key]
+            if counter_nucleotide[key] > popular_nucleotide_count:
+                # We got the most popular nucleotide.
+                popular_nucleotide_count = counter_nucleotide[key]
+                popular_nucleotide = key
+        # 2. Getting the number of un-popular nucleotide to get it's score.
+        return total_count_nucleotide - popular_nucleotide_count
+
+
+
     def findStringComposition(self,lengthkmers):
         """
         This function will output [ in a list ] all the kmers [ sub-string ] of DNA,
@@ -870,7 +1033,9 @@ class AdamskiClass:
             all_kmers_values_list = self.overlap_graph[key]
             all_kmers_values_str  = ''
             for kmers in all_kmers_values_list:
-                all_kmers_values_str = kmers + ' ' + all_kmers_values_str
+                #all_kmers_values_str = kmers + ' ' + all_kmers_values_str
+                # the white-space at the end , give error in stepic answer ?
+                all_kmers_values_str = kmers
             # We now got all the value of a particular keys in a simple string
             print key,'->',all_kmers_values_str
 
