@@ -775,8 +775,7 @@ class AdamskiClass:
             idx+=1
         return proba
 
-    @staticmethod
-    def greedy_Motif_Search(listDNA,length_kmers,length_list_dna):
+    def greedy_Motif_Search(self,listDNA,length_kmers,length_list_dna):
         """
         Slide 39 from chapter 3 of bio-informatics coursera.
         """
@@ -786,16 +785,43 @@ class AdamskiClass:
             # Getting the first kmers from each dna of listDNA
             current_kmers = dna[:length_kmers]
             list_kmers_best_motifs.append(current_kmers)
+        best_score = AdamskiClass.score_Motifs(list_kmers_best_motifs)
+        current_score = sys.maxsize
         idx = 0
         first_dna = listDNA[0]
         motif_one = ''
+        list_best_motifs = []
         while idx <= length_kmers:
-            current_kmers = first_dna[idx:length_kmers]
-            motif_one = [current_kmers]
+            current_kmers = first_dna[idx:idx+length_kmers]
+            list_motif_for_profile = [current_kmers]
             idx_list_dna = 1
-            while idx_list_dna < length_list_dna-1:
-                matrix_count = AdamskiClass.get_Count_Matrix_Motifs(motif_one)
+            while idx_list_dna <= length_list_dna-1:
+                matrix_count = AdamskiClass.get_Count_Matrix_Motifs(list_motif_for_profile)
                 matrix_proba = AdamskiClass.get_Profil_Matrix_Motifs(matrix_count)
+                #print idx_list_dna
+                #print matrix_proba
+                # We need to put the current dna in self.genome, because findMostProbableKmers use that.
+                self.genome = listDNA[idx_list_dna]
+                """
+                print 'The current idx for list dna : ',idx_list_dna
+                print 'We will search for the best prob kmers in this dna : ',self.genome
+                print 'Matrix profile build with : '
+                print list_motif_for_profile
+                print '+++++'
+                print 'length_kmers : ',length_kmers,'and the matrix proba is : '
+                print matrix_proba
+                """
+                most_probbable_kmers = self.findMostProbableKmers(length_kmers,matrix_proba)
+                list_motif_for_profile.append(most_probbable_kmers)
+                idx_list_dna+=1
+            current_score = AdamskiClass.score_Motifs(list_motif_for_profile)
+            #print 'current score : ',current_score, 'and the best score : ',best_score
+            #print list_motif_for_profile
+            if current_score < best_score:
+                list_best_motifs = list_motif_for_profile[:]
+                best_score = current_score
+            idx+=1
+        return list_best_motifs
 
 
     def findMostProbableKmers(self,length_kmers,matrixproba):

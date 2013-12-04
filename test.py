@@ -9,12 +9,8 @@ infile = open(sys.argv[1],'r')
 nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
-#listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 
-
-#EX : Find most probable kmers in a list of kmers
-"""
-matrixproba = AdamskiClass.buildMatrixProfile('matrixproba.txt')
-print matrixproba
-print genomeClass.findMostProbableKmers(5,matrixproba)
-"""
+listDNA = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
+listMotif = genomeClass.greedy_Motif_Search(listDNA,12,25)
+for elem in listMotif:
+    print elem
