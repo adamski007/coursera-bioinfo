@@ -12,43 +12,9 @@ genomeClass = AdamskiClass(nucleotide)
 #listKmers = genomeClass.mostFrequentKmersXMissMatches2(10,2)
 
 
-list_kmers = genomeClass.readAndBuildListFromFile("listDNA.txt")
-
-matrix = AdamskiClass.get_Count_Matrix_Motifs(list_kmers)
-print AdamskiClass.get_Count_Matrix_Motifs(list_kmers)
-print AdamskiClass.get_Profil_Matrix_Motifs(matrix)
-
+#EX : Find most probable kmers in a list of kmers
 """
-EX : OVERLAPPING GRAPH AND PRINTING ALL HIS EDGES.
-list_kmers = genomeClass.readAndBuildListFromFile("listDNA.txt")
-genomeClass.build_Overlap_Graph(list_kmers)
-#print genomeClass.overlap_graph
-genomeClass.print_edge_overlap_graph()
-"""
-
-"""
-EX : FIND COMPOSITION OF A DNA
-listSubStr = genomeClass.findStringComposition(100)
-for elem in listSubStr:
-    print elem
-"""
-
-"""
-EX : Find most probable kmers in a list of kmers
 matrixproba = AdamskiClass.buildMatrixProfile('matrixproba.txt')
-print genomeClass.findMostProbableKmers(6,matrixproba)
-"""
-
-"""
-FIND MOTIF EXERCICE
-listDNA = genomeClass.readAndBuildListFromFile("listDNA.txt")
-print AdamskiClass.findMedianString(listDNA,6)
-"""
-
-"""
-MOTIF ENUMERATION WORKING
-listDNA = genomeClass.readAndBuildListFromFile("listDNA.txt")
-print listDNA
-allmotif = genomeClass.motifEnumeration(listDNA,15,4)
-print allmotif.keys()
+print matrixproba
+print genomeClass.findMostProbableKmers(5,matrixproba)
 """

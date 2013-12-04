@@ -768,12 +768,34 @@ class AdamskiClass:
         0.5 0.5 0 0     -> proba of 0.5 for A , proba of 0.5 for C
         """
         idx = 0
-        proba = 1
+        proba = 1 # as 1 is neutral for a multiplication.
         for nucleotide in kmers:
-            y_idx = AdamskiClass.getYValueForMatrixProba(nucleotide)
-            proba = proba * matrixProba[idx][y_idx]
+            x_idx = AdamskiClass.getYValueForMatrixProba(nucleotide)
+            proba = proba * matrixProba[idx][x_idx]
             idx+=1
         return proba
+
+    @staticmethod
+    def greedy_Motif_Search(listDNA,length_kmers,length_list_dna):
+        """
+        Slide 39 from chapter 3 of bio-informatics coursera.
+        """
+        # Building our initial list of kmers for bestMotifs
+        list_kmers_best_motifs = []
+        for dna in listDNA:
+            # Getting the first kmers from each dna of listDNA
+            current_kmers = dna[:length_kmers]
+            list_kmers_best_motifs.append(current_kmers)
+        idx = 0
+        first_dna = listDNA[0]
+        motif_one = ''
+        while idx <= length_kmers:
+            current_kmers = first_dna[idx:length_kmers]
+            motif_one = [current_kmers]
+            idx_list_dna = 1
+            while idx_list_dna < length_list_dna-1:
+                matrix_count = AdamskiClass.get_Count_Matrix_Motifs(motif_one)
+                matrix_proba = AdamskiClass.get_Profil_Matrix_Motifs(matrix_count)
 
 
     def findMostProbableKmers(self,length_kmers,matrixproba):
@@ -784,7 +806,9 @@ class AdamskiClass:
         bestproba = 0
         currentproba = 0
         currentkmers = ''
-        bestkmers = ''
+        # In case, we never find a better kmers, initializing the best kmers
+        # as the first we found.
+        bestkmers = self.genome[:length_kmers]
         idx = 0
         while idx <= len(self.genome)-length_kmers:
             currentkmers = self.genome[idx:idx+length_kmers]
@@ -820,7 +844,7 @@ class AdamskiClass:
                 T:    7   2   0   0   1   1   0   5   8   7   3   4
         """
         # Initializing the matrix, and each kmers in list_kmers should have the same length.
-        matrix_count = numpy.zeros( (4,len(list_kmers[0])) )
+        matrix_count = numpy.zeros( (len(list_kmers[0]),4) )
         counter_nucleotide = {}
         idx_vert = 0
         length_kmers = len(list_kmers[0])
@@ -836,7 +860,8 @@ class AdamskiClass:
                 # Inserting now the count of each nucleotide to the matrix count.
                 for nucleotide in list(counter_nucleotide.keys()):
                     idx_horiz = AdamskiClass.translate_Nucleotide_To_Horiz_Idx(nucleotide)
-                    matrix_count[idx_horiz][idx_vert] = counter_nucleotide[nucleotide]
+                    #matrix_count[idx_horiz][idx_vert] = counter_nucleotide[nucleotide]
+                    matrix_count[idx_vert][idx_horiz] = counter_nucleotide[nucleotide]
                 # We should clear the dict for the next cycle.
             counter_nucleotide.clear()
             idx_vert+=1
@@ -863,9 +888,9 @@ class AdamskiClass:
         # as each time it will be the same.
         total_count = 0
         idx = 0
-        # We known in advance that the matrix is max 4 line horizontale , because of ACGT
+        # We known in advance that the matrix is max 4 column, because of ACGT
         while idx < 4:
-            total_count+=matrix_count[idx][0]
+            total_count+=matrix_count[0][idx]
             idx+=1
         # Normalizing the matrix to get proba instead of frequency count.
         return matrix_count/total_count
