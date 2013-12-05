@@ -1091,50 +1091,6 @@ class AdamskiClass:
             # We now got all the value of a particular keys in a simple string
             print key,'->',all_kmers_values_str
 
-    def build_DeBruin_Graph(self,stringTXT,length_kmers):
-        """
-        Slide 53 of Chapter 4.
-        This is the same kind of implementation of the overlapping graph, except
-        that here, we got as input a string and a length of kmers.
-        So :
-        1. we should decompose the string in slices kmers of k length.
-        2. Build the overlap-graph, as it takes already into account the fact
-            that more than 1 kmers as prefixe of a suffixe.
-        3. From the graph at point two, re-build the same but remove always the
-            last char of each node.
-            A node is a pair : key / value
-                                where value is a list of kmers.
-            So, remove the last char from key, and from each elem in the list value.
-        Sample Input:
-             4
-             AAGATTCTCTAC
-
-        Sample Output:
-             AAG -> AGA
-             AGA -> GAT
-             ATT -> TTC
-             CTA -> TAC
-             CTC -> TCT
-             GAT -> ATT
-             TCT -> CTA,CTC
-             TTC -> TCT
-        """
-        self.genome = stringTXT
-        # Point 1 execution.
-        dna_composition_into_kmers = self.findStringComposition(length_kmers)
-        # Building the overlap-grapth.
-        self.build_Overlap_Graph(dna_composition_into_kmers)
-        # The graph is now stored in [ self.overlap_graph ]
-        # Point 3, iterating over overlap-graph, and removing each time last nucleotide.
-        for key in list(self.overlap_graph.keys()):
-            key_shortened = key[:len(key)-1]
-            list_value_kmers_from_key_shortened = []
-            list_kmers = list(self.overlap_graph[key])
-            for kmers in list_kmers:
-                kmers_shortened = kmers[:len(kmers)-1]
-                list_value_kmers_from_key_shortened.append(kmers_shortened)
-            self.de_bruijn_grapth[key_shortened] = list_value_kmers_from_key_shortened
-
     def print_edge_debruijn_graph(self):
         """
         Again the course want us to print the debruijn graph in a
@@ -1182,8 +1138,38 @@ class AdamskiClass:
     def build_DeBruijn_Grapth(self,length_kmers,dna):
         """
         Will build the algo mentionned on slide 53 chapter 4
-        """
+        Sample Input:
+             4
+             AAGATTCTCTAC
 
+        Sample Output:
+             AAG -> AGA
+             AGA -> GAT
+             ATT -> TTC
+             CTA -> TAC
+             CTC -> TCT
+             GAT -> ATT
+             TCT -> CTA,CTC
+             TTC -> TCT
+        """
+        self.genome = dna
+        list_kmers_sequential = []
+        list_kmers_sequential = self.build_List_Decomposition_DNA_Sequential(length_kmers)
+        idx = 0
+        # until len(list_kmers)-2 because the last element should be the value,
+        # and the before last the key
+        while idx <= len(list_kmers_sequential)-2:
+            key = list_kmers_sequential[idx]
+            value = list_kmers_sequential[idx+1]
+            if self.de_bruijn_grapth.get(key) == None:
+                # key still does not exist, creating and inserting the value.
+                self.de_bruijn_grapth[key] = [value]
+            else:
+                # key already exist, adding a value to the list
+                cur_list = self.de_bruijn_grapth[key]
+                cur_list.append(value)
+                self.de_bruijn_grapth[key] = cur_list
+            idx+=1
 
 
 

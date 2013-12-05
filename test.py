@@ -11,11 +11,14 @@ nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
-print genomeClass.build_List_Decomposition_DNA_Sequential(3)
-print genomeClass.genome
-
 print '#############################'
 print ''
+
+
+genomeClass.build_DeBruijn_Grapth(11,genomeClass.genome)
+genomeClass.print_edge_debruijn_graph()
+
+
 sys.exit(0)
 genomeClass.build_DeBruin_Graph(genomeClass.genome,3)
 listkmers = genomeClass.findStringComposition(4)
