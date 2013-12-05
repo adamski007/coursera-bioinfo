@@ -11,12 +11,8 @@ nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
-lengthkmers = 3
-listkmers = genomeClass.findStringComposition(lengthkmers)
-genomeClass.build_Overlap_Graph(listkmers)
-pprint.pprint(genomeClass.overlap_graph)
-genomeClass.print_edge_overlap_graph()
-
+print genomeClass.build_List_Decomposition_DNA_Sequential(3)
+print genomeClass.genome
 
 print '#############################'
 print ''

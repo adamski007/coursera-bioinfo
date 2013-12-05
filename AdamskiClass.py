@@ -1165,8 +1165,24 @@ class AdamskiClass:
                 idx+=1
             print output_string
 
+    def build_List_Decomposition_DNA_Sequential(self,lengthkmers):
+        """
+        It will decompose DNA into kmers
+        # TO FINISHE YET !!!!!!!!!!!!!!!!!!!!!
+        """
+        list_kmers = []
+        idx = 0
+        newkmers = ''
+        while idx <= len(self.genome)-lengthkmers:
+            newkmers = self.genome[idx:idx+lengthkmers]
+            list_kmers.append(newkmers)
+            idx+=1
+        return list_kmers
 
-
+    def build_DeBruijn_Grapth(self,length_kmers,dna):
+        """
+        Will build the algo mentionned on slide 53 chapter 4
+        """
 
 
 
