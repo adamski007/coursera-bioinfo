@@ -12,6 +12,7 @@ class AdamskiClass:
         self.allMassValue = []
         self.listxmutationkmers = []
         self.overlap_graph = {}
+        self.de_bruijn_grapth = {}
 
     def buildAllMassValue(self):
         """
@@ -1090,6 +1091,79 @@ class AdamskiClass:
             # We now got all the value of a particular keys in a simple string
             print key,'->',all_kmers_values_str
 
+    def build_DeBruin_Graph(self,stringTXT,length_kmers):
+        """
+        Slide 53 of Chapter 4.
+        This is the same kind of implementation of the overlapping graph, except
+        that here, we got as input a string and a length of kmers.
+        So :
+        1. we should decompose the string in slices kmers of k length.
+        2. Build the overlap-graph, as it takes already into account the fact
+            that more than 1 kmers as prefixe of a suffixe.
+        3. From the graph at point two, re-build the same but remove always the
+            last char of each node.
+            A node is a pair : key / value
+                                where value is a list of kmers.
+            So, remove the last char from key, and from each elem in the list value.
+        Sample Input:
+             4
+             AAGATTCTCTAC
+
+        Sample Output:
+             AAG -> AGA
+             AGA -> GAT
+             ATT -> TTC
+             CTA -> TAC
+             CTC -> TCT
+             GAT -> ATT
+             TCT -> CTA,CTC
+             TTC -> TCT
+        """
+        self.genome = stringTXT
+        # Point 1 execution.
+        dna_composition_into_kmers = self.findStringComposition(length_kmers)
+        # Building the overlap-grapth.
+        self.build_Overlap_Graph(dna_composition_into_kmers)
+        # The graph is now stored in [ self.overlap_graph ]
+        # Point 3, iterating over overlap-graph, and removing each time last nucleotide.
+        for key in list(self.overlap_graph.keys()):
+            key_shortened = key[:len(key)-1]
+            list_value_kmers_from_key_shortened = []
+            list_kmers = list(self.overlap_graph[key])
+            for kmers in list_kmers:
+                kmers_shortened = kmers[:len(kmers)-1]
+                list_value_kmers_from_key_shortened.append(kmers_shortened)
+            self.de_bruijn_grapth[key_shortened] = list_value_kmers_from_key_shortened
+
+    def print_edge_debruijn_graph(self):
+        """
+        Again the course want us to print the debruijn graph in a
+        lexicograph way.
+        So, we need to sort the keys, and the print their related content.
+        """
+        keys_sorted = list(self.de_bruijn_grapth.keys())
+        keys_sorted.sort()
+        output_string = ''
+        for key in keys_sorted:
+            output_string = key + ' -> '
+            all_kmers_associated_with_key = list(self.de_bruijn_grapth[key])
+            idx = 0
+            # We will parse all_mers_associated_with_key with an index,
+            # this way we known when the list is finished, because we don t
+            # have to add an [ , ] at the end of the list, only between
+            # 2 kmers.
+            while idx < len(all_kmers_associated_with_key):
+                kmers = all_kmers_associated_with_key[idx]
+                if idx == len(all_kmers_associated_with_key)-1:
+                    # This is the last element of the list
+                    # Don't add a [ , ] to the print, just the last elem
+                    output_string = output_string + kmers
+                else:
+                    # We need to add [ , ] to the oupput, as there is
+                    # still some elem to be printed.
+                    output_string = output_string + kmers + ','
+                idx+=1
+            print output_string
 
 
 
