@@ -1,5 +1,6 @@
 import sys
 import numpy
+import pprint
 import os
 
 class AdamskiClass:
@@ -1171,6 +1172,55 @@ class AdamskiClass:
                 self.de_bruijn_grapth[key] = cur_list
             idx+=1
 
+    def test_Insert_kmers_Into_DeBruijn_Graph(self,key,value):
+        if self.de_bruijn_grapth.get(key) == None:
+            # key still does not exist, creating and inserting the value.
+            self.de_bruijn_grapth[key] = [value]
+        else:
+            # key already exist, adding a value to the list
+            cur_list = self.de_bruijn_grapth[key]
+            cur_list.append(value)
+            self.de_bruijn_grapth[key] = cur_list
+
+
+    def build_DeBruijn_Graph_from_listKmers(self,list_kmers):
+        """
+        The goal is also here to build this De Bruijn graph, but from
+        a list of kmers.
+        The task is here to build an overlap graph from these kmers,
+        and from each key, value build the edges.
+        By instance, for the overlap node :
+        - ATG -> TGC
+        We got finally :
+        - AT -> TG
+        - TG -> GC
+        """
+        # Building our overlap graph, and from that building debruijn graph.
+        self.build_Overlap_Graph(list_kmers)
+        list_kmers_processed = []
+        # Just to prevent any collision if deBruijn graph already initialized,
+        # we re-set it to empty.
+        self.de_bruijn_grapth.clear()
+        for (key,value) in self.overlap_graph.items():
+            # For each key , value pair, we will build the edges of both side.
+            # value can be a list of kmers.
+            kmers = str(key)
+            if kmers not in list_kmers_processed:
+                pre_kmers = AdamskiClass.get_prefixe_kmers(kmers)
+                suf_kmers = AdamskiClass.get_suffix_kmers(kmers)
+                self.test_Insert_kmers_Into_DeBruijn_Graph(pre_kmers,suf_kmers)
+                # Adding this kmers to the list of kmers already processed.
+                list_kmers_processed.append(kmers)
+            list_values = []
+            list_values = list(value)
+            for item in list_values:
+                kmers = str(item)
+                if kmers not in list_kmers_processed:
+                    pre_kmers = AdamskiClass.get_prefixe_kmers(kmers)
+                    suf_kmers = AdamskiClass.get_suffix_kmers(kmers)
+                    self.test_Insert_kmers_Into_DeBruijn_Graph(pre_kmers,suf_kmers)
+                    # Adding this kmers to the list of kmers already processed.
+                    list_kmers_processed.append(kmers)
 
 
 
