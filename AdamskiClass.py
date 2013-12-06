@@ -1222,7 +1222,22 @@ class AdamskiClass:
                     # Adding this kmers to the list of kmers already processed.
                     list_kmers_processed.append(kmers)
 
-
+    def read_Data_And_Build_Graph(self,nameFile):
+        """
+        Data from the file will look like :
+             0 -> 3
+             1 -> 0
+             2 -> 1,6
+        To insert all these data in an efficient structure, we will
+        use a dictionnary.
+        """
+        infile = open(nameFile,'r')
+        for line in infile:
+            line = line.replace('\n', '')
+            key = line.split(' -> ')
+        # STILL TO FINISH HOME OR ANYWHERE ELSE...
+        #    listDNA.append(line)
+        #return listDNA
 
 
 
