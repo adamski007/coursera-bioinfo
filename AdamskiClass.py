@@ -1222,7 +1222,7 @@ class AdamskiClass:
                     # Adding this kmers to the list of kmers already processed.
                     list_kmers_processed.append(kmers)
 
-    def read_Data_And_Build_Graph(self,nameFile):
+    def read_data_and_Build_Graph(self,nameFile):
         """
         Data from the file will look like :
              0 -> 3
@@ -1231,23 +1231,77 @@ class AdamskiClass:
         To insert all these data in an efficient structure, we will
         use a dictionnary.
         """
+        # Clearing the DeBruijn grapth.
+        self.de_bruijn_grapth.clear()
         infile = open(nameFile,'r')
         for line in infile:
             line = line.replace('\n', '')
-            key = line.split(' -> ')
-        # STILL TO FINISH HOME OR ANYWHERE ELSE...
-        #    listDNA.append(line)
-        #return listDNA
+            list_token = line.split(' -> ')
+            key = list_token[0]
+            all_values = list_token[1].split(',')
+            for value in all_values:
+                self.test_Insert_kmers_Into_DeBruijn_Graph(key,value)
 
+    def find_eulerian_path(self):
+        """
+        All the edges are contained in the structure de_bruijn_graph, which is
+        a dictionnary, with values representing all incident edges of the key.
+        Implementation is done with link :
+        www.ms.uky.ed/~lee/ma515fa10/euler.pdf
+        """
+        # We need a copy of de_bruijn_graph
+        copy_debruijn_graph = self.de_bruijn_grapth.copy()
+        # Each time, we will build a path from two adjacent edge, we will remove one value
+        # of the dictionnary, so the goal would be to get an dictionnary where no anymore values
+        # will remain in each key.
+        eulerian_stack = []
+        eulerian_path  = []
+        list_incident_edges = []
+        incident_edge = ''
+        # Initializing the eulerian path, taking an edge at random.
+        #for key in list(self.de_bruijn_grapth.keys()):
+        for key in copy_debruijn_graph.keys():
+            eulerian_stack.append(key)
+            # The loop is only present to get one element of the dic at random.
+            break
+        #print self.de_bruijn_grapth.keys()
+        #eulerian_stack.append(6)
+        while len(eulerian_stack) > 0:
+            # Searching for the eulerian path.
+            top_vertex = eulerian_stack[len(eulerian_stack)-1]
+            #print 'Current vertex is : ',top_vertex
+            # Checking if this vertex got an incident edge not yet walked on...
+            if len(copy_debruijn_graph[top_vertex]) > 0:
+                incident_edge = list(copy_debruijn_graph[top_vertex])[0]
+                #print 'All adjacent vertex of current vertex : ',copy_debruijn_graph[top_vertex]
+                #print 'Adjacent vertex of current vertex is : ',incident_edge
+                # Meaning there is still adjacent edge not already used.
+                # there is an un-marked edge.
+                # push this new edge onto the stack.
+                eulerian_stack.append(incident_edge)
+                # Now mark this edge -> remove this edge from the dic.
+                #list_incident_edges = list(copy_debruijn_graph[top_vertex])
+                #list_incident_edges.pop(0)
+                edge_to_remove = list(copy_debruijn_graph[top_vertex]).pop(0)
+                old_list = list(copy_debruijn_graph[top_vertex])
+                old_list.pop(0)
+                copy_debruijn_graph[top_vertex] = old_list
+                #print 'There should be one less adjacent edges to the list : ',copy_debruijn_graph[top_vertex]
+            else:
+                # There is not any adjacent vertex, un-marked vertex,
+                # pop the vertex off the stack, and print it to the eulerian path.
+                eulerian_stack.pop(len(eulerian_stack)-1)
+                eulerian_path.append(top_vertex)
+        eulerian_path.reverse()
+        return eulerian_path
 
-
-
-
-
-
-
-
-
-
+    def print_eulerian_path(self,eulerian_list):
+        """
+        Printing the list the way coursera want it.
+        """
+        eulerian_path = ''
+        for item in eulerian_list:
+            eulerian_path = eulerian_path + '->' + item
+        print eulerian_path
 
 

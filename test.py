@@ -11,9 +11,9 @@ nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
-list_kmers = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
-#genomeClass.build_Overlap_Graph(list_kmers)
-#genomeClass.print_edge_overlap_graph()
-#print ''
-genomeClass.build_DeBruijn_Graph_from_listKmers(list_kmers)
-genomeClass.print_edge_debruijn_graph()
+genomeClass.read_data_and_Build_Graph('listDNA.txt')
+
+#print pprint.pprint(genomeClass.de_bruijn_grapth)
+path = genomeClass.find_eulerian_path()
+#print path
+genomeClass.print_eulerian_path(path)
