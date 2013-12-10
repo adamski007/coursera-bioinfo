@@ -1407,10 +1407,5 @@ class AdamskiClass:
         # Returning the node who got a new out-edge. The new eulerian path, should start
         # with that one. This should be the last node of the eulerian path.
         # Don t forget that eulerian path, reverse the list as last step in the function.
-        return out_edges
         # Now, the graph present in [ self.de_bruijn_graph ] should be balanced.
-
-
-
-
-
+        return out_edges
