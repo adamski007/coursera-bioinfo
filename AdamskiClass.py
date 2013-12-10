@@ -1310,9 +1310,7 @@ class AdamskiClass:
         Adding simply 1 to the in-edges count to each elem of list_values.
         """
         # We also need to check if key exist already or not.
-        print list_nodes
         for elem in list_nodes:
-            print elem
             if self.count_in_out_edges.get(elem) == None:
                 in_edges = 1
                 out_edges= 0
@@ -1372,17 +1370,45 @@ class AdamskiClass:
         [ self.build_count_in_out_edge_all_nodes ] , it create a new dic.
         And in this new dic, what we need to check if in-edges == out-edges
         """
-        list_nodes_unbalanced = []
+        # List of nodes, where in edges are less than out edges.
+        list_nodes_unbalanced_in = []
+        # List of nodes, where out edges are less than out edges.
+        list_nodes_unbalanced_out = []
         for key in self.count_in_out_edges.keys():
             in_edges = self.count_in_out_edges[key][0]
             out_edges= self.count_in_out_edges[key][1]
-            if in_edges != out_edges:
+            if in_edges < out_edges:
                 # This node is not balanced.
-                list_nodes_unbalanced.append(key)
-        return list_nodes_unbalanced
+                list_nodes_unbalanced_in.append(key)
+            elif in_edges > out_edges:
+                list_nodes_unbalanced_out.append(key)
+        return list_nodes_unbalanced_in,list_nodes_unbalanced_out
 
 
-
+    def build_balanced_graph(self,list_nodes_unbalanced_in,list_nodes_unbalanced_out):
+        """
+        We got our De Bruijn graph build into dictionnary structure :
+        - self.de_bruijn_grapth
+        With that, we can count if each nodes is balanced [ in_edges == out_edges ],
+        the function used for that is [ check_unbalanced_nodes ], it will return
+        two list [ node_in , node_out ] , where node_in is the list of nodes where
+        in_edges < out_edges , and the other the other way.
+        So, to build a balanced graph, for each nodes in out_edges , do a link to a node
+        in in_edges.
+        Output  :   the last node
+        """
+        # So far, we do simple check, no check if one nodes got more than 2 out-going edges more
+        # than in-edges.
+        # We simply guess that for each out_edge there is an in_edge.
+        #start_node =
+        for out_edges in list_nodes_unbalanced_out:
+            for in_edges in list_nodes_unbalanced_in:
+                self.test_Insert_kmers_Into_DeBruijn_Graph(out_edges,in_edges)
+        # Returning the node who got a new out-edge. The new eulerian path, should start
+        # with that one. This should be the last node of the eulerian path.
+        # Don t forget that eulerian path, reverse the list as last step in the function.
+        return out_edges
+        # Now, the graph present in [ self.de_bruijn_graph ] should be balanced.
 
 
 
