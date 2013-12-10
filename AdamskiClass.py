@@ -14,6 +14,7 @@ class AdamskiClass:
         self.listxmutationkmers = []
         self.overlap_graph = {}
         self.de_bruijn_grapth = {}
+        self.count_in_out_edges = {}
 
     def buildAllMassValue(self):
         """
@@ -1303,5 +1304,87 @@ class AdamskiClass:
         for item in eulerian_list:
             eulerian_path = eulerian_path + '->' + item
         print eulerian_path
+
+    def add_one_in_edges(self,list_nodes):
+        """
+        Adding simply 1 to the in-edges count to each elem of list_values.
+        """
+        # We also need to check if key exist already or not.
+        print list_nodes
+        for elem in list_nodes:
+            print elem
+            if self.count_in_out_edges.get(elem) == None:
+                in_edges = 1
+                out_edges= 0
+                self.count_in_out_edges[elem] = [in_edges,out_edges]
+            else:
+                in_edges = self.count_in_out_edges[elem][0] + 1
+                out_edges= self.count_in_out_edges[elem][1]
+                self.count_in_out_edges[elem] = [in_edges,out_edges]
+
+
+    def add_in_out_edges_one_node(self,key,values):
+        """
+        With this element of the dictionnary, we will count his in-edges,
+        and out-edges.
+        """
+        self.count_in_out_edges
+        if self.count_in_out_edges.get(key) == None:
+            # key still does not exist, creating and inserting the count value
+            out_edges = len(values)
+            # By default, at the beginning, we don't known in-edges,
+            # so we insert simply a count of 0.
+            in_edges = 0
+            self.count_in_out_edges[key] = [in_edges,out_edges]
+            # Updating the in-edges count for each elem in values.
+            self.add_one_in_edges(values)
+        else:
+            # key already exist, we need to update the count value.
+            in_edges = self.count_in_out_edges[key][0]
+            out_edges= self.count_in_out_edges[key][1] + len(values)
+            self.count_in_out_edges[key] = [in_edges,out_edges]
+            # Updating the in-edges count for each elem in values.
+            self.add_one_in_edges(values)
+
+    def build_count_in_out_edge_all_nodes(self):
+        """
+        The function will count for each vertex in the graph, how many
+        it has in-edges, and out-edges.
+        This way, we will find where we have to add an edge between probably
+        two nodes, and make our eulerian path, and not only the eulerian cycle.
+
+        Again, we will use a dictionnary to count the in/out edges of a vertex.
+        key/value , where value will be a list, where :
+        - [0] will be the count of in-edges.
+        - [1] will be the count of out-edges.
+        and normally at the end, for each key in a balanced graph, [0] == [1]
+        """
+        for key in self.de_bruijn_grapth.keys():
+            values = self.de_bruijn_grapth[key]
+            self.add_in_out_edges_one_node(key,values)
+
+    def check_unbalanced_nodes(self):
+        """
+        It will check for un-balanced nodes, in the De Bruijn graph.
+        The structure of the De Bruijn graph, has already been builded
+        and insert into : self.de_bruijn_grapth
+        The checking if each nodes is balanced, is done through method
+        [ self.build_count_in_out_edge_all_nodes ] , it create a new dic.
+        And in this new dic, what we need to check if in-edges == out-edges
+        """
+        list_nodes_unbalanced = []
+        for key in self.count_in_out_edges.keys():
+            in_edges = self.count_in_out_edges[key][0]
+            out_edges= self.count_in_out_edges[key][1]
+            if in_edges != out_edges:
+                # This node is not balanced.
+                list_nodes_unbalanced.append(key)
+        return list_nodes_unbalanced
+
+
+
+
+
+
 
 
