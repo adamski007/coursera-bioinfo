@@ -1446,3 +1446,37 @@ class AdamskiClass:
             str_genome      = str_genome + last_char
             idx+=1
         return str_genome
+
+    def generate_all_binary_string(self,binary_length):
+        """
+        This function will generate all the binary string for a length specified
+        by [ binary_length ].
+        By instance :   binary_length == 2 -> 00,01,10,11
+                        binary_length == 3 -> 000,001,010,100,101,011,110,111
+        Output      :   a list where each elem is a binary string.
+
+        HOWTO       :   1. the max-value of a binary string of length n is 2^n - 1
+                        2. create the range of value from 0 -> 2^n - 1
+                        3. convert each of these number into binary string with bin function
+                        4. Cutting the string return by the bin function to not contain 0b character.
+                        5. Adding the needed 0 to the string. By instance : 0001
+        """
+        max_bin_value   = 2**binary_length
+        list_value      = range(max_bin_value)
+        list_bin_str    = []
+        for elem in list_value:
+            # Keeping only from the second char as the first two are [ 0b ]
+            cur_bin_val = bin(elem)[2:]
+            if len(cur_bin_val) != binary_length:
+                # We need to add the necessary 0 in front of the string.
+                cur_bin_val = self.add_necessary_zeros(cur_bin_val,binary_length)
+            list_bin_str.append(cur_bin_val)
+        return list_bin_str
+
+    def add_necessary_zeros(self,bin_str,bin_length):
+        """
+        Adding the necessary 0 in front of a binary value.
+        """
+        for elem in range(bin_length-len(bin_str)):
+            bin_str = '0' + bin_str
+        return bin_str

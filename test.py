@@ -25,6 +25,13 @@ genomeClass.print_eulerian_path(eul_path)
 print eul_path
 genome = genomeClass.string_reconstruction(eul_path)
 print genome
+bin_str = genomeClass.generate_all_binary_string(4)
+print bin_str
+new_str = '11'
+print genomeClass.add_necessary_zeros(new_str,4)
+print new_str
+list_str = genomeClass.generate_all_binary_string(18)
+print list_str
 #genomeClass.print_edge_debruijn_graph()
 """
 new_edge = genomeClass.build_balanced_graph(list_nodes_unbalanced_in,list_nodes_unbalanced_out)
