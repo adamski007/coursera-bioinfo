@@ -1243,7 +1243,7 @@ class AdamskiClass:
             for value in all_values:
                 self.test_Insert_kmers_Into_DeBruijn_Graph(key,value)
 
-    def find_eulerian_path(self):
+    def find_eulerian_path(self,starting_node=''):
         """
         All the edges are contained in the structure de_bruijn_graph, which is
         a dictionnary, with values representing all incident edges of the key.
@@ -1259,9 +1259,14 @@ class AdamskiClass:
         eulerian_path  = []
         list_incident_edges = []
         incident_edge = ''
-        # Initializing the eulerian path, taking an edge at random.
+        # By default, we can start the eulerian path by taking a randon start node
+        # if no start_node specified.
+        if starting_node == '':
+            list_node = copy_debruijn_graph.keys()
+        else:
+            list_node = [starting_node]
         #for key in list(self.de_bruijn_grapth.keys()):
-        for key in copy_debruijn_graph.keys():
+        for key in list_node:
             eulerian_stack.append(key)
             # The loop is only present to get one element of the dic at random.
             break
@@ -1400,12 +1405,44 @@ class AdamskiClass:
         # So far, we do simple check, no check if one nodes got more than 2 out-going edges more
         # than in-edges.
         # We simply guess that for each out_edge there is an in_edge.
-        #start_node =
+        last_node = ''
         for out_edges in list_nodes_unbalanced_out:
             for in_edges in list_nodes_unbalanced_in:
                 self.test_Insert_kmers_Into_DeBruijn_Graph(out_edges,in_edges)
+            last_node = out_edges
         # Returning the node who got a new out-edge. The new eulerian path, should start
         # with that one. This should be the last node of the eulerian path.
         # Don t forget that eulerian path, reverse the list as last step in the function.
         # Now, the graph present in [ self.de_bruijn_graph ] should be balanced.
-        return out_edges
+        return last_node
+
+    def string_reconstruction(self,graph_path,start_node=1):
+        """
+        From the result of the eulerian path, we can re-construct the DNA genome.
+        By simply, adding all of the nodes in a string object,
+        first node should be full str, and the following should only be the last char of
+        each node. as sub(str) == pre(str)
+        Due to the fact, we also start from one special node [ start_node = 1 ], we need to
+        remove the first elem of the list [ graph_path ], this elem removed is also present
+        as last elem of the list.
+        If start_node == 0 , no need to remove the first elem, it imply that we find only an
+        eulerian cycle, and not an eulerian path. See coursera...
+        """
+        str_genome = ''
+        # Putting the variable definition here, to be available in all function [ scope issue ]
+        idx  = 0
+        if start_node == 1:
+            # We need to start printing the genome from the second elem [ implying removing first elem ]
+            idx = 1
+        else:
+            idx = 0
+        str_genome = str_genome + graph_path[idx]
+        idx+=1
+        while idx <= len(graph_path)-1:
+            # Parsing all elem of the graph path.
+            # We could do all in one step, but for clarity decomposing what we are doing...
+            current_elem    = graph_path[idx]
+            last_char       = current_elem[len(current_elem)-1]
+            str_genome      = str_genome + last_char
+            idx+=1
+        return str_genome
