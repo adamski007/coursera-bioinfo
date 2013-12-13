@@ -1,4 +1,5 @@
 import os
+import datetime
 import sys
 import numpy
 import pprint
@@ -11,39 +12,65 @@ nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
-genomeClass.read_data_and_Build_Graph('listDNA.txt')
-#eul_path = genomeClass.find_eulerian_path()
-#genomeClass.print_eulerian_path(eul_path)
-#print 'suite'
+"""
+CODE CHALLENGE: Solve the k-Universal Circular String Problem.
+Chapter 57.
+"""
+
+list_str = []
+
+start_time = datetime.datetime.now()
+list_str = genomeClass.generate_all_binary_string(3)
+genomeClass.build_Overlap_Graph(list_str)
+
+end_time = datetime.datetime.now()
+
+genomeClass.read_data_and_Build_Graph('listDNA.txt',1)
+
+
+genomeClass.build_count_in_out_edge_all_nodes()
+nodes_in,nodes_out  = genomeClass.check_unbalanced_nodes()
+start_node          = genomeClass.build_balanced_graph(nodes_in,nodes_in)
+
+#pprint.pprint(genomeClass.de_bruijn_grapth)
+eul_path            = genomeClass.find_eulerian_path(start_node)
+
+
+print eul_path
+print eul_path[2]
+
+#print 'Building all binary string took                      : ',end_time-start_time
+"""
+print ''
+start_time = datetime.datetime.now()
+genomeClass.build_DeBruijn_Graph_from_listKmers(list_str)
+end_time = datetime.datetime.now()
+print 'Construction of De Bruijn graph has been builded in  : ',end_time-start_time
+"""
+"""
 genomeClass.build_count_in_out_edge_all_nodes()
 list_nodes_unbalanced_in,list_nodes_unbalanced_out = genomeClass.check_unbalanced_nodes()
+print 'is the graph un-balanced, list_nodes_in : ',list_nodes_unbalanced_in
+print 'is the graph un-balanced, list_nodes_out: ',list_nodes_unbalanced_out
 new_edge = genomeClass.build_balanced_graph(list_nodes_unbalanced_in,list_nodes_unbalanced_out)
 
 print 'The new edge inserted and where we have to start from : ',new_edge
-eul_path = genomeClass.find_eulerian_path(new_edge)
-genomeClass.print_eulerian_path(eul_path)
+"""
+"""
+start_time = datetime.datetime.now()
+eul_path = genomeClass.find_eulerian_path()
+print 'Here is the eulerian path : '
 print eul_path
-genome = genomeClass.string_reconstruction(eul_path)
+end_time   = datetime.datetime.now()
+print 'Search of the eulerian path took                     : ',end_time-start_time
+"""
+#genomeClass.print_eulerian_path(eul_path,0)
+#print eul_path
+"""
+start_time = datetime.datetime.now()
+genome = genomeClass.string_reconstruction(eul_path,0)
+end_time   = datetime.datetime.now()
+print 'String reconstruciton from eulerian path took        : ',end_time-start_time
 print genome
-bin_str = genomeClass.generate_all_binary_string(4)
-print bin_str
-new_str = '11'
-print genomeClass.add_necessary_zeros(new_str,4)
-print new_str
-list_str = genomeClass.generate_all_binary_string(18)
-print list_str
-#genomeClass.print_edge_debruijn_graph()
+print 'Len of overlap graph : ',len(genomeClass.overlap_graph)
 """
-new_edge = genomeClass.build_balanced_graph(list_nodes_unbalanced_in,list_nodes_unbalanced_out)
-print 'Starting node found in building balanced graph : ',new_edge
-eul_path = genomeClass.find_eulerian_path(new_edge)
-print 'Starting node is : ',new_edge
-genomeClass.print_eulerian_path(eul_path)
-"""
-
-#print list_nodes_unbalanced_in
-#print list_nodes_unbalanced_out
-#print pprint.pprint(genomeClass.de_bruijn_grapth)
-#path = genomeClass.find_eulerian_path()
-#print path
-#genomeClass.print_eulerian_path(path)
