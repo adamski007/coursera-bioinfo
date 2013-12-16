@@ -27,7 +27,6 @@ end_time = datetime.datetime.now()
 
 genomeClass.read_data_and_Build_Graph('listDNA.txt',1)
 
-
 genomeClass.build_count_in_out_edge_all_nodes()
 nodes_in,nodes_out  = genomeClass.check_unbalanced_nodes()
 start_node          = genomeClass.build_balanced_graph(nodes_in,nodes_out)
@@ -36,7 +35,7 @@ start_node          = genomeClass.build_balanced_graph(nodes_in,nodes_out)
 eul_path            = genomeClass.find_eulerian_path(start_node)
 str_genome          = genomeClass.string_reconstruction(eul_path)
 print str_genome
-print eul_path
+print len(eul_path)
 
 
 #print 'Building all binary string took                      : ',end_time-start_time

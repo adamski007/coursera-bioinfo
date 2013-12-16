@@ -1300,6 +1300,7 @@ class AdamskiClass:
             #print 'Current vertex is : ',top_vertex
             # Checking if this vertex got an incident edge not yet walked on...
             if copy_debruijn_graph.get(top_vertex) != None and len(copy_debruijn_graph[top_vertex]) > 0:
+            #if len(copy_debruijn_graph[top_vertex]) > 0:
                 incident_edge = list(copy_debruijn_graph[top_vertex])[0]
                 #print 'All adjacent vertex of current vertex : ',copy_debruijn_graph[top_vertex]
                 #print 'Adjacent vertex of current vertex is : ',incident_edge
