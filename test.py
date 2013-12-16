@@ -33,9 +33,11 @@ start_node          = genomeClass.build_balanced_graph(nodes_in,nodes_out)
 
 #pprint.pprint(genomeClass.de_bruijn_grapth)
 eul_path            = genomeClass.find_eulerian_path(start_node)
-str_genome          = genomeClass.string_reconstruction(eul_path)
+str_genome          = genomeClass.string_reconstruction(eul_path,1,1,300)
 print str_genome
-print len(eul_path)
+#print len(eul_path)
+#print eul_path
+#print eul_path[0]
 
 
 #print 'Building all binary string took                      : ',end_time-start_time

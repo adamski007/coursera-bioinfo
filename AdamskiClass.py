@@ -1439,7 +1439,7 @@ class AdamskiClass:
         # Now, the graph present in [ self.de_bruijn_graph ] should be balanced.
         return last_node
 
-    def string_reconstruction(self,graph_path,start_node=1,reads_paired=1):
+    def string_reconstruction(self,graph_path,start_node=1,reads_paired=1,spaces_paired=0):
         """
         From the result of the eulerian path, we can re-construct the DNA genome.
         By simply, adding all of the nodes in a string object,
@@ -1477,22 +1477,22 @@ class AdamskiClass:
             str_genome      = str_genome + last_char
             idx+=1
         # We reach the end of the list, and for a reads_paired, we still need to get the last suffixes elem.
-        if reads_paired == 1:
-            # Processing the last chars, we need to go back the length of the kmers of the read pairs.
-            # if len(key) == 3 -> length of kmers == 4
-            # each elem in the list is a tuple, that's why we use : graph_path[0][0]
-            idx = len(graph_path) - ( len(graph_path[0][0]) + 1 )
-            # The first new string to add should be a full one.
-            current_elem    = graph_path[idx][1]
-            str_genome      = str_genome + current_elem
-            idx+=1
-            while idx <= len(graph_path)-1:
+        if reads_paired == 1 and spaces_paired > 0:
+            # Read the forum here :
+            # https://class.coursera.org/bioinformatics-001/forum/thread?thread_id=688#post-3264
+            # -1 because we don't take the last elem of the list, we take it full but at the end step.
+            # and still go back spaces_paried + 1 as explained in URL mentionned above.
+            idx = len(graph_path) - 1 - (spaces_paired + 1)
+            # idx should be sctricly lower than len because last elem shoud be taken full and not only first letter.
+            while idx < len(graph_path)-1:
                 # Parsing the last element, to re-construct the genome from the read pairs.
                 # We now use the second elem of the tuple and not anymore the first one.
                 current_elem    = graph_path[idx][1]
-                last_char       = current_elem[len(current_elem)-1]
-                str_genome      = str_genome + last_char
+                first_char       = current_elem[0]
+                str_genome      = str_genome + first_char
                 idx+=1
+        # Adding the last full elem of the list.
+        str_genome  = str_genome + graph_path[idx][1]
         return str_genome
 
     def generate_all_binary_string(self,binary_length):
