@@ -20,28 +20,19 @@ Chapter 57.
 list_str = []
 
 start_time = datetime.datetime.now()
-list_str = genomeClass.generate_all_binary_string(3)
+list_str = genomeClass.generate_all_binary_string(5)
 genomeClass.build_Overlap_Graph(list_str)
+print list_str[2]
 
-genomeClass.read_data_and_Build_Graph('listDNA.txt',1)
-genomeClass.build_count_in_out_edge_all_nodes()
-nodes_in,nodes_out  = genomeClass.check_unbalanced_nodes()
-start_node          = genomeClass.build_balanced_graph(nodes_in,nodes_out)
-eul_path            = genomeClass.find_eulerian_path(start_node)
-str_genome          = genomeClass.string_reconstruction(eul_path,1,1,300)
-print str_genome
-#print len(eul_path)
-#print eul_path
-#print eul_path[0]
+genomeClass.build_overlap_grapth_from_file('output-overlap-bin-kmers-19.txt')
 
 
-"""
-print ''
 start_time = datetime.datetime.now()
-genomeClass.build_DeBruijn_Graph_from_listKmers(list_str)
+print 'Current date is : ',datetime.datetime.now().isoformat()
+genomeClass.build_DeBruijn_Graph_from_listKmers(list_str,'output-overlap-bin-kmers-19.txt')
 end_time = datetime.datetime.now()
 print 'Construction of De Bruijn graph has been builded in  : ',end_time-start_time
-"""
+
 """
 genomeClass.build_count_in_out_edge_all_nodes()
 list_nodes_unbalanced_in,list_nodes_unbalanced_out = genomeClass.check_unbalanced_nodes()

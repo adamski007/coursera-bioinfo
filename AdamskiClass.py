@@ -1074,6 +1074,32 @@ class AdamskiClass:
                         new_list.append(kmers_pre)
                         self.overlap_graph[kmers_suf] = new_list
 
+    def build_overlap_grapth_from_file(self,nameFile):
+        """
+        Getting the value of the overlap from a file as :
+        0001 -> 0011
+        0011 -> 0110
+        ...
+        """
+        self.overlap_graph.clear()
+        infile = open(nameFile,'r')
+        for line in infile:
+            line = line.replace('\n', '')
+            list_token = line.split(' -> ')
+            key = list_token[0]
+            all_values = list_token[1].split(',')
+            for value in all_values:
+                # Checking and inserting.
+                if self.overlap_graph.get(key) == None:
+                    # Value does not exist, inserting...
+                    self.overlap_graph[key] = [value]
+                else:
+                    # Value does already exist, so getting the present value
+                    new_list = self.overlap_graph[key]
+                    new_list.append(value)
+                    self.overlap_graph[key] = new_lis
+
+
     def print_edge_overlap_graph(self):
         """
         This is the function used to print the overlap grapth
@@ -1190,7 +1216,7 @@ class AdamskiClass:
         READ THE FILE FIRST WITH THE RELEVANT DATA.
         """
 
-    def build_DeBruijn_Graph_from_listKmers(self,list_kmers):
+    def build_DeBruijn_Graph_from_listKmers(self,list_kmers,namefile=''):
         """
         The goal is also here to build this De Bruijn graph, but from
         a list of kmers.
@@ -1204,14 +1230,25 @@ class AdamskiClass:
         """
         # Building our overlap graph, and from that building debruijn graph.
         start_time = datetime.datetime.now()
-        self.build_Overlap_Graph(list_kmers)
+        if namefile != '':
+            # We got the overlap graph in a file, don t needed to be build it.
+            self.build_overlap_grapth_from_file(namefile)
+        else:
+            self.build_Overlap_Graph(list_kmers)
         end_time   = datetime.datetime.now()
         print 'Overlap graph has been build in                      : ',end_time-start_time
         list_kmers_processed = []
         # Just to prevent any collision if deBruijn graph already initialized,
         # we re-set it to empty.
         self.de_bruijn_grapth.clear()
+        print 'Length of the overlap graph : ',len(self.overlap_graph)
+        idx_overlap_graph = 0
+        print 'Current date is : ',datetime.datetime.now().isoformat()
         for (key,value) in self.overlap_graph.items():
+            if idx_overlap_graph == 10000 or idx_overlap_graph == 20000 or idx_overlap_graph == 30000 or idx_overlap_graph == 40000 or idx_overlap_graph == 50000 or idx_overlap_graph == 100000 :
+                print 'Current date is : ',datetime.datetime.now().isoformat()
+                print 'idx value for overlap graph is ',idx_overlap_graph,'and the length total is : ',len(self.overlap_graph)
+            idx_overlap_graph+=1
             # For each key , value pair, we will build the edges of both side.
             # value can be a list of kmers.
             kmers = str(key)
