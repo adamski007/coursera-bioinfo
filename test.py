@@ -23,15 +23,10 @@ start_time = datetime.datetime.now()
 list_str = genomeClass.generate_all_binary_string(3)
 genomeClass.build_Overlap_Graph(list_str)
 
-end_time = datetime.datetime.now()
-
 genomeClass.read_data_and_Build_Graph('listDNA.txt',1)
-
 genomeClass.build_count_in_out_edge_all_nodes()
 nodes_in,nodes_out  = genomeClass.check_unbalanced_nodes()
 start_node          = genomeClass.build_balanced_graph(nodes_in,nodes_out)
-
-#pprint.pprint(genomeClass.de_bruijn_grapth)
 eul_path            = genomeClass.find_eulerian_path(start_node)
 str_genome          = genomeClass.string_reconstruction(eul_path,1,1,300)
 print str_genome
@@ -40,7 +35,6 @@ print str_genome
 #print eul_path[0]
 
 
-#print 'Building all binary string took                      : ',end_time-start_time
 """
 print ''
 start_time = datetime.datetime.now()
