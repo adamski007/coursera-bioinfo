@@ -1269,7 +1269,7 @@ class AdamskiClass:
                     # Adding this kmers to the list of kmers already processed.
                     list_kmers_processed.append(kmers)
 
-    def read_data_and_Build_Graph(self,nameFile,paired_reads=0):
+    def read_data_and_Build_Graph(self,nameFile,paired_reads=0,list_kmers=0):
         """
         Data from the file will look like :
              0 -> 3
@@ -1279,6 +1279,13 @@ class AdamskiClass:
         use a dictionnary.
         Adaption to the methode, to be able to read a file where we got a paired read.
         By default, it is NOT a paired_reads
+        Adding a case [ with param = list_kmers ], where the file readed is filled with data such as :
+        - ATG
+        - ACC
+        - ...
+        So, by instance, for ATG , key : AT , and value : TG.
+        We build the De Bruijn grapth this way.
+
         """
         # Clearing the DeBruijn grapth.
         self.de_bruijn_grapth.clear()
@@ -1286,12 +1293,17 @@ class AdamskiClass:
         for line in infile:
             line = line.replace('\n', '')
             # Here is our adaption needed in case of paired reads.
-            if paired_reads == 0:
+            if paired_reads == 0 and list_kmers == 0:
                 list_token = line.split(' -> ')
                 key = list_token[0]
                 all_values = list_token[1].split(',')
                 for value in all_values:
                     self.test_Insert_kmers_Into_DeBruijn_Graph(key,value)
+            elif list_kmers == 1:
+                # Cases for kmers
+                key = AdamskiClass.get_prefixe_kmers(line)
+                value = AdamskiClass.get_suffix_kmers(line)
+                self.test_Insert_kmers_Into_DeBruijn_Graph(key,value)
             else:
                 list_token = line.split('|')
                 # our key in this case, is the prefixe of both token.
