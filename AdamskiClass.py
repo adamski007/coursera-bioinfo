@@ -1269,6 +1269,19 @@ class AdamskiClass:
                     # Adding this kmers to the list of kmers already processed.
                     list_kmers_processed.append(kmers)
 
+    def build_all_path(self):
+        """
+        To generate all the contigs find in the De Bruijn graph, we need to parse all this
+        De Bruijn graph, and hence all his keys.
+        """
+        list_contigs    = []
+        curr_str    = ''
+        for key in self.de_bruijn_grapth.keys():
+            for value in self.de_bruijn_grapth[key]:
+                # Searching any path for each value of the current key.
+                if self.de_bruijn_grapth.get(value) == None:
+                    curr_str = curr_str + self.de_bruijn_grapth[key]
+
     def read_data_and_Build_Graph(self,nameFile,paired_reads=0,list_kmers=0):
         """
         Data from the file will look like :
@@ -1579,4 +1592,18 @@ class AdamskiClass:
         return bin_str
 
 
-
+    @staticmethod
+    def dpchange(money,coins):
+        """
+        Algo explained Chapter 5 , slide 71.
+        coins is a list with all the piece present.
+        """
+        min_num_coins = numpy.zeros( (money + 1) )
+        min_num_coins[0]    =   0
+        for m in range(1,money+1):
+            min_num_coins[m]    = sys.maxsize
+            for i in range(len(coins)):
+                if m >= coins[i]:
+                    if min_num_coins[m-coins[i]] + 1 < min_num_coins[m]:
+                        min_num_coins[m] = min_num_coins[m-coins[i]] + 1
+        return min_num_coins[money]

@@ -17,16 +17,23 @@ CODE CHALLENGE: Solve the k-Universal Circular String Problem.
 Chapter 57.
 """
 
+"""
 list_str = []
-
 start_time = datetime.datetime.now()
 list_str = genomeClass.generate_all_binary_string(5)
 genomeClass.build_Overlap_Graph(list_str)
-print list_str[2]
+"""
 
 #genomeClass.build_overlap_grapth_from_file('output-overlap-bin-kmers-19.txt')
 
 genomeClass.read_data_and_Build_Graph('listDNA.txt',0,1)
+pprint.pprint(genomeClass.de_bruijn_grapth)
+print ''
+#eul_path = genomeClass.find_eulerian_path('CA')
+#pprint.pprint(eul_path)
+list = [24,5,3,1]
+#list.reverse()
+print AdamskiClass.dpchange(18409,list)
 
 """
 start_time = datetime.datetime.now()
