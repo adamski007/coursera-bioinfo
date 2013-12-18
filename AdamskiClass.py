@@ -1607,3 +1607,98 @@ class AdamskiClass:
                     if min_num_coins[m-coins[i]] + 1 < min_num_coins[m]:
                         min_num_coins[m] = min_num_coins[m-coins[i]] + 1
         return min_num_coins[money]
+
+    @staticmethod
+    def manathan_tourist(n,m,down,right):
+        """
+        As explained in chapter 5, slide 72.
+
+        """
+        return 0
+
+    @staticmethod
+    def initialize_down_matrix_edges(namefile,row,column):
+        """
+        Initialize the down matrix, which means the weigth of the edges going down from nodes.
+        """
+        #
+        matrix_edges_down   =   numpy.zeros( ( row,column+1 ) )
+        infile = open(namefile,'r')
+        idx_column = 0
+        idx_row = 0
+        for line in infile:
+            line = line.replace('\n', '')
+            list_token = line.split(' ')
+            for weigth in list_token:
+                matrix_edges_down[idx_row][idx_column] = weigth
+                idx_column+=1
+            idx_column = 0
+            idx_row+=1
+        return matrix_edges_down
+
+    @staticmethod
+    def initialize_right_matrix_edges(namefile,row,column):
+        """
+        Initialize the right matrix, which means the weigth of the edges going right of each nodes.
+        """
+        matrix_edges_right  =   numpy.zeros((row+1,column))
+        infile = open(namefile,'r')
+        idx_column = 0
+        idx_row = 0
+        for line in infile:
+            print 0
+
+    @staticmethod
+    def initialize_matrix_edges(namefile,row,column):
+        matrix_edges_right  =   numpy.zeros( ( row+1,column ) )
+        matrix_edges_down   =   numpy.zeros( ( row,column+1 ) )
+        infile = open(namefile,'r')
+        idx_column = 0
+        idx_row = 0
+        # We will begin processing the down matrix untill we reach the char '-' ,
+        # and then processing of the right matrix will occur.
+        reached_right_matrix = 0
+        for line in infile:
+            line = line.replace('\n', '')
+            list_token = line.split(' ')
+            if list_token[0] == '-':
+                reached_right_matrix = 1
+            if reached_right_matrix == 0:
+                #Processing the down matrix.
+                for weigth in list_token:
+                    matrix_edges_down[idx_row][idx_column] = weigth
+                    idx_column+=1
+                idx_column = 0
+                idx_row+=1
+            else:
+                for weigth in list_token:
+                    matrix_edges_right[]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

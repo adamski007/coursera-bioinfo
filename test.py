@@ -31,9 +31,12 @@ pprint.pprint(genomeClass.de_bruijn_grapth)
 print ''
 #eul_path = genomeClass.find_eulerian_path('CA')
 #pprint.pprint(eul_path)
-list = [24,5,3,1]
-#list.reverse()
-print AdamskiClass.dpchange(18409,list)
+
+matrix_down = AdamskiClass.initialize_down_matrix_edges('matrix.txt',4,4)
+
+print matrix_down
+
+
 
 """
 start_time = datetime.datetime.now()
