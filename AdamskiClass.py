@@ -1663,6 +1663,10 @@ class AdamskiClass:
             list_token = line.split(' ')
             if list_token[0] == '-':
                 reached_right_matrix = 1
+                idx_column = 0
+                idx_row = 0
+                # Continue directly reading the next line, and do not process this line.
+                continue
             if reached_right_matrix == 0:
                 #Processing the down matrix.
                 for weigth in list_token:
@@ -1672,7 +1676,89 @@ class AdamskiClass:
                 idx_row+=1
             else:
                 for weigth in list_token:
-                    matrix_edges_right[]
+                    matrix_edges_right[idx_row][idx_column] = weigth
+                    idx_column+=1
+                idx_column  =   0
+                idx_row+=1
+        return matrix_edges_down,matrix_edges_right
+
+    @staticmethod
+    def manathan_tourist( n, m, matrix_down_edges, matrix_right_edges):
+        """
+        Finding the length of the longest path in this graph builded with the
+        2 matrix.
+        PS : range function in python output for instance :
+        - range(3) = 0,1,2
+        - range(1,3) = 1,2
+        -> we need range(1,4) to get 1,2,3,4 .
+        -> n will be n+1 in range function.
+        """
+        matrix_weigth = numpy.zeros( (n+1, m+1) )
+        matrix_weigth[0][0] = 0
+        # Processing the down edges, and computing the weigth on each node.
+        for i in range(1,n+1):
+            # for the matrix down edges, the value start with idx = 0 -> i-1 first reference to matrix down.
+            # we use for that idx_down_matrix, to make a difference with i-1 in matrix_weigth.
+            idx_down_matrix = i-1
+            matrix_weigth[i][0] = matrix_weigth[i-1][0] + matrix_down_edges[idx_down_matrix][0]
+        # Processing the right edges, and computing the weigth on each node.
+        for j in range(1,m+1):
+            # for the matrix right edges, the value start with idx = 0 -> i-1 as first ref to matrix right.
+            # we use for that idx_right_matrix, to make a difference with j-1 in matrix_weigth
+            idx_right_matrix = j-1
+            matrix_weigth[0][j] = matrix_weigth[0][j-1] + matrix_right_edges[0][idx_right_matrix]
+        for i in range(1,n+1):
+            for j in range(1,m+1):
+                # Again we use idx for down and right path, to make a difference with other indices.
+                # This is only due to the way we build our matrix at the beginning, and the orig is 0,0 and not 1,1
+                idx_down_path = i - 1
+                idx_right_path= j - 1
+                down_path = matrix_weigth[i-1][j] + matrix_down_edges[idx_down_path][j]
+                right_path= matrix_weigth[i][j-1] + matrix_right_edges[i][idx_right_path]
+                matrix_weigth[i][j] = max(down_path,right_path)
+        print matrix_weigth
+        return matrix_weigth[n][m]
+
+
+
+
+    @staticmethod
+    def lcs(str_v,str_w):
+        """
+        Implementation of algo defined in chapter 5, slide 74 from coursera.org
+
+        """
+        # s in the algo.
+        matrix_matches_str  =   numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
+        matrix_backtrack    =   numpy.zeros( ( len(str_v)  , len(str_w)   ) )
+        for i in range( len(str_v)+1 ):
+            matrix_matches_str[i][0]  = 0
+        for j in range( len(str_w)+1 ):
+            matrix_matches_str[0][j]
+        for i in range(1, len(str_v)+1 ):
+            for j in range(1, len(str_w)+1 ):
+                previous_i  =   matrix_matches_str[i-1][j]
+                previous_j  =   matrix_matches_str[i][j-1]
+                matrix_matches_str[i][j]    =   max(previous_i,previous_j,)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

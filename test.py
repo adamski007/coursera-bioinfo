@@ -26,15 +26,19 @@ genomeClass.build_Overlap_Graph(list_str)
 
 #genomeClass.build_overlap_grapth_from_file('output-overlap-bin-kmers-19.txt')
 
-genomeClass.read_data_and_Build_Graph('listDNA.txt',0,1)
-pprint.pprint(genomeClass.de_bruijn_grapth)
-print ''
+#genomeClass.read_data_and_Build_Graph('listDNA.txt',0,1)
+#pprint.pprint(genomeClass.de_bruijn_grapth)
+#print ''
 #eul_path = genomeClass.find_eulerian_path('CA')
 #pprint.pprint(eul_path)
 
-matrix_down = AdamskiClass.initialize_down_matrix_edges('matrix.txt',4,4)
-
+#matrix_down = AdamskiClass.initialize_down_matrix_edges('matrix.txt',4,4)
+matrix_down, matrix_right = AdamskiClass.initialize_matrix_edges('matrix.txt',11,10)
 print matrix_down
+print ''
+print matrix_right
+print matrix_right[2][3]
+print AdamskiClass.manathan_tourist(11,10,matrix_down,matrix_right)
 
 
 
@@ -62,8 +66,6 @@ print eul_path
 end_time   = datetime.datetime.now()
 print 'Search of the eulerian path took                     : ',end_time-start_time
 """
-#genomeClass.print_eulerian_path(eul_path,0)
-#print eul_path
 """
 start_time = datetime.datetime.now()
 genome = genomeClass.string_reconstruction(eul_path,0)
