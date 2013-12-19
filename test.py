@@ -12,65 +12,9 @@ nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
-"""
-CODE CHALLENGE: Solve the k-Universal Circular String Problem.
-Chapter 57.
-"""
-
-"""
-list_str = []
-start_time = datetime.datetime.now()
-list_str = genomeClass.generate_all_binary_string(5)
-genomeClass.build_Overlap_Graph(list_str)
-"""
-
-#genomeClass.build_overlap_grapth_from_file('output-overlap-bin-kmers-19.txt')
-
-#genomeClass.read_data_and_Build_Graph('listDNA.txt',0,1)
-#pprint.pprint(genomeClass.de_bruijn_grapth)
-#print ''
-#eul_path = genomeClass.find_eulerian_path('CA')
-#pprint.pprint(eul_path)
-
-#matrix_down = AdamskiClass.initialize_down_matrix_edges('matrix.txt',4,4)
 matrix_down, matrix_right = AdamskiClass.initialize_matrix_edges('matrix.txt',11,10)
 print matrix_down
 print ''
 print matrix_right
 print matrix_right[2][3]
 print AdamskiClass.manathan_tourist(11,10,matrix_down,matrix_right)
-
-
-
-"""
-start_time = datetime.datetime.now()
-print 'Current date is : ',datetime.datetime.now().isoformat()
-genomeClass.build_DeBruijn_Graph_from_listKmers(list_str,'output-overlap-bin-kmers-19.txt')
-end_time = datetime.datetime.now()
-print 'Construction of De Bruijn graph has been builded in  : ',end_time-start_time
-"""
-"""
-genomeClass.build_count_in_out_edge_all_nodes()
-list_nodes_unbalanced_in,list_nodes_unbalanced_out = genomeClass.check_unbalanced_nodes()
-print 'is the graph un-balanced, list_nodes_in : ',list_nodes_unbalanced_in
-print 'is the graph un-balanced, list_nodes_out: ',list_nodes_unbalanced_out
-new_edge = genomeClass.build_balanced_graph(list_nodes_unbalanced_in,list_nodes_unbalanced_out)
-
-print 'The new edge inserted and where we have to start from : ',new_edge
-"""
-"""
-start_time = datetime.datetime.now()
-eul_path = genomeClass.find_eulerian_path()
-print 'Here is the eulerian path : '
-print eul_path
-end_time   = datetime.datetime.now()
-print 'Search of the eulerian path took                     : ',end_time-start_time
-"""
-"""
-start_time = datetime.datetime.now()
-genome = genomeClass.string_reconstruction(eul_path,0)
-end_time   = datetime.datetime.now()
-print 'String reconstruciton from eulerian path took        : ',end_time-start_time
-print genome
-print 'Len of overlap graph : ',len(genomeClass.overlap_graph)
-"""
