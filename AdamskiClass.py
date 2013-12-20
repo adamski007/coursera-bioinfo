@@ -17,6 +17,7 @@ class AdamskiClass:
         self.de_bruijn_grapth = {}
         self.count_in_out_edges = {}
         self.edges_weigth_dag = {}
+        self.graph_dag = {}
 
     def buildAllMassValue(self):
         """
@@ -1789,7 +1790,6 @@ class AdamskiClass:
         0->2:4
         2->3:2
         """
-
         infile = open(namefile,'r')
         for line in infile:
             line = line.replace('\n', '')
@@ -1798,14 +1798,46 @@ class AdamskiClass:
             destination = list_token[1].split(':')
             node_dest = destination[0]
             weigth_to_dest = destination[1]
-            if self.edges_weigth_dag.get(node) == None:
+            if self.edges_weigth_dag.get(node_orig) == None:
                 # This is a new node -> creating it...
-                self.edges_weigth_dag[node] = [(node_dest,weigth_to_dest)]
+                self.edges_weigth_dag[node_orig] = [(node_dest,weigth_to_dest)]
             else:
                 # this node already exist, adding a new tuple to the list of destination.
                 list_dest = self.edges_weigth_dag[node_orig]
                 list_dest.append( (node_dest,weigth_to_dest))
                 self.edges_weigth_dag[node_orig] = list_dest
+
+
+    def build_dag_grath(self,start_node,sink_node):
+        """
+        Only used for the exercice Chapter 5 , slide 74.
+
+        We need to loop over all the key we inserted, and from that we build the graph.
+        Each node in the graph, got :
+        - the destination where he can go
+        - the node it came from
+        - his current weigth [ max weigth of the edge of all of his predecessor ]
+        """
+        # Clearing the graph just for safery.
+        self.graph_dag.clear()
+        list_dest_node = self.edges_weigth_dag[start_node]
+        weight_start_node = 0
+        max_weight = 0
+        orig_node = ''
+        for dest in list_dest_node:
+            dest_node = dest[0]
+            weight_node = dest[1]
+            if ( weight_node + weight_start_node ) > max_weight:
+                max_weight = weight_node + weight_start_node
+                orig_node = start_node
+
+
+        list_nodes = []
+        list_nodes = self.edges_weigth_dag.keys()
+        while len(list_nodes) != 0:
+            # We still have some nodes to processes.
+            return 1
+
 
 
 
