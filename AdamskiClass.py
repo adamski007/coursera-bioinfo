@@ -16,6 +16,7 @@ class AdamskiClass:
         self.overlap_graph = {}
         self.de_bruijn_grapth = {}
         self.count_in_out_edges = {}
+        self.edges_weigth_dag = {}
 
     def buildAllMassValue(self):
         """
@@ -1726,28 +1727,85 @@ class AdamskiClass:
     def lcs(str_v,str_w):
         """
         Implementation of algo defined in chapter 5, slide 74 from coursera.org
+        We use the range function, it create our list needed.
+        range(4) -> 0 1 2 3     -> we never touch an un-indexed character in the string.
 
         """
+
         # s in the algo.
         matrix_matches_str  =   numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
-        matrix_backtrack    =   numpy.zeros( ( len(str_v)  , len(str_w)   ) )
+        # 0 represent right arrow , 1 represent diag arrow , 2 represent down arrow
+        matrix_backtrack    =   numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
         for i in range( len(str_v)+1 ):
             matrix_matches_str[i][0]  = 0
         for j in range( len(str_w)+1 ):
-            matrix_matches_str[0][j]
+            matrix_matches_str[0][j] = 0
         for i in range(1, len(str_v)+1 ):
             for j in range(1, len(str_w)+1 ):
                 previous_i  =   matrix_matches_str[i-1][j]
                 previous_j  =   matrix_matches_str[i][j-1]
-                matrix_matches_str[i][j]    =   max(previous_i,previous_j,)
+                if str_v[i-1] == str_w[j-1]:
+                    previous_i_j_diag = matrix_matches_str[i-1][j-1] + 1
+                    matrix_matches_str[i][j]    =   max(previous_i,previous_j,previous_i_j_diag)
+                else:
+                    matrix_matches_str[i][j]    =   max(previous_i,previous_j)
+                if matrix_matches_str[i][j] == matrix_matches_str[i-1][j]:
+                    matrix_backtrack[i][j] = 2
+                elif matrix_matches_str[i][j] == matrix_matches_str[i][j-1]:
+                    matrix_backtrack[i][j] = 0
+                elif matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + 1 ):
+                    matrix_backtrack[i][j] = 1
+                else:
+                    print '++++++++++++++++++++++++++++++++++++'
+                    print ' WE SHOULD NEVER PRINT THIS LINE.'
+                    print '++++++++++++++++++++++++++++++++++++'
+        # Returning the last value created -> len(str) - 1
+        return matrix_matches_str[len(str_v)-1][len(str_w)-1],matrix_backtrack
+        #return matrix_matches_str,matrix_backtrack
 
 
+    @staticmethod
+    def output_lcs(matrix_backtrack,str_v,i,j):
+        """
+        As said in our previous function lcs, in backtrack matrix :
+        - 0 represent , right arrow
+        - 1 represent , diag arrow
+        - 2 represent , down arrow
+        """
+        if i == 0 or j == 0:
+            return
+        if matrix_backtrack[i][j] == 2:
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,i-1,j)
+        elif matrix_backtrack[i][j] == 0:
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,i,j-1)
+        else:
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,i-1,j-1)
+            print str_v[i],
 
+    def read_data_weigth_edges(self,namefile):
+        """
+        It will read the data in a specific file. The data in the file are :
+        0->1:7
+        0->2:4
+        2->3:2
+        """
 
-
-
-
-
+        infile = open(namefile,'r')
+        for line in infile:
+            line = line.replace('\n', '')
+            list_token = line.split('->')
+            node_orig = list_token[0]
+            destination = list_token[1].split(':')
+            node_dest = destination[0]
+            weigth_to_dest = destination[1]
+            if self.edges_weigth_dag.get(node) == None:
+                # This is a new node -> creating it...
+                self.edges_weigth_dag[node] = [(node_dest,weigth_to_dest)]
+            else:
+                # this node already exist, adding a new tuple to the list of destination.
+                list_dest = self.edges_weigth_dag[node_orig]
+                list_dest.append( (node_dest,weigth_to_dest))
+                self.edges_weigth_dag[node_orig] = list_dest
 
 
 

@@ -6,15 +6,24 @@ import pprint
 from AdamskiClass import AdamskiClass
 
 
+sys.setrecursionlimit(2000)
 infile = open(sys.argv[1],'r')
 #infile = open("data.txt",'r')
 nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
-matrix_down, matrix_right = AdamskiClass.initialize_matrix_edges('matrix.txt',11,10)
-print matrix_down
-print ''
-print matrix_right
-print matrix_right[2][3]
-print AdamskiClass.manathan_tourist(11,10,matrix_down,matrix_right)
+list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
+#print list_str[0]
+#print ''
+#print list_str[1]
+
+str_v = list_str[0]
+str_w = list_str[1]
+
+count,matrix_backtrack = AdamskiClass.lcs(str_v,str_w)
+#print count
+#print ''
+#print matrix_backtrack
+#print ''
+AdamskiClass.output_lcs(matrix_backtrack,str_v,len(str_v),len(str_w))
