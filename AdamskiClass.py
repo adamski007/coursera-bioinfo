@@ -1823,7 +1823,7 @@ class AdamskiClass:
             # Creating the dictionnary for the relation of predecessor nodes.
             self.test_and_insert_predecessor_node(node_dest,node_orig,weigth_to_dest)
 
-    def get_weight_nodes(self,node):
+    def get_weight_nodes(self,node,start_node):
         """
         Function name say it all.
         We will stop if we encounter the start_node, or if we goes through this node, and it is not the
@@ -1839,11 +1839,15 @@ class AdamskiClass:
             for tuple_predecessor in self.predecessor_nodes[node]:
                 node_name = tuple_predecessor[0]
                 weight_edge = tuple_predecessor[1]
-                node_value_prede = self.get_weight_nodes(node_name)
+                node_value_prede = self.get_weight_nodes(node_name,start_node)
                 weight_node = int(node_value_prede) + int(weight_edge)
                 if weight_node > max_node_weight:
                     max_node_weight = weight_node
                     path_max_node = node_name
+                if node_name == start_node:
+                    max_node_weight = weight_node
+                    path_max_node = node_name
+                    break
             self.weight_nodes[node] = (max_node_weight,path_max_node)
             self.node_used.append(path_max_node)
             print 'For node : ',node,' The max value is : ', max_node_weight ,'which goes throught node : ',path_max_node
