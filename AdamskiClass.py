@@ -17,7 +17,10 @@ class AdamskiClass:
         self.de_bruijn_grapth = {}
         self.count_in_out_edges = {}
         self.edges_weigth_dag = {}
+        self.predecessor_nodes = {}
+        self.weight_nodes = {}
         self.graph_dag = {}
+        self.node_used = []
 
     def buildAllMassValue(self):
         """
@@ -1783,6 +1786,16 @@ class AdamskiClass:
             AdamskiClass.output_lcs(matrix_backtrack,str_v,i-1,j-1)
             print str_v[i],
 
+    def test_and_insert_predecessor_node(self,node,predecessor,weight):
+        if self.predecessor_nodes.get(node) == None:
+            # This is a new node.
+            self.predecessor_nodes[node] = [(predecessor,weight)]
+        else:
+            # node already exist, inserting a nez value into the list.
+            cur_list = self.predecessor_nodes[node]
+            cur_list.append((predecessor,weight))
+            self.predecessor_nodes[node] = cur_list
+
     def read_data_weigth_edges(self,namefile):
         """
         It will read the data in a specific file. The data in the file are :
@@ -1790,6 +1803,7 @@ class AdamskiClass:
         0->2:4
         2->3:2
         """
+        self.predecessor_nodes.clear()
         infile = open(namefile,'r')
         for line in infile:
             line = line.replace('\n', '')
@@ -1806,7 +1820,42 @@ class AdamskiClass:
                 list_dest = self.edges_weigth_dag[node_orig]
                 list_dest.append( (node_dest,weigth_to_dest))
                 self.edges_weigth_dag[node_orig] = list_dest
+            # Creating the dictionnary for the relation of predecessor nodes.
+            self.test_and_insert_predecessor_node(node_dest,node_orig,weigth_to_dest)
 
+    def get_weight_nodes(self,node):
+        """
+        Function name say it all.
+        We will stop if we encounter the start_node, or if we goes through this node, and it is not the
+        biggest value, we will force to take it.
+        """
+        weight_node = 0
+        max_node_weight = 0
+        path_max_node = ''
+        if self.weight_nodes.get(node) == None:
+            # Still not yet a weight of node -> finding it recursively
+            #print 'Getting node : ',node
+            #print '     The predecessor are : ',self.predecessor_nodes[node]
+            for tuple_predecessor in self.predecessor_nodes[node]:
+                node_name = tuple_predecessor[0]
+                weight_edge = tuple_predecessor[1]
+                node_value_prede = self.get_weight_nodes(node_name)
+                weight_node = int(node_value_prede) + int(weight_edge)
+                if weight_node > max_node_weight:
+                    max_node_weight = weight_node
+                    path_max_node = node_name
+            self.weight_nodes[node] = (max_node_weight,path_max_node)
+            self.node_used.append(path_max_node)
+            print 'For node : ',node,' The max value is : ', max_node_weight ,'which goes throught node : ',path_max_node
+            return max_node_weight
+        else:
+            return self.weight_nodes[node][0]
+
+    def init_start_node(self):
+        for node in self.edges_weigth_dag.keys():
+            if self.predecessor_nodes.get(node) == None:
+                # We got a starting node in the graph, no predecessor -> weight node = 0
+                self.weight_nodes[node] = (0,None)
 
     def build_dag_grath(self,start_node,sink_node):
         """
