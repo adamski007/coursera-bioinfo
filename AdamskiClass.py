@@ -1764,8 +1764,8 @@ class AdamskiClass:
                     print ' WE SHOULD NEVER PRINT THIS LINE.'
                     print '++++++++++++++++++++++++++++++++++++'
         # Returning the last value created -> len(str) - 1
-        return matrix_matches_str[len(str_v)-1][len(str_w)-1],matrix_backtrack
-        #return matrix_matches_str,matrix_backtrack
+        #return matrix_matches_str[len(str_v)-1][len(str_w)-1],matrix_backtrack
+        return matrix_matches_str,matrix_backtrack
 
 
     @staticmethod
@@ -1779,12 +1779,18 @@ class AdamskiClass:
         if i == 0 or j == 0:
             return
         if matrix_backtrack[i][j] == 2:
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,i-1,j)
+            new_i = i - 1
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,new_i,j)
         elif matrix_backtrack[i][j] == 0:
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,i,j-1)
+            new_j = j - 1
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,i,new_j)
         else:
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,i-1,j-1)
-            print str_v[i],
+            new_i = i - 1
+            new_j = j - 1
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,new_i,new_j)
+            # Start printing from i-1 instead of i, because the string start
+            # at position 1, and the matrix start at position 0
+            print str_v[i-1],
 
     def test_and_insert_predecessor_node(self,node,predecessor,weight):
         if self.predecessor_nodes.get(node) == None:

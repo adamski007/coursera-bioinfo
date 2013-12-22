@@ -6,27 +6,24 @@ import pprint
 from AdamskiClass import AdamskiClass
 
 
+sys.setrecursionlimit(2000)
 infile = open(sys.argv[1],'r')
 #infile = open("data.txt",'r')
 nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
-genomeClass.read_data_weigth_edges('listDNA.txt')
-genomeClass.init_start_node()
-pprint.pprint(genomeClass.edges_weigth_dag)
-print 'Here is the predecessor structure : '
-pprint.pprint(genomeClass.predecessor_nodes)
-print '_'
-#print genomeClass.predecessor_nodes['1']
-#print genomeClass.edges_weigth_dag['0'][0][0]
-start_node = '4'
-sink_node = '43'
-#genomeClass.weight_nodes[start_node] = 0
-test_node = '21'
-#print 'Node : ',test_node, 'and his weight is : ', genomeClass.get_weight_nodes(test_node)
-print 'Node : ',sink_node, 'and his weight is :  ', genomeClass.get_weight_nodes(sink_node,start_node)
-print genomeClass.node_used
-print ''
-print 'all graph'
-pprint.pprint(genomeClass.weight_nodes)
+list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
+#print list_str[0]
+#print ''
+#print list_str[1]
+
+str_v = list_str[0]
+str_w = list_str[1]
+
+count,matrix_backtrack = AdamskiClass.lcs(str_v,str_w)
+#print count
+#print ''
+#print matrix_backtrack
+#print ''
+AdamskiClass.output_lcs(matrix_backtrack,str_v,len(str_v),len(str_w))
