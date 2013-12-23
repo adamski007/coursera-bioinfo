@@ -1729,22 +1729,24 @@ class AdamskiClass:
 
 
     @staticmethod
-    def lcs(str_v,str_w):
+    def lcs(str_v,str_w,score_matrix='',indel_penalty=0):
         """
         Implementation of algo defined in chapter 5, slide 74 from coursera.org
         We use the range function, it create our list needed.
         range(4) -> 0 1 2 3     -> we never touch an un-indexed character in the string.
-
+        score_matrix represent the value of any match/mis-match between two amino acid.
         """
 
         # s in the algo.
         matrix_matches_str  =   numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
         # 0 represent right arrow , 1 represent diag arrow , 2 represent down arrow
         matrix_backtrack    =   numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
-        for i in range( len(str_v)+1 ):
-            matrix_matches_str[i][0]  = 0
-        for j in range( len(str_w)+1 ):
-            matrix_matches_str[0][j] = 0
+        # We don't need to initialize the first row and column to zero, as it is done by numpy.zeros
+        if score_matrix != '' and indel_penalty != 0:
+            for i in range( 1,len(str_v)+1 ):
+                matrix_matches_str[i][0] = indel_penalty + matrix_matches_str[i-1][0]
+            for j in range( 1,len(str_w)+1 ):
+                matrix_matches_str[0][j] = indel_penalty + matrix_matches_str[0][j-1]
         for i in range(1, len(str_v)+1 ):
             for j in range(1, len(str_w)+1 ):
                 previous_i  =   matrix_matches_str[i-1][j]
