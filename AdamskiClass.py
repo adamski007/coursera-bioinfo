@@ -21,6 +21,7 @@ class AdamskiClass:
         self.weight_nodes = {}
         self.graph_dag = {}
         self.node_used = []
+        self.idx_matrix_amino_acid = {}
 
     def buildAllMassValue(self):
         """
@@ -1898,6 +1899,41 @@ class AdamskiClass:
             return 1
 
 
+    def build_scoring_matrix(self,namefile):
+        """
+        Chapter 5 , slide 74. We need a matrix to score each LCS.
+        The matrix is in a file
+        """
+        # Initializing a matrix with the score.
+        matrix_score = numpy.zeros( (20,20) )
+        infile = open(namefile, 'r')
+        listToken = []
+        # We will fill the matrix, row by row with this list.
+        value_to_insert = []
+        idx_amino_acid = 0
+        idx_column_matrix = 0
+        for line in infile:
+            line = line.replace('\n', '')
+            listToken = line.split()
+            # The first line should be the amino acid, we remove it.
+            # Each time, the first char is the amino acid.
+            amino_acid = listToken[0]
+            self.idx_matrix_amino_acid[amino_acid] = idx_amino_acid
+            # Because they may be more than 1 space between values, we use the simple split(), which handle that.
+
+            matrix_score[idx_amino_acid] = listToken[1:]
+            # Parsing the rest of the line, and getting the scoring against two amino acid
+            """
+            for score in all_values:
+                print score,'-next-'
+                matrix_score[idx_amino_acid] = all_values
+                idx_column_matrix+=1
+            """
+            # Resetting the idx for column, for the next line.
+            idx_column_matrix = 0
+            # Incrementing the row index for the matrix.
+            idx_amino_acid+=1
+        return matrix_score
 
 
 
