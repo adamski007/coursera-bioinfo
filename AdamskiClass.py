@@ -1726,10 +1726,7 @@ class AdamskiClass:
         return matrix_weigth[n][m]
 
 
-
-
-    @staticmethod
-    def lcs(str_v,str_w,score_matrix='',indel_penalty=0):
+    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0):
         """
         Implementation of algo defined in chapter 5, slide 74 from coursera.org
         We use the range function, it create our list needed.
@@ -1738,34 +1735,62 @@ class AdamskiClass:
         """
 
         # s in the algo.
-        matrix_matches_str  =   numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
+        matrix_matches_str = numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
         # 0 represent right arrow , 1 represent diag arrow , 2 represent down arrow
         matrix_backtrack    =   numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
+        if score_matrix == '':
+            # initializing the matrix with zero, to get the scoring right, as we did modity the code with matrix.
+            score_matrix = numpy.zeros( ( 20, 20 ) )
         # We don't need to initialize the first row and column to zero, as it is done by numpy.zeros
         if score_matrix != '' and indel_penalty != 0:
             for i in range( 1,len(str_v)+1 ):
-                matrix_matches_str[i][0] = indel_penalty + matrix_matches_str[i-1][0]
+                matrix_matches_str[i][0] = matrix_matches_str[i-1][0] - indel_penalty
             for j in range( 1,len(str_w)+1 ):
-                matrix_matches_str[0][j] = indel_penalty + matrix_matches_str[0][j-1]
+                matrix_matches_str[0][j] = matrix_matches_str[0][j-1] - indel_penalty
         for i in range(1, len(str_v)+1 ):
             for j in range(1, len(str_w)+1 ):
-                previous_i  =   matrix_matches_str[i-1][j]
-                previous_j  =   matrix_matches_str[i][j-1]
+                # Init these two var here, to be available somewhere below...
+                score_match = 0
+                score_missmatch = 0
+                previous_i = matrix_matches_str[i-1][j] - indel_penalty
+                previous_j = matrix_matches_str[i][j-1] - indel_penalty
+                # match between two amino acid in the string v and w.
                 if str_v[i-1] == str_w[j-1]:
-                    previous_i_j_diag = matrix_matches_str[i-1][j-1] + 1
+                    # Getting the idx in the matrix with the amino acid.
+                    idx_matrix = self.idx_matrix_amino_acid[str_v[i-1]]
+                    # Getting the score of this match in the matrix.
+                    score_match = score_matrix[idx_matrix][idx_matrix]
+                    previous_i_j_diag = matrix_matches_str[i-1][j-1] + score_match
+                    matrix_matches_str[i][j] = max(previous_i,previous_j,previous_i_j_diag)
+                else:
+                    # Getting the idx in the matrix with the amino acid.
+                    idx_matrix_v = self.idx_matrix_amino_acid[str_v[i-1]]
+                    idx_matrix_w = self.idx_matrix_amino_acid[str_w[j-1]]
+                    # Getting the score of this match in the matrix.
+                    score_missmatch = score_matrix[idx_matrix_v][idx_matrix_w]
+                    previous_i_j_diag = matrix_matches_str[i-1][j-1] + score_missmatch
                     matrix_matches_str[i][j]    =   max(previous_i,previous_j,previous_i_j_diag)
+                if indel_penalty == 0:
+                    if matrix_matches_str[i][j] == matrix_matches_str[i-1][j]:
+                        matrix_backtrack[i][j] = 2
+                    elif matrix_matches_str[i][j] == matrix_matches_str[i][j-1]:
+                        matrix_backtrack[i][j] = 0
+                    elif matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + 1 ):
+                        matrix_backtrack[i][j] = 1
+                    else:
+                        print '++++++++++++++++++++++++++++++++++++'
+                        print ' WE SHOULD NEVER PRINT THIS LINE.'
+                        print '++++++++++++++++++++++++++++++++++++'
                 else:
-                    matrix_matches_str[i][j]    =   max(previous_i,previous_j)
-                if matrix_matches_str[i][j] == matrix_matches_str[i-1][j]:
-                    matrix_backtrack[i][j] = 2
-                elif matrix_matches_str[i][j] == matrix_matches_str[i][j-1]:
-                    matrix_backtrack[i][j] = 0
-                elif matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + 1 ):
-                    matrix_backtrack[i][j] = 1
-                else:
-                    print '++++++++++++++++++++++++++++++++++++'
-                    print ' WE SHOULD NEVER PRINT THIS LINE.'
-                    print '++++++++++++++++++++++++++++++++++++'
+                    # Using the code with initialized matrix and indel_penalty set.
+                    if matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + score_match ) or matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + score_missmatch ):
+                        # We should print the char, even if it does not match, it is a better score than right arrow or down arrow.
+                        matrix_backtrack[i][j] = 1
+                    elif matrix_matches_str[i][j] == matrix_matches_str[i-1][j] - indel_penalty:
+                        # Best score is to get down
+                        matrix_backtrack[i][j] = 2
+                    elif matrix_matches_str[i][j] == matrix_matches_str[i][j-1] - indel_penalty:
+                        matrix_backtrack[i][j] = 0
         # Returning the last value created -> len(str) - 1
         #return matrix_matches_str[len(str_v)-1][len(str_w)-1],matrix_backtrack
         return matrix_matches_str,matrix_backtrack
