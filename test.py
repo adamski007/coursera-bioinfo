@@ -20,6 +20,10 @@ list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
 
 str_v = list_str[0]
 str_w = list_str[1]
+print ''
+print len(str_v)
+print len(str_w)
+print ''
 
 matrix_score_lcs = genomeClass.build_scoring_matrix('score_matrix.txt')
 indel_penalty = 5
