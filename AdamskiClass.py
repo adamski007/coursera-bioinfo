@@ -1780,15 +1780,11 @@ class AdamskiClass:
         if i == 0 or j == 0:
             return
         if matrix_backtrack[i][j] == 2:
-            new_i = i - 1
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,new_i,j)
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,i - 1,j)
         elif matrix_backtrack[i][j] == 0:
-            new_j = j - 1
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,i,new_j)
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,i,j-1)
         else:
-            new_i = i - 1
-            new_j = j - 1
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,new_i,new_j)
+            AdamskiClass.output_lcs(matrix_backtrack,str_v,i-1,j-1)
             # Start printing from i-1 instead of i, because the string start
             # at position 1, and the matrix start at position 0
             print str_v[i-1],
