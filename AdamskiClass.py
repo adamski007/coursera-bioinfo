@@ -1796,8 +1796,7 @@ class AdamskiClass:
         return matrix_matches_str,matrix_backtrack
 
 
-    @staticmethod
-    def output_lcs(matrix_backtrack,str_v,i,j):
+    def output_lcs(self,matrix_backtrack,str_v,i,j,global_alignement=0):
         """
         As said in our previous function lcs, in backtrack matrix :
         - 0 represent , right arrow
@@ -1805,16 +1804,21 @@ class AdamskiClass:
         - 2 represent , down arrow
         """
         if i == 0 or j == 0:
+            print '-',
             return
         if matrix_backtrack[i][j] == 2:
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,i - 1,j)
+            self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement)
+            print '-',
         elif matrix_backtrack[i][j] == 0:
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,i,j-1)
+            self.output_lcs(matrix_backtrack,str_v,i,j-1,global_alignement)
         else:
-            AdamskiClass.output_lcs(matrix_backtrack,str_v,i-1,j-1)
+            self.output_lcs(matrix_backtrack,str_v,i-1,j-1,global_alignement)
             # Start printing from i-1 instead of i, because the string start
             # at position 1, and the matrix start at position 0
-            print str_v[i-1],
+            if global_alignement == 1:
+                print str_v[j-1],
+            else:
+                print str_v[i-1],
 
     def test_and_insert_predecessor_node(self,node,predecessor,weight):
         if self.predecessor_nodes.get(node) == None:
