@@ -1742,6 +1742,10 @@ class AdamskiClass:
             # initializing the matrix with zero, to get the scoring right, as we did modity the code with matrix.
             score_matrix = numpy.zeros( ( 20, 20 ) )
         # We don't need to initialize the first row and column to zero, as it is done by numpy.zeros
+        if score_matrix != '':
+            # We need to init first column [ except first elem ] to 2 , down arrow
+            for i in range(1,len(str_v)+1):
+                matrix_backtrack[i][0] = 2
         if score_matrix != '' and indel_penalty != 0:
             for i in range( 1,len(str_v)+1 ):
                 matrix_matches_str[i][0] = matrix_matches_str[i-1][0] - indel_penalty
@@ -1783,14 +1787,15 @@ class AdamskiClass:
                         print '++++++++++++++++++++++++++++++++++++'
                 else:
                     # Using the code with initialized matrix and indel_penalty set.
-                    if matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + score_match ) or matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + score_missmatch ):
-                        # We should print the char, even if it does not match, it is a better score than right arrow or down arrow.
-                        matrix_backtrack[i][j] = 1
-                    elif matrix_matches_str[i][j] == matrix_matches_str[i-1][j] - indel_penalty:
+                    if matrix_matches_str[i][j] == matrix_matches_str[i-1][j] - indel_penalty:
                         # Best score is to get down
                         matrix_backtrack[i][j] = 2
                     elif matrix_matches_str[i][j] == matrix_matches_str[i][j-1] - indel_penalty:
                         matrix_backtrack[i][j] = 0
+                    elif matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + score_match ) or matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + score_missmatch ):
+                        # We should print the char, even if it does not match, it is a better score than right arrow
+                        # or down arrow.
+                        matrix_backtrack[i][j] = 1
         # Returning the last value created -> len(str) - 1
         #return matrix_matches_str[len(str_v)-1][len(str_w)-1],matrix_backtrack
         return matrix_matches_str,matrix_backtrack
@@ -1803,8 +1808,7 @@ class AdamskiClass:
         - 1 represent , diag arrow
         - 2 represent , down arrow
         """
-        if i == 0 or j == 0:
-            print '-',
+        if i == 0 and j == 0:
             return
         if matrix_backtrack[i][j] == 2:
             self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement)
