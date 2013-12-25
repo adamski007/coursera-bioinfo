@@ -1812,9 +1812,12 @@ class AdamskiClass:
             return
         if matrix_backtrack[i][j] == 2:
             self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement)
-            print '-',
+            if global_alignement == 1:
+                print '-',
         elif matrix_backtrack[i][j] == 0:
             self.output_lcs(matrix_backtrack,str_v,i,j-1,global_alignement)
+            if global_alignement != 1:
+                print '-',
         else:
             self.output_lcs(matrix_backtrack,str_v,i-1,j-1,global_alignement)
             # Start printing from i-1 instead of i, because the string start
