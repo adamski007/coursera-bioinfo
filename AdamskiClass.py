@@ -1801,31 +1801,43 @@ class AdamskiClass:
         return matrix_matches_str,matrix_backtrack
 
 
-    def output_lcs(self,matrix_backtrack,str_v,i,j,global_alignement=0):
+    def output_lcs(self,matrix_backtrack,str_v,i,j,global_alignement=False,first_str=True):
         """
         As said in our previous function lcs, in backtrack matrix :
         - 0 represent , right arrow
         - 1 represent , diag arrow
         - 2 represent , down arrow
+
+        PS : As normally, we do the alignement against two string, the argument first_str means that we need to print
+                this alignement against the first str, otherwise the second.
         """
         if i == 0 and j == 0:
             return
         if matrix_backtrack[i][j] == 2:
-            self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement)
-            if global_alignement == 1:
-                print '-',
+            self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement,first_str)
+            if global_alignement == True:
+                if first_str == True:
+                    print str_v[i-1],
+                else:
+                    print '-',
         elif matrix_backtrack[i][j] == 0:
-            self.output_lcs(matrix_backtrack,str_v,i,j-1,global_alignement)
-            if global_alignement != 1:
-                print '-',
+            self.output_lcs(matrix_backtrack,str_v,i,j-1,global_alignement,first_str)
+            if global_alignement == True:
+                if first_str == True:
+                    print '-',
+                else:
+                    print str_v[j-1],
         else:
-            self.output_lcs(matrix_backtrack,str_v,i-1,j-1,global_alignement)
+            self.output_lcs(matrix_backtrack,str_v,i-1,j-1,global_alignement,first_str)
             # Start printing from i-1 instead of i, because the string start
             # at position 1, and the matrix start at position 0
-            if global_alignement == 1:
-                print str_v[j-1],
+            if global_alignement == True:
+                if first_str == True:
+                    print str_v[i-1],
+                else:
+                    print str_v[j-1],
             else:
-                print str_v[i-1],
+                print str_v[j-1],
 
     def test_and_insert_predecessor_node(self,node,predecessor,weight):
         if self.predecessor_nodes.get(node) == None:
