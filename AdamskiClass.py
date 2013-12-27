@@ -1967,7 +1967,6 @@ class AdamskiClass:
             # We still have some nodes to processes.
             return 1
 
-
     def build_scoring_matrix(self,namefile):
         """
         Chapter 5 , slide 74. We need a matrix to score each LCS.
@@ -2004,8 +2003,7 @@ class AdamskiClass:
             idx_amino_acid+=1
         return matrix_score
 
-
-    def backtrack_local_alignement(self,matrix_score,idx_i,idx_j,str_v,str_w,indel_penalty,matrix_score_matches):
+    def backtrack_local_alignement(self,matrix_score,idx_i,idx_j,str_v,str_w,indel_penalty,matrix_score_matches,first_str=True):
         """
         In matrix_score, there will be all the score build with the function lcs.
         And in a classe variable [ max_value_matrix_score ] , will contains the idx i and j
@@ -2025,19 +2023,24 @@ class AdamskiClass:
             score = matrix_score_matches[idx_matrix_v][idx_matrix_w]
             previous_i_j_diag = matrix_score[idx_i-1][idx_j-1] + score
             if matrix_score[idx_i][idx_j] == matrix_score[idx_i-1][idx_j] - indel_penalty:
-                self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j,str_v,str_w,indel_penalty,matrix_score_matches)
-                # print something probably.
-                print str_v[idx_i-1],
-            elif matrix_score[idx_i][idx_j] == matrix_score[idx_i][idx_j-1] - indel_penalty:
-                self.backtrack_local_alignement(matrix_score,idx_i,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches)
-                print '-',
-                # print something probably.
-            elif matrix_score[idx_i][idx_j] == previous_i_j_diag:
-                self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches)
-                if str_v[idx_i-1] == str_w[idx_j-1]:
-                    # This is a match, we can print whatever character of both string.
+                self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j,str_v,str_w,indel_penalty,matrix_score_matches,first_str)
+                if first_str == True:
                     print str_v[idx_i-1],
                 else:
-                    # We print a character, but it depends on which str v or w we try to get the local alignment.
-                    # TO DO
+                    print '-',
+            elif matrix_score[idx_i][idx_j] == matrix_score[idx_i][idx_j-1] - indel_penalty:
+                self.backtrack_local_alignement(matrix_score,idx_i,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches,first_str)
+                if first_str == True:
+                    print '-',
+                else:
+                    print str_w[idx_j-1],
+            elif matrix_score[idx_i][idx_j] == previous_i_j_diag:
+                self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches,first_str)
+                if str_v[idx_i-1] == str_w[idx_j-1]:
+                    # This is a match, we can print whatever character of both string, str_v or str_w
                     print str_v[idx_i-1],
+                else:
+                    if first_str == True:
+                        print str_v[idx_i-1],
+                    else:
+                        print str_w[idx_j-1],
