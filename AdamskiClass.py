@@ -22,6 +22,8 @@ class AdamskiClass:
         self.graph_dag = {}
         self.node_used = []
         self.idx_matrix_amino_acid = {}
+        # In the matrix, at [0,0] , this is always a minimal score.
+        self.max_value_matrix_score = (0,0)
 
     def buildAllMassValue(self):
         """
@@ -1726,14 +1728,14 @@ class AdamskiClass:
         return matrix_weigth[n][m]
 
 
-    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0):
+    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0,local_alignment=False):
         """
         Implementation of algo defined in chapter 5, slide 74 from coursera.org
         We use the range function, it create our list needed.
         range(4) -> 0 1 2 3     -> we never touch an un-indexed character in the string.
         score_matrix represent the value of any match/mis-match between two amino acid.
         """
-
+        max_score_matrix = 0
         # s in the algo.
         matrix_matches_str = numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
         # 0 represent right arrow , 1 represent diag arrow , 2 represent down arrow
@@ -1746,7 +1748,8 @@ class AdamskiClass:
             # We need to init first column [ except first elem ] to 2 , down arrow
             for i in range(1,len(str_v)+1):
                 matrix_backtrack[i][0] = 2
-        if score_matrix != '' and indel_penalty != 0:
+        # Only needed to put penalty on first row and column if it is a global alignment.
+        if score_matrix != '' and indel_penalty != 0 and local_alignment == False:
             for i in range( 1,len(str_v)+1 ):
                 matrix_matches_str[i][0] = matrix_matches_str[i-1][0] - indel_penalty
             for j in range( 1,len(str_w)+1 ):
@@ -1765,7 +1768,16 @@ class AdamskiClass:
                     # Getting the score of this match in the matrix.
                     score_match = score_matrix[idx_matrix][idx_matrix]
                     previous_i_j_diag = matrix_matches_str[i-1][j-1] + score_match
-                    matrix_matches_str[i][j] = max(previous_i,previous_j,previous_i_j_diag)
+                    if local_alignment == True:
+                        matrix_matches_str[i][j] = max(0,previous_i,previous_j,previous_i_j_diag)
+                        # We need to store where is the max value in the matrix.
+                        idx_i = self.max_value_matrix_score[0]
+                        idx_j = self.max_value_matrix_score[1]
+                        max_score_matrix = matrix_matches_str[idx_i][idx_j]
+                        if matrix_matches_str[i][j] >= max_score_matrix:
+                            self.max_value_matrix_score = (i,j)
+                    else:
+                        matrix_matches_str[i][j] = max(previous_i,previous_j,previous_i_j_diag)
                 else:
                     # Getting the idx in the matrix with the amino acid.
                     idx_matrix_v = self.idx_matrix_amino_acid[str_v[i-1]]
@@ -1773,7 +1785,16 @@ class AdamskiClass:
                     # Getting the score of this match in the matrix.
                     score_missmatch = score_matrix[idx_matrix_v][idx_matrix_w]
                     previous_i_j_diag = matrix_matches_str[i-1][j-1] + score_missmatch
-                    matrix_matches_str[i][j]    =   max(previous_i,previous_j,previous_i_j_diag)
+                    if local_alignment == True:
+                        matrix_matches_str[i][j]    =   max(0,previous_i,previous_j,previous_i_j_diag)
+                        # We need to store where is the max value in the matrix.
+                        idx_i = self.max_value_matrix_score[0]
+                        idx_j = self.max_value_matrix_score[1]
+                        max_score_matrix = matrix_matches_str[idx_i][idx_j]
+                        if matrix_matches_str[i][j] >= max_score_matrix:
+                            self.max_value_matrix_score = (i,j)
+                    else:
+                        matrix_matches_str[i][j]    =   max(previous_i,previous_j,previous_i_j_diag)
                 if indel_penalty == 0:
                     if matrix_matches_str[i][j] == matrix_matches_str[i-1][j]:
                         matrix_backtrack[i][j] = 2
@@ -1781,10 +1802,6 @@ class AdamskiClass:
                         matrix_backtrack[i][j] = 0
                     elif matrix_matches_str[i][j] == ( matrix_matches_str[i-1][j-1] + 1 ):
                         matrix_backtrack[i][j] = 1
-                    else:
-                        print '++++++++++++++++++++++++++++++++++++'
-                        print ' WE SHOULD NEVER PRINT THIS LINE.'
-                        print '++++++++++++++++++++++++++++++++++++'
                 else:
                     # Using the code with initialized matrix and indel_penalty set.
                     if matrix_matches_str[i][j] == matrix_matches_str[i-1][j] - indel_penalty:
@@ -1796,6 +1813,9 @@ class AdamskiClass:
                         # We should print the char, even if it does not match, it is a better score than right arrow
                         # or down arrow.
                         matrix_backtrack[i][j] = 1
+                    elif matrix_matches_str[i][j] == 0:
+                        # The best predecessor is the source node.
+                        matrix_backtrack[i][j] = 3
         # Returning the last value created -> len(str) - 1
         #return matrix_matches_str[len(str_v)-1][len(str_w)-1],matrix_backtrack
         return matrix_matches_str,matrix_backtrack
@@ -1803,6 +1823,9 @@ class AdamskiClass:
 
     def output_lcs(self,matrix_backtrack,str_v,i,j,global_alignement=False,first_str=True):
         """
+        PS : We should check if the function still works properly for a normal alignement.
+                Because this one work now for global alignement.
+
         As said in our previous function lcs, in backtrack matrix :
         - 0 represent , right arrow
         - 1 represent , diag arrow
@@ -1982,40 +2005,39 @@ class AdamskiClass:
         return matrix_score
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def backtrack_local_alignement(self,matrix_score,idx_i,idx_j,str_v,str_w,indel_penalty,matrix_score_matches):
+        """
+        In matrix_score, there will be all the score build with the function lcs.
+        And in a classe variable [ max_value_matrix_score ] , will contains the idx i and j
+        of the max value of the matrix. This is needed, because from there, we will begin
+        printing the local alignment as asked in coursera.org
+        We just have to pay attention, on the way we put the score in the matrix build in function lcs.
+        If it start from righ , diag , down, or any other order.
+        """
+        if matrix_score[idx_i][idx_j] == 0:
+            return
+        else:
+            # We first need to get the score of match/missmatch of two character in the string v and w, to known
+            # where we did go
+            idx_matrix_v = self.idx_matrix_amino_acid[str_v[idx_i-1]]
+            idx_matrix_w = self.idx_matrix_amino_acid[str_w[idx_j-1]]
+            # Getting the score of this match in the matrix.
+            score = matrix_score_matches[idx_matrix_v][idx_matrix_w]
+            previous_i_j_diag = matrix_score[idx_i-1][idx_j-1] + score
+            if matrix_score[idx_i][idx_j] == matrix_score[idx_i-1][idx_j] - indel_penalty:
+                self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j,str_v,str_w,indel_penalty,matrix_score_matches)
+                # print something probably.
+                print str_v[idx_i-1],
+            elif matrix_score[idx_i][idx_j] == matrix_score[idx_i][idx_j-1] - indel_penalty:
+                self.backtrack_local_alignement(matrix_score,idx_i,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches)
+                print '-',
+                # print something probably.
+            elif matrix_score[idx_i][idx_j] == previous_i_j_diag:
+                self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches)
+                if str_v[idx_i-1] == str_w[idx_j-1]:
+                    # This is a match, we can print whatever character of both string.
+                    print str_v[idx_i-1],
+                else:
+                    # We print a character, but it depends on which str v or w we try to get the local alignment.
+                    # TO DO
+                    print str_v[idx_i-1],
