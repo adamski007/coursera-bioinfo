@@ -1749,6 +1749,12 @@ class AdamskiClass:
         We use the range function, it create our list needed.
         range(4) -> 0 1 2 3     -> we never touch an un-indexed character in the string.
         score_matrix represent the value of any match/mis-match between two amino acid.
+
+        Edit distance Levenshtein, it is the same as global alignement but :
+        - mismatch count for 1
+        - match count for 0
+        - insertion/deletion count for 1
+        and the goal is to found the minimum at the end.
         """
         max_score_matrix = 0
         # s in the algo.
