@@ -17,10 +17,12 @@ list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
 str_v = list_str[0]
 str_w = list_str[1]
 
-matrix_score_lcs = genomeClass.build_scoring_matrix('score_matrix_edit_dist.txt')
-indel_penalty = int(-1)
+matrix_score_lcs = genomeClass.build_scoring_matrix('score_matrix_fit_align.txt')
+indel_penalty = int(1)
 
-edit_distance = True
+edit_distance = False
 local_alignment = False
-count,matrix_backtrack = genomeClass.lcs(str_v,str_w,matrix_score_lcs,indel_penalty,local_alignment,edit_distance)
+fitting_alignment = True
+count,matrix_backtrack = genomeClass.lcs(str_v,str_w,matrix_score_lcs,indel_penalty,local_alignment,edit_distance,fitting_alignment)
+print count
 print int(count[len(str_v),len(str_w)])

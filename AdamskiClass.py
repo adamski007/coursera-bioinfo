@@ -1743,7 +1743,7 @@ class AdamskiClass:
 
 
 
-    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0,local_alignment=False,edit_distance=False):
+    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0,local_alignment=False,edit_distance=False,fitting_alignment=False):
         """
         Implementation of algo defined in chapter 5, slide 74 from coursera.org
         We use the range function, it create our list needed.
@@ -1775,6 +1775,10 @@ class AdamskiClass:
                 matrix_matches_str[i][0] = matrix_matches_str[i-1][0] - indel_penalty
             for j in range( 1,len(str_w)+1 ):
                 matrix_matches_str[0][j] = matrix_matches_str[0][j-1] - indel_penalty
+        if fitting_alignment == True:
+            # We need to re-set the first column to zero.
+            for i in range( 1,len(str_v)+1 ):
+                matrix_matches_str[i][0] = 0
         for i in range(1, len(str_v)+1 ):
             for j in range(1, len(str_w)+1 ):
                 # Init these two var here, to be available somewhere below...
@@ -1854,7 +1858,7 @@ class AdamskiClass:
         return matrix_matches_str,matrix_backtrack
 
 
-    def output_lcs(self,matrix_backtrack,str_v,i,j,global_alignement=False,first_str=True):
+    def output_lcs(self,matrix_backtrack,str_v,i,j,global_alignement=False,first_str=True,fitting_alignment=False):
         """
         PS : We should check if the function still works properly for a normal alignement.
                 Because this one work now for global alignement.
@@ -1867,24 +1871,29 @@ class AdamskiClass:
         PS : As normally, we do the alignement against two string, the argument first_str means that we need to print
                 this alignement against the first str, otherwise the second.
         """
-        if i == 0 and j == 0:
-            return
+        if fitting_alignment == False:
+            if i == 0 and j == 0:
+                return
+        else:
+            # Depending which string is the shorted, we will stop when we encounter i=0 or j=0.
+            if i == 0 or j == 0:
+                return
         if matrix_backtrack[i][j] == 2:
-            self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement,first_str)
+            self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement,first_str,fitting_alignment)
             if global_alignement == True:
                 if first_str == True:
                     print str_v[i-1],
                 else:
                     print '-',
         elif matrix_backtrack[i][j] == 0:
-            self.output_lcs(matrix_backtrack,str_v,i,j-1,global_alignement,first_str)
+            self.output_lcs(matrix_backtrack,str_v,i,j-1,global_alignement,first_str,fitting_alignment)
             if global_alignement == True:
                 if first_str == True:
                     print '-',
                 else:
                     print str_v[j-1],
         else:
-            self.output_lcs(matrix_backtrack,str_v,i-1,j-1,global_alignement,first_str)
+            self.output_lcs(matrix_backtrack,str_v,i-1,j-1,global_alignement,first_str,fitting_alignment)
             # Start printing from i-1 instead of i, because the string start
             # at position 1, and the matrix start at position 0
             if global_alignement == True:
