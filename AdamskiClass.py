@@ -1727,8 +1727,23 @@ class AdamskiClass:
         print matrix_weigth
         return matrix_weigth[n][m]
 
+    def score_edit_distance(self,str_v,str_w,indel_penalty=0):
+        """
+        Compute a scoring matrix needed for the edit distance.
+        We need to get the minimum score [ edit distance ], between two string.
+        The score is the minimum number of delete/insert/substition ine one string in order to get
+        the other string.
+        """
+        scoring_matrix_edit_dist = numpy.zeros( ( len(str_v)+1, len(str_w)+1 ) )
+        # We need to init the insert/delete score to 1 -> first column/row
+        for i in range( 1,len(str_v)+1 ):
+                scoring_matrix_edit_dist[i][0] = scoring_matrix_edit_dist[i-1][0] + indel_penalty
+        for j in range( 1,len(str_w)+1 ):
+                scoring_matrix_edit_dist[0][j] = scoring_matrix_edit_dist[0][j-1] + indel_penalty
 
-    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0,local_alignment=False):
+
+
+    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0,local_alignment=False,edit_distance=False):
         """
         Implementation of algo defined in chapter 5, slide 74 from coursera.org
         We use the range function, it create our list needed.
@@ -1769,7 +1784,10 @@ class AdamskiClass:
                     score_match = score_matrix[idx_matrix][idx_matrix]
                     previous_i_j_diag = matrix_matches_str[i-1][j-1] + score_match
                     if local_alignment == True:
-                        matrix_matches_str[i][j] = max(0,previous_i,previous_j,previous_i_j_diag)
+                        if edit_distance == False:
+                            matrix_matches_str[i][j] = max(0,previous_i,previous_j,previous_i_j_diag)
+                        else:
+                            matrix_matches_str[i][j] = min(previous_i,previous_j,previous_i_j_diag)
                         # We need to store where is the max value in the matrix.
                         idx_i = self.max_value_matrix_score[0]
                         idx_j = self.max_value_matrix_score[1]
@@ -1777,7 +1795,10 @@ class AdamskiClass:
                         if matrix_matches_str[i][j] >= max_score_matrix:
                             self.max_value_matrix_score = (i,j)
                     else:
-                        matrix_matches_str[i][j] = max(previous_i,previous_j,previous_i_j_diag)
+                        if edit_distance == False:
+                            matrix_matches_str[i][j] = max(previous_i,previous_j,previous_i_j_diag)
+                        else:
+                            matrix_matches_str[i][j] = min(previous_i,previous_j,previous_i_j_diag)
                 else:
                     # Getting the idx in the matrix with the amino acid.
                     idx_matrix_v = self.idx_matrix_amino_acid[str_v[i-1]]
@@ -1786,7 +1807,10 @@ class AdamskiClass:
                     score_missmatch = score_matrix[idx_matrix_v][idx_matrix_w]
                     previous_i_j_diag = matrix_matches_str[i-1][j-1] + score_missmatch
                     if local_alignment == True:
-                        matrix_matches_str[i][j]    =   max(0,previous_i,previous_j,previous_i_j_diag)
+                        if edit_distance == False:
+                            matrix_matches_str[i][j]    =   max(0,previous_i,previous_j,previous_i_j_diag)
+                        else:
+                            matrix_matches_str[i][j] = min(previous_i,previous_j,previous_i_j_diag)
                         # We need to store where is the max value in the matrix.
                         idx_i = self.max_value_matrix_score[0]
                         idx_j = self.max_value_matrix_score[1]
@@ -1794,7 +1818,10 @@ class AdamskiClass:
                         if matrix_matches_str[i][j] >= max_score_matrix:
                             self.max_value_matrix_score = (i,j)
                     else:
-                        matrix_matches_str[i][j]    =   max(previous_i,previous_j,previous_i_j_diag)
+                        if edit_distance == False:
+                            matrix_matches_str[i][j]    =   max(previous_i,previous_j,previous_i_j_diag)
+                        else:
+                            matrix_matches_str[i][j] = min(previous_i,previous_j,previous_i_j_diag)
                 if indel_penalty == 0:
                     if matrix_matches_str[i][j] == matrix_matches_str[i-1][j]:
                         matrix_backtrack[i][j] = 2
