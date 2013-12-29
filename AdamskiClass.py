@@ -2086,3 +2086,16 @@ class AdamskiClass:
                         print str_v[idx_i-1],
                     else:
                         print str_w[idx_j-1],
+
+    @staticmethod
+    def get_idx_max_value_last_column_matrix(matrix):
+        """
+        This method is only for execice fitting alignement.
+        To print the string, we need to get the max value from the last column of the matrix.
+        And then from there, do the global alignment.
+        """
+        # Getting the row idx from each column of the matrix, where there is the max value.
+        list_row_idx = matrix.argmax(axis=0)
+        # As the matrix should be a 2 dimensions. 1 should reference the number of column in matrix
+        num_column = matrix.shape[1]
+        return (list_row_idx[num_column-1],num_column-1)

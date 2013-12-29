@@ -24,5 +24,14 @@ edit_distance = False
 local_alignment = False
 fitting_alignment = True
 count,matrix_backtrack = genomeClass.lcs(str_v,str_w,matrix_score_lcs,indel_penalty,local_alignment,edit_distance,fitting_alignment)
-print count
-print int(count[len(str_v),len(str_w)])
+idx_i , idx_j = AdamskiClass.get_idx_max_value_last_column_matrix(count)
+print int(count[idx_i,idx_j])
+
+
+global_alignement = True
+first_str = True
+fitting_alignment = True
+genomeClass.output_lcs(matrix_backtrack,str_v,idx_i,idx_j,global_alignement,first_str,fitting_alignment)
+print ''
+first_str = False
+genomeClass.output_lcs(matrix_backtrack,str_w,idx_i,idx_j,global_alignement,first_str,fitting_alignment)
