@@ -1743,7 +1743,7 @@ class AdamskiClass:
 
 
 
-    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0,local_alignment=False,edit_distance=False,fitting_alignment=False):
+    def lcs(self,str_v,str_w,score_matrix='',indel_penalty=0,local_alignment=False,edit_distance=False,fitting_alignment=False,overlap_alignement=False):
         """
         Implementation of algo defined in chapter 5, slide 74 from coursera.org
         We use the range function, it create our list needed.
@@ -1778,6 +1778,12 @@ class AdamskiClass:
         if fitting_alignment == True:
             # We need to re-set the first column to zero.
             for i in range( 1,len(str_v)+1 ):
+                matrix_matches_str[i][0] = 0
+        if overlap_alignement == True:
+            # We need to re-set the first row and column to zero.
+             for j in range( 1,len(str_w)+1 ):
+                matrix_matches_str[0][j] = 0
+             for i in range( 1,len(str_v)+1 ):
                 matrix_matches_str[i][0] = 0
         for i in range(1, len(str_v)+1 ):
             for j in range(1, len(str_w)+1 ):
@@ -2099,3 +2105,25 @@ class AdamskiClass:
         # As the matrix should be a 2 dimensions. 1 should reference the number of column in matrix
         num_column = matrix.shape[1]
         return (list_row_idx[num_column-1],num_column-1)
+
+    @staticmethod
+    def get_idx_max_value_last_row_matrix(matrix):
+        """
+        This method is only for exercice overlap alignment. Because we need to known where is
+        the max value on the last row of the matrix. And on this last row, we need to get the last value found
+        , and not the first found on this row.
+        """
+        num_row = matrix.shape[0]
+        # Getting all elem of the last row, except the zero put in the first column.
+        all_elem = matrix[num_row-1][1:]
+        # As by default, all max function seems to found the first max value, we will implement our max value
+        # because in our case, we need the last max value.
+        idx_j = 1
+        max_value = -sys.maxsize
+        idx_j_max_value = 1
+        for elem in all_elem:
+            if elem >= max_value:
+                max_value = elem
+                idx_j_max_value = idx_j
+            idx_j+=1
+        return (num_row-1,idx_j_max_value)
