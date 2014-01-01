@@ -17,24 +17,21 @@ list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
 str_v = list_str[0]
 str_w = list_str[1]
 
-matrix_score_lcs = genomeClass.build_scoring_matrix('score_matrix_over_align.txt')
-indel_penalty = int(2)
+matrix_score_lcs = genomeClass.build_scoring_matrix('score_matrix.txt')
+indel_penalty = 5
 
-edit_distance = False
-local_alignment = False
-fitting_alignment = False
-overlap_alignment = True
-count,matrix_backtrack = genomeClass.lcs(str_v,str_w,matrix_score_lcs,indel_penalty,local_alignment,edit_distance,fitting_alignment,overlap_alignment)
+count,matrix_backtrack = genomeClass.lcs(str_v,str_w,matrix_score_lcs,indel_penalty)
+#print count
 
-#idx_i , idx_j = AdamskiClass.get_idx_max_value_last_column_matrix(count)
-idx_i , idx_j = AdamskiClass.get_idx_max_value_last_row_matrix(count)
-print int(count[idx_i,idx_j])
-#print 'The idx where the max are on the last row : ',idx_i,idx_j
+row_idx,column_idx = AdamskiClass.get_middle_edge(count,len(str_w))
+print (row_idx,column_idx),(row_idx+1,column_idx+1)
 
+# not needed so far
+sys.exit()
+print int(count[len(str_v),len(str_w)])
 global_alignement = True
 first_str = True
-fitting_alignment = True
-genomeClass.output_lcs(matrix_backtrack,str_v,idx_i,idx_j,global_alignement,first_str,fitting_alignment)
+genomeClass.output_lcs(matrix_backtrack,str_v,len(str_v),len(str_w),global_alignement,first_str)
 print ''
 first_str = False
-genomeClass.output_lcs(matrix_backtrack,str_w,idx_i,idx_j,global_alignement,first_str,fitting_alignment)
+genomeClass.output_lcs(matrix_backtrack,str_w,len(str_v),len(str_w),global_alignement,first_str)

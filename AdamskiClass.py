@@ -2127,3 +2127,13 @@ class AdamskiClass:
                 idx_j_max_value = idx_j
             idx_j+=1
         return (num_row-1,idx_j_max_value)
+
+    @staticmethod
+    def get_middle_edge(matrix_score,len_str_w):
+        """
+        Finding the row and column number where the middle edge is.
+        """
+        middle = len_str_w/2
+        # Getting the row idx from each column of the matrix, where there is the max value.
+        list_row_idx = matrix_score.argmax(axis=0)
+        return (list_row_idx[middle],middle)
