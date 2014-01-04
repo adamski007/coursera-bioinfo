@@ -6,7 +6,7 @@ import pprint
 from AdamskiClass import AdamskiClass
 
 
-sys.setrecursionlimit(2000)
+sys.setrecursionlimit(20000)
 infile = open(sys.argv[1],'r')
 #infile = open("data.txt",'r')
 nucleotide = infile.readline()
@@ -22,12 +22,6 @@ indel_penalty = 5
 
 count,matrix_backtrack = genomeClass.lcs(str_v,str_w,matrix_score_lcs,indel_penalty)
 #print count
-
-row_idx,column_idx = AdamskiClass.get_middle_edge(count,len(str_w))
-print (row_idx,column_idx),(row_idx+1,column_idx+1)
-
-# not needed so far
-sys.exit()
 print int(count[len(str_v),len(str_w)])
 global_alignement = True
 first_str = True
