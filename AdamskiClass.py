@@ -23,7 +23,9 @@ class AdamskiClass:
         self.node_used = []
         self.idx_matrix_amino_acid = {}
         # In the matrix, at [0,0] , this is always a minimal score.
-        self.max_value_matrix_score = (0,0)
+        self.max_value_matrix_score = (0, 0)
+        # Initializing the matrix, but will be updated with the current request made on demand.
+        self.matrix_multiple_alignment = numpy.zeros( (3, 3) )
 
     def buildAllMassValue(self):
         """
@@ -1740,6 +1742,72 @@ class AdamskiClass:
                 scoring_matrix_edit_dist[i][0] = scoring_matrix_edit_dist[i-1][0] + indel_penalty
         for j in range( 1,len(str_w)+1 ):
                 scoring_matrix_edit_dist[0][j] = scoring_matrix_edit_dist[0][j-1] + indel_penalty
+
+    def get_current_score(self,list_str,idx_i,idx_j,idx_k):
+        """
+        In multiple longest common sub-sequence, we need to compare the character, and assign a score of 1 if all
+        character are the same, and 0 otherwise.
+        """
+        str_v = list_str[0]
+        str_w = list_str[1]
+        str_x = list_str[2]
+        if str_v[idx_i] == str_w[idx_j] == str_x[idx_k]:
+            return 1
+        else:
+            return 0
+
+    def get_max_score(self,list_str,idx_i,idx_j,idx_k):
+        """
+        Getting the current max score of a node, we need to search for value on the previous
+        node, and the score of the current node.
+        """
+        str_v = list_str[0]
+        str_w = list_str[1]
+        str_x = list_str[2]
+        # Doing the test in the same order as defined on coursera.org, varying the i , j and k idx.
+        # 7 test in total
+        current_score = -sys.maxsize
+        max_score = -sys.maxsize
+        current_score = self.matrix_multiple_alignment[idx_i-1][idx_j][idx_k]
+        if current_score > max_score:
+            max_score = current_score
+        current_score = self.matrix_multiple_alignment[idx_i][idx_j-1][idx_k]
+        if current_score > max_score:
+            max_score = current_score
+        current_score = self.matrix_multiple_alignment[idx_i][idx_j][idx_k-1]
+        if current_score > max_score:
+            max_score = current_score
+        current_score = self.matrix_multiple_alignment[idx_i-1][idx_j-1][idx_k]
+        if current_score > max_score:
+            max_score = current_score
+        current_score = self.matrix_multiple_alignment[idx_i-1][idx_j][idx_k-1]
+        if current_score > max_score:
+            max_score = current_score
+        current_score = self.matrix_multiple_alignment[idx_i][idx_j-1][idx_k-1]
+        if current_score > max_score:
+            max_score = current_score
+        current_score = self.matrix_multiple_alignment[idx_i-1][idx_j-1][idx_k-1] + self.get_current_score(list_str,
+                                                                                                           idx_i-1,
+                                                                                                           idx_j-1,
+                                                                                                           idx_k-1)
+        if current_score > max_score:
+            max_score = current_score
+        return max_score
+
+
+
+    def score_multiple_alignement(self,list_str):
+        """
+        Last exercice of week 7, alignement of more than 2 strings.
+        """
+        str_v = list_str[0]
+        str_w = list_str[1]
+        str_x = list_str[2]
+        self.matrix_multiple_alignment = numpy.zeros( (len(str_v)+1,len(str_w)+1,len(str_x)+1 ) )
+        for i in range(1, len(str_v)+1 ):
+            for j in range(1, len(str_w)+1 ):
+                for k in range(1, len(str_x)+1 ):
+                    self.matrix_multiple_alignment[i][j][k] = self.get_max_score(list_str,i,j,k)
 
 
 
