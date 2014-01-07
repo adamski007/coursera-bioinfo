@@ -25,7 +25,9 @@ print str_x
 genomeClass.score_multiple_alignement(list_str)
 print genomeClass.matrix_multiple_alignment.shape
 print genomeClass.matrix_multiple_alignment
+print genomeClass.matrix_multiple_alignment[2][5][2]
 print genomeClass.matrix_multiple_alignment[len(str_v)][len(str_w)][len(str_x)]
+
 
 sys.exit()
 #print count

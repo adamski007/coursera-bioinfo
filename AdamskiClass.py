@@ -25,7 +25,8 @@ class AdamskiClass:
         # In the matrix, at [0,0] , this is always a minimal score.
         self.max_value_matrix_score = (0, 0)
         # Initializing the matrix, but will be updated with the current request made on demand.
-        self.matrix_multiple_alignment = numpy.zeros( (3, 3) )
+        self.matrix_multiple_alignment = numpy.zeros((3, 3))
+        self.matrix_backtracking_multiple = numpy.zeros((3, 3))
 
     def buildAllMassValue(self):
         """
@@ -1766,32 +1767,40 @@ class AdamskiClass:
         str_x = list_str[2]
         # Doing the test in the same order as defined on coursera.org, varying the i , j and k idx.
         # 7 test in total
+        # Backtracking direction goes to 7 direction : 1 -> 7
         current_score = -sys.maxsize
         max_score = -sys.maxsize
         current_score = self.matrix_multiple_alignment[idx_i-1][idx_j][idx_k]
         if current_score > max_score:
             max_score = current_score
+            self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] = 1
         current_score = self.matrix_multiple_alignment[idx_i][idx_j-1][idx_k]
         if current_score > max_score:
             max_score = current_score
+            self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] = 2
         current_score = self.matrix_multiple_alignment[idx_i][idx_j][idx_k-1]
         if current_score > max_score:
             max_score = current_score
+            self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] = 3
         current_score = self.matrix_multiple_alignment[idx_i-1][idx_j-1][idx_k]
         if current_score > max_score:
             max_score = current_score
+            self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] = 4
         current_score = self.matrix_multiple_alignment[idx_i-1][idx_j][idx_k-1]
         if current_score > max_score:
             max_score = current_score
+            self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] = 5
         current_score = self.matrix_multiple_alignment[idx_i][idx_j-1][idx_k-1]
         if current_score > max_score:
             max_score = current_score
+            self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] = 6
         current_score = self.matrix_multiple_alignment[idx_i-1][idx_j-1][idx_k-1] + self.get_current_score(list_str,
                                                                                                            idx_i-1,
                                                                                                            idx_j-1,
                                                                                                            idx_k-1)
         if current_score > max_score:
             max_score = current_score
+            self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] = 7
         return max_score
 
 
@@ -1804,10 +1813,27 @@ class AdamskiClass:
         str_w = list_str[1]
         str_x = list_str[2]
         self.matrix_multiple_alignment = numpy.zeros( (len(str_v)+1,len(str_w)+1,len(str_x)+1 ) )
+        self.matrix_backtracking_multiple = numpy.zeros( (len(str_v)+1,len(str_w)+1,len(str_x)+1 ) )
         for i in range(1, len(str_v)+1 ):
             for j in range(1, len(str_w)+1 ):
                 for k in range(1, len(str_x)+1 ):
                     self.matrix_multiple_alignment[i][j][k] = self.get_max_score(list_str,i,j,k)
+
+
+    def backtrack_multiple_alignment(self,list_str, idx_i, idx_j, idx_k, num_str=1):
+        """
+        Function to backtrack an alignement for 3 strings.
+        By default, we try to backtrack printing of str 1 in list_str.
+        """
+        str_v = list_str[0]
+        str_w = list_str[1]
+        str_x = list_str[2]
+        if idx_i == 0 and idx_j == 0 and idx_k == 0:
+            return
+        else:
+            if self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] == 1:
+                self.backtrack_multiple_alignment(list_str,idx_i-1,idx_j,idx_k,num_str)
+                print str_v[idx_i-1]
 
 
 
