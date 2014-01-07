@@ -679,6 +679,18 @@ class AdamskiClass:
             listDNA.append(line)
         return listDNA
 
+    @staticmethod
+    def readAndBuildListPermutation(nameFile):
+        """
+        Function to read the content of a file which contains a list of signed number, and
+        build a list with these numbers.
+        """
+        list_number = []
+        infile = open(nameFile,'r')
+        for line in infile:
+            line = line.replace('\n', '')
+            list_number = line.split(' ')
+        return list_number
 
     @staticmethod
     def rebuildKmersWithMutation(kmers,newnucleotide,idxnucleotide):
@@ -2231,3 +2243,26 @@ class AdamskiClass:
         # Getting the row idx from each column of the matrix, where there is the max value.
         list_row_idx = matrix_score.argmax(axis=0)
         return (list_row_idx[middle],middle)
+
+    def greeding_sorting(self,list=[]):
+        """
+        Greedy sorting algo as described in coursera.org for bio-informatics.
+        """
+        num_to_sort = len(list)
+        approxReversalDistance = 0
+        for x in range(1,len(list)+1):
+            # We do not known if it is x or -x which is present in the list -> need to check.
+            if list.count(x) > 0:
+                # doing processing on a positive number
+                # We can make an improvement, by searching only from x -> till end of list, and not always all the list.
+                idx_x = list.index(x)
+                list_to_reverse = list[x-1:idx_x]
+                new_list_builded = self.sorting_reversal(list_to_reverse)
+                # Re-build the original list with this new list sorted_reversal.
+                # need to do some re-building...
+                begin_list = list[0:idx-1-1]
+                end_list = list[idx_x+1:]
+            else:
+                # Doing processing on a negative number
+
+
