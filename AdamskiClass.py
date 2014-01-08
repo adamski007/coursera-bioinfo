@@ -2264,5 +2264,19 @@ class AdamskiClass:
                 end_list = list[idx_x+1:]
             else:
                 # Doing processing on a negative number
+                return 0
+            return 1
+        return 2
+
+    def sorting_reversal(self,list_num=[]):
+        """
+        Function used to reverse a list, and inverting sign of each number present in the list.
+        """
+        # Reversing the list
+        list_reversed = list_num[::-1]
+        # Building a matrix of 1 dim.
+        matrix = numpy.array( list_reversed )
+        # Inverting sign of all number in the list
+        return (matrix*-1).tolist()
 
 

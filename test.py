@@ -19,6 +19,8 @@ print list_str[1]
 print list_str[421]
 print len(list_str)
 
+a=[1,2,3]
+print genomeClass.sorting_reversal(a)
 sys.exit()
 print str_v
 str_w = list_str[1]
