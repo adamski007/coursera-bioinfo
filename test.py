@@ -14,16 +14,8 @@ nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
 list_str = AdamskiClass.readAndBuildListPermutation('listDNA.txt')
-print list_str[0]
-print list_str[1]
-print list_str[421]
-print len(list_str)
 
-a=[1,2,3]
-print genomeClass.sorting_reversal(a)
-sys.exit()
-print str_v
-str_w = list_str[1]
-print str_w
-str_x = list_str[2]
-print str_x
+
+
+#a=[-3,+4,+1,+5,-2]
+genomeClass.greeding_sorting(list_str)

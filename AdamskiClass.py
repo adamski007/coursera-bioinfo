@@ -686,11 +686,14 @@ class AdamskiClass:
         build a list with these numbers.
         """
         list_number = []
+        list_number_int = []
         infile = open(nameFile,'r')
         for line in infile:
             line = line.replace('\n', '')
             list_number = line.split(' ')
-        return list_number
+            for x in list_number:
+                list_number_int.append(int(x))
+        return list_number_int
 
     @staticmethod
     def rebuildKmersWithMutation(kmers,newnucleotide,idxnucleotide):
@@ -2244,31 +2247,79 @@ class AdamskiClass:
         list_row_idx = matrix_score.argmax(axis=0)
         return (list_row_idx[middle],middle)
 
-    def greeding_sorting(self,list=[]):
+    def build_back_list(self,list_orig,list_inserting,begin_idx,end_idx):
+        """
+        Re-building the original list.
+        There is 3 case possible, idx_x = 0 , idx_x > 0 and idx_x < len(list) , otherwise idx_x == len(list)-1
+        it is the latest item in the list.
+        """
+        if begin_idx == 0:
+            return list_inserting+list_orig[end_idx:]
+        elif end_idx < len(list_orig):
+            # need to rebuild, before and after the new list.
+            return list_orig[0:begin_idx]+list_inserting+list_orig[end_idx:]
+        else:
+            # We reach the last item of the list, adding the new list at the end.
+            return list_orig[0:begin_idx]+list_inserting
+
+
+    def greeding_sorting(self,list):
         """
         Greedy sorting algo as described in coursera.org for bio-informatics.
         """
-        num_to_sort = len(list)
-        approxReversalDistance = 0
+        approx_reversal_distance = 0
+        cur_idx = 0
+        rebuilded_list = list[:]
         for x in range(1,len(list)+1):
             # We do not known if it is x or -x which is present in the list -> need to check.
-            if list.count(x) > 0:
-                # doing processing on a positive number
-                # We can make an improvement, by searching only from x -> till end of list, and not always all the list.
-                idx_x = list.index(x)
-                list_to_reverse = list[x-1:idx_x]
+            if rebuilded_list.count(x) > 0:
+                num_to_handle = x
+            elif rebuilded_list.count(-x) > 0:
+                num_to_handle = -x
+            else:
+                print "Number not found in the list, not GOOD"
+                print 'The number is : ',x
+                sys.exit()
+            # doing processing on a positive number
+            # We can make an improvement, by searching only from x -> till end of list, and not always all the list.
+            idx_x = rebuilded_list.index(num_to_handle)
+            if cur_idx != idx_x:
+                # We need to sort, as the element is not on the right place.
+                # reversing from the current idx -> the number found in the str [ +1 which take the number it-self also ]
+                list_to_reverse = rebuilded_list[cur_idx:idx_x+1]
                 new_list_builded = self.sorting_reversal(list_to_reverse)
                 # Re-build the original list with this new list sorted_reversal.
                 # need to do some re-building...
-                begin_list = list[0:idx-1-1]
-                end_list = list[idx_x+1:]
-            else:
-                # Doing processing on a negative number
-                return 0
-            return 1
-        return 2
+                # There is 3 case possible, idx_x = 0 , idx_x > 0 and idx_x < len(list) , otherwise idx_x == len(list)-1
+                # it is the latest item in the list.
+                rebuilded_list = self.build_back_list(rebuilded_list,new_list_builded,cur_idx,idx_x+1)
+                self.printing_list(rebuilded_list)
+                approx_reversal_distance+=1
+            if rebuilded_list[x-1] < 0:
+                rebuilded_list[x-1] = -rebuilded_list[x-1]
+                self.printing_list(rebuilded_list)
+                approx_reversal_distance+=1
+            cur_idx+=1
+            # normally, we shouldn't use this variable cur_idx, as it can be deducted from x instead.
+        return approx_reversal_distance
 
-    def sorting_reversal(self,list_num=[]):
+    def printing_list(self,list):
+        """
+        Needed to output the list in the proper format by coursera, meaning a + in front of number if positif.
+        """
+        str_to_print = ''
+        str_to_print = str_to_print+'('
+        for x in list:
+            if x > 0:
+                str_to_print = str_to_print+'+'+str(x)+' '
+            else:
+                str_to_print = str_to_print+str(x)+' '
+        # Removing the last whitespace inserted.
+        str_whithout_last_space = str_to_print.rstrip()
+        str_whithout_last_space = str_whithout_last_space+')'
+        print str_whithout_last_space
+
+    def sorting_reversal(self,list_num):
         """
         Function used to reverse a list, and inverting sign of each number present in the list.
         """
@@ -2278,5 +2329,26 @@ class AdamskiClass:
         matrix = numpy.array( list_reversed )
         # Inverting sign of all number in the list
         return (matrix*-1).tolist()
+
+    def compute_breakpoint_number(self,list_permutation):
+        """
+        Finding the number of breakpoint present in the list.
+        """
+        number_break = 0
+        adjacency = 0
+        if list_permutation[0] != 1:
+            # Because we have implicitely 0 in front of the list
+            number_break+=1
+        if list_permutation[len(list_permutation)-1] != len(list_permutation):
+            # Because we have implicitely the last number at the end of the list.
+            number_break+=1
+        idx = 0
+        while idx < len(list_permutation)-2:
+            if list_permutation[idx]+1 == list_permutation[idx+1]:
+                adjacency+=1
+            else:
+                number_break+=1
+            idx+=1
+        return number_break
 
 
