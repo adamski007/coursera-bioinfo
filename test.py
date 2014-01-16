@@ -15,7 +15,4 @@ genomeClass = AdamskiClass(nucleotide)
 
 list_str = AdamskiClass.readAndBuildListPermutation('listDNA.txt')
 
-
-
-#a=[-3,+4,+1,+5,-2]
-genomeClass.greeding_sorting(list_str)
+print genomeClass.compute_breakpoint_number(list_str)
