@@ -27,6 +27,11 @@ class AdamskiClass:
         # Initializing the matrix, but will be updated with the current request made on demand.
         self.matrix_multiple_alignment = numpy.zeros((3, 3))
         self.matrix_backtracking_multiple = numpy.zeros((3, 3))
+        # Variables needed for the tries construction
+        self.index_tries_construction = 1
+        self.tries_construction = {}
+        self.deep_level_in_tries = 0
+        # END : Variables needed for the tries construction
 
     def buildAllMassValue(self):
         """
@@ -2351,4 +2356,97 @@ class AdamskiClass:
             idx+=1
         return number_break
 
+    def build_tries_construction(self, list_pattern):
+        """
+        Building the list of adjancy node for the tries contruction.
+        """
+        # We first need to initialize the tries construction, the root node with 1.
+        first_pattern = list_pattern[0]
+        rest_list_pattern = list_pattern[1:]
+        first_str_pattern = first_pattern[0]
+        rest_first_str_pattern = first_pattern[1:]
+        next_idx = self.index_tries_construction + 1
+        self.index_tries_construction = next_idx
+        self.tries_construction[1] = [(next_idx,first_str_pattern)]
+        # We just build the first elem in the tries construction.
+        # And we now need to continue the construction of this first pattern.
+        for x in rest_first_str_pattern:
+            next_idx = self.index_tries_construction + 1
+            self.tries_construction[self.index_tries_construction] = [(next_idx,x)]
+            self.index_tries_construction = next_idx
+        # We now need to construct the rest of the tree (tries) with all the other pattern in list_pattern.
+        for pattern in rest_list_pattern:
+            # we need to found where to insert in the tries.
+            # We always start to insert a pattern from the root node -> node number 1
+            idx = self.found_idx_in_tries(pattern,1)
+            # How deep did we go in the tries ? This will tell us how much of the rest of the pattern
+            # need to be inserted in the tries.
+            deep_level = self.deep_level_in_tries
+            rest_pattern_to_be_inserted = pattern[deep_level:]
+            self.insert_pattern_in_tries(rest_pattern_to_be_inserted,idx)
+            # We need to reset the level of deep we goes through last time.
+            self.deep_level_in_tries = 0
 
+
+    def insert_pattern_in_tries(self, pattern, node_number):
+        """
+        The function will insert the rest of pattern in the tries, the beginning of the
+        pattern match may be a branch in the tries, that's why we only insert a part of the pattern.
+        Insertion will begin from node number [ node_number ]
+        """
+        # First checking if the node to insert is a new one or not ?
+        # Getting first the list of letter already in the tries.
+        if self.tries_construction.get(node_number) == None:
+            # this node number does not exist yet... creating...
+            next_idx = self.index_tries_construction + 1
+            self.index_tries_construction = next_idx
+            letter = pattern[0]
+            self.tries_construction[node_number] = [(next_idx,letter)]
+            # Checking if there is still something to be inserted...
+            if len(pattern[1:]) > 0:
+                # still something to be inserted in the tries...
+                self.insert_pattern_in_tries(pattern[1:],next_idx)
+        else:
+            list_letter = self.tries_construction[node_number]
+            next_idx = self.index_tries_construction + 1
+            self.index_tries_construction = next_idx
+            letter = pattern[0]
+            list_letter.append( (next_idx,letter) )
+            # Inserting this new branch to the list of the node.
+            self.tries_construction[node_number] = list_letter
+            if len(pattern[1:]) > 0:
+                # still something to be inserted in the tries...
+                self.insert_pattern_in_tries(pattern[1:],next_idx)
+
+    def found_idx_in_tries(self, pattern, node_number):
+        """
+        The first time we call this function, it should be with node_number = 1 , 1 is the root node.
+        Searching recursively in all node of the tries, where to insert the current letter.
+        We now got a tries [ tree ] , and we need to traverse the tree to found
+        where we can start inserting a new pattern.
+        If the letter is not yet present in the tries, we insert from root node [ 1 ], otherwise
+        somewhere below in the tries.
+        """
+        list_from_cur_node = []
+        list_from_cur_node = self.tries_construction[node_number]
+        # node number does not exist, and won't never exist.
+        found_from_node_number = node_number
+        for elem in list_from_cur_node:
+            if elem[1] == pattern[0]:
+                # Continue deper in the tries and searching for continuing pattern matching.
+                found_from_node_number = self.found_idx_in_tries(pattern[1:],elem[0])
+                self.deep_level_in_tries = self.deep_level_in_tries + 1
+                # We break the for loop, because ASAP that we found a match, we go deper in the tries...
+                break
+        return found_from_node_number
+
+    def print_tries_structure(self):
+        """
+        This function will print the tries structure as the way bio-informatica coursera.org want it, to
+        get a good result, and hence the point associated with it.
+        """
+        for key in self.tries_construction.keys():
+            # Iterating over all node of the tries structure.
+            for elem in self.tries_construction[key]:
+                # Iterating over each letter present in the current node of the tries.
+                print key, elem[0], elem[1]
