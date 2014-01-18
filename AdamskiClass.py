@@ -2450,3 +2450,61 @@ class AdamskiClass:
             for elem in self.tries_construction[key]:
                 # Iterating over each letter present in the current node of the tries.
                 print key, elem[0], elem[1]
+
+    def prefix_trie_matching(self, text, idx_match_search):
+        """
+        Algo as defined by coursera.org with the trie structure.
+        """
+        cur_idx = 0
+        symbol = text[cur_idx]
+        cur_idx+=1
+        v = 1
+        pattern_spelled = ''
+        while True:
+            #print 'parameter passed : ',v,symbol
+            edge_found,node_number = self.is_edge_symbol_found(v,symbol)
+            #print edge_found,node_number
+            if edge_found == True:
+                pattern_spelled = pattern_spelled + symbol
+                if len(text[cur_idx:]) > 0:
+                    symbol = text[cur_idx]
+                else:
+                    # as end of str, just to init symbol to something...
+                    symbol = ''
+                cur_idx+=1
+                v = node_number
+            elif self.tries_construction.get(v) == None:
+                # print pattern_spelled, idx_match_search,
+                # We only need the idx where the pattern does exist in the string...
+                print idx_match_search,
+                return
+            else:
+                # print 'Not match found'
+                # We do not need to print this, output will be easier for coursera.org
+                return
+
+    def trie_matching(self, text):
+        """
+        Algo as defined on coursera.org for trie structure.
+        """
+        idx = 0
+        while len(text[idx:]) > 0:
+            self.prefix_trie_matching(text[idx:],idx)
+            idx+=1
+
+
+    def is_edge_symbol_found(self, node_number, letter):
+        """
+        The function will only tell us if at node [ node_number ] there is a letter [ letter ]
+         meaning an edge v -> w with letter [ letter ]
+        """
+        if self.tries_construction.get(node_number) == None:
+            return False,False
+        else:
+            all_edges = self.tries_construction[node_number]
+            for edge in all_edges:
+                if edge[1] == letter:
+                    return True,edge[0]
+                    # Do not need to process further the list of edges...
+                    break
+        return False,False
