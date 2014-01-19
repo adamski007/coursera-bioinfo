@@ -1,6 +1,7 @@
 import sys
 import numpy
 import datetime
+import itertools
 import pprint
 import os
 
@@ -31,6 +32,8 @@ class AdamskiClass:
         self.index_tries_construction = 1
         self.tries_construction = {}
         self.deep_level_in_tries = 0
+        self.deepest_level_longest_repeat = 0
+        self.longest_repeat = ''
         # END : Variables needed for the tries construction
 
     def buildAllMassValue(self):
@@ -2508,3 +2511,144 @@ class AdamskiClass:
                     # Do not need to process further the list of edges...
                     break
         return False,False
+
+    def get_all_suffix(self, text):
+        """
+        Will build a list with all suffixe of text, including the '$' character.
+        """
+        text = text + '$'
+        list_suffixe = []
+        idx = 0
+        while idx < len(text):
+            list_suffixe.append(text[idx:])
+            idx+=1
+        return list_suffixe
+
+    def find_longest_repeat_pattern(self):
+        """
+        Definition of this function is in coursera, it will find the longest string present, at least 2 times,  in the
+        trie structure builded.
+        """
+        self.deepest_level_longest_repeat = self.get_nodes_with_multiple_sub_node()
+        pattern, deep_level = self.who_is_deepest_node(self.deepest_level_longest_repeat)
+        return pattern, deep_level
+
+    def has_node_mutiple_sub_nodes(self, node_number):
+        """
+        self-explanory.
+        """
+        list_node = self.tries_construction[node_number]
+        if len(list_node) > 1:
+            return True
+        else:
+            return False
+
+    def get_nodes_with_multiple_sub_node(self):
+        """
+        The function will only return all the node number which got more than 1 sub-node.
+        """
+        list_node = []
+        for key in self.tries_construction.keys():
+            sub_node = self.tries_construction[key]
+            if len(sub_node) > 1:
+                list_node.append(key)
+        # Removing the root node
+        # May be not necessary to remove the root node as we do not start from it...
+        list_node.remove(1)
+        return list_node
+
+    def who_is_deepest_node(self, list_nodes):
+        """
+        Will find the node which is the most deep in the tries, from the list provided as input [ list_nodes ].
+        """
+        # Start our search from the root node.
+        list_nodes_root = self.tries_construction[1]
+        all_nodes = []
+        deepest_level = 0
+        winning_pattern = ''
+        for node in list_nodes_root:
+            #print 'search for : ', type(node)
+            (longest_pattern, deep_level) = self.search_recursively_deepest_node(node[0], node[1], 1)
+            all_nodes.append((longest_pattern, deep_level))
+        for node in all_nodes:
+            if node[1] > deepest_level:
+                deepest_level = node[1]
+                winning_pattern = node[0]
+        return winning_pattern, deepest_level
+
+    def search_recursively_deepest_node(self, node_number, pattern, deep_level):
+        """
+        Algo used in combinaison with 'who_is_deepest_node'
+        """
+        list_node = self.tries_construction[node_number]
+        node_found = False
+        list_potential_node = []
+        longest_pattern = ''
+        deepest_node = 0
+        print ' ++ just before entering the for loop , listnode is : ',list_node
+        for node in list_node:
+            print 'listnode should not be empty : ',node
+            if node[0] in  self.deepest_level_longest_repeat:
+                # We got our node number
+                deep_level+=1
+                pattern = pattern + node[1]
+                node_found = True
+                list_potential_node = [(pattern, deep_level,)]
+                print 'list potential node : ', list_potential_node
+                break
+            else:
+                new_pattern = pattern + node[1]
+                deep_level+=1
+                pattern_found, deep_level_found = self.search_recursively_deepest_node(node[0], new_pattern, deep_level)
+                list_potential_node.append((pattern_found, deep_level_found,))
+        # if nothing has been found in this for loop, meaning that we need to search deeped,
+        # and our list of potential of node is bigger, and we need to search for the longest one.
+        # NEED TO FLATTEN THE LIST FIRST.
+        print 'before flatening the list : ', list_potential_node
+        print type(list_potential_node[0])
+        ## BUG
+        ## Because it un-flatten also the tuple we got a problem, we cannot known node[0] and node[1]
+        ## BUG
+        #list_flattened = list(itertools.chain.from_iterable(list_potential_node))
+        list_flattened = list_potential_node
+        print 'list flatened : ',list_flattened
+        # searching in all node found... who is the longer...
+        deepest_node = 0
+        print 'juste before for loop'
+        for node in list_flattened:
+            print 'after the for loop'
+            if node[1] > deepest_node:
+                # We got the deepest so far...
+                deepest_node = node[1]
+                longest_pattern = node[0]
+        return [(longest_pattern, deepest_node)]
+
+    def search_longest_repeat(self):
+        """
+        some text to add ...
+        """
+        list_root_nodes = self.tries_construction[1]
+        longest_pattern = ''
+        for node in list_root_nodes:
+            self.search_recur_longest_repeat(node, node[1], longest_pattern)
+
+
+    def search_recur_longest_repeat(self, cur_node, letter, longest_pattern):
+        """
+        some text to add...
+        """
+        node_reference = cur_node[0]
+        if self.tries_construction.get(node_reference) == None:
+            # We did reach a leaf, we do not processes further...
+            return
+        list_sub_nodes = self.tries_construction[node_reference]
+        new_longest_pattern = longest_pattern + letter
+        if len(list_sub_nodes) > 1:
+            # We got multiple sub-node, and hence a potential longest repeat sequence.
+            if len(new_longest_pattern) > len(self.longest_repeat):
+                self.longest_repeat = new_longest_pattern
+        for node in list_sub_nodes:
+            self.search_recur_longest_repeat(node, node[1], new_longest_pattern)
+
+
+
