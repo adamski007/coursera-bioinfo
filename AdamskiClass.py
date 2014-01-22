@@ -35,6 +35,9 @@ class AdamskiClass:
         self.deepest_level_longest_repeat = 0
         self.longest_repeat = ''
         # END : Variables needed for the tries construction
+        # Variables needed for the suffix tree structure.
+        self.num_letter_down_tree = 0
+        # END : Variables needed for the suffix tree structure
 
     def buildAllMassValue(self):
         """
@@ -2553,4 +2556,129 @@ class AdamskiClass:
             self.search_recur_longest_repeat(node, node[1], new_longest_pattern)
 
 
+    def merge_non_branching_path(self, current_node, reference_node_number, pattern):
+        """
+        NOT YET USED AS FUNCTION
+        This function will build up the suffix tree from the tries structure.
+        So far, it won't be very fast... need to improve that !
+        """
+        if self.tries_construction.get(current_node) == None:
+            # We got a leaf, nothing more to be done...
+            # Re-building the potential non branching tree...
+            self.tries_construction[reference_node_number] = [(current_node, pattern)]
+        else:
+            list_sub_nodes = self.tries_construction[current_node]
+            if len(list_sub_nodes) == 1:
+                # We need to go further down the tree, and continue re-assembling the pattern...
+                # As list_sub_node should be a list with only one tuple.
+                node = list_sub_nodes[0]
+                pattern = pattern + node[1]
+                self.merge_non_branching_path(node[0], reference_node_number, pattern)
+            elif len(list_sub_nodes) > 1:
+                # Rebuilding a non-branching path.
+                print 0
+            else:
+                print "We should never PRINT THIS LINE !!!!!!!!!!!"
 
+
+
+    def get_longest_prefixe_match(self, pattern1, pattern2):
+        """
+        We return the longest commumn prefixe betwwen the two patter [ str ]
+        pattern2 should be the longest pattern.
+        pattern1 the one already in the tree.
+        """
+        idx = 0
+        commun_pattern = ''
+        while idx < len(pattern2) and idx < len(pattern1):
+            if char1[idx] == char2[idx]:
+                idx+=1
+                commun_pattern = commun_pattern + char1
+            else:
+                break
+        return commun_pattern
+
+    def get_cyclic_rotation(self, text):
+        """
+        The function will output a list containing all the strings of text,
+        which represent a cyclic rotation of the original text.
+        """
+        list_cyclic = []
+        list_cyclic.append(text)
+        idx = len(text)-1
+        rotated_text = ''
+        while ( idx > 0 ):
+            rotated_text = text[idx:] + text[0:idx]
+            list_cyclic.append(rotated_text)
+            idx = idx - 1
+        return list_cyclic
+
+    def get_BWT( self, list_text):
+        """
+        Implement the Burrows-Wheeler transform, given a matrix with all lines
+        of text.
+        """
+        # the sorting occur in place -> no new for a new variable.
+        list_text.sort()
+        # All items in the list will have the same length.
+        idx_last_item = len(list_text[0])-1
+        bw_transform = ''
+        for item in list_text:
+            bw_transform = bw_transform + item[idx_last_item]
+        return bw_transform
+
+    def get_BW_transform( self, text):
+        """
+        Easier for us, if all the Burrows-Wheeler occurs in only one function.
+        """
+        list_cyclic_rotation_text = self.get_cyclic_rotation(text)
+        return self.get_BWT( list_cyclic_rotation_text )
+
+
+    def fill_matrix_BWT(self , text):
+        """
+        With the BW transform of a text, we can fill a matrix, and find back the original
+        text, as described on coursera.org
+        """
+        # As we cannot use numpy with character item in it.
+        # We will use a list of list
+        matrix_BW = range(len(text))
+        idx = 0
+        while idx < len(text):
+            matrix_BW[idx] = range(len(text))
+            idx+=1
+        # Initializing the last column of the matrix with the BWT.
+        idx_y = 0
+        idx_x = len(text)
+        for char in text:
+            matrix_BW[idx_x][idx_y] = char
+            idx_y+=1
+        # Init the first column of the matrix with text re-ordered lexicographically
+        orig_text = text[:]
+        sorted_text = self.transform_text_to_list_sorted( text)
+        idx_x = 0
+        idx_y = 0
+        for char in sorted_text:
+            matrix_BW[idx_x][idx_y] = char
+            idx_y+=1
+        # Now the real re-construction of the full matrix will begin.
+        # and finally getting the original string.
+        return matrix_BW
+
+    def get_x_elem(self, list, character):
+        """
+        If a list contain a more than one of the same character, this function will return the index
+        where the X is located in the list.
+        """
+        number_elem = list.count(character)
+
+
+    def transform_text_to_list_sorted(self, text):
+        """
+        As we cannot sort directly a string, we will first put all the string
+        in a list, and then sort this list.
+        """
+        list = []
+        for x in text:
+            list.append(x)
+        return list.sort()
