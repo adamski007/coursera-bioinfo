@@ -2649,7 +2649,7 @@ class AdamskiClass:
             idx+=1
         # Initializing the last column of the matrix with the BWT.
         idx_y = 0
-        idx_x = len(text)
+        idx_x = len(text)-1
         for char in text:
             matrix_BW[idx_x][idx_y] = char
             idx_y+=1
@@ -2665,12 +2665,23 @@ class AdamskiClass:
         # and finally getting the original string.
         return matrix_BW
 
-    def get_x_elem(self, list, character):
+    def get_x_elem(self, list, character, number):
         """
         If a list contain a more than one of the same character, this function will return the index
         where the X is located in the list.
+        number represent which character we need, if it is the first 'a' , the second 'a' or even more in the list.
         """
-        number_elem = list.count(character)
+        # number_elem = list.count(character)
+        shifting = 0
+        if number == 1:
+             return list.index(character)
+        else:
+            index = list.index(character)
+            shifting = index + 1
+            new_list = list[index+1:]
+            last_index = self.get_x_elem(new_list, character, number-1)
+            shifting = shifting + last_index
+            return shifting
 
 
     def transform_text_to_list_sorted(self, text):
@@ -2681,4 +2692,5 @@ class AdamskiClass:
         list = []
         for x in text:
             list.append(x)
-        return list.sort()
+        list.sort()
+        return list

@@ -16,4 +16,9 @@ genomeClass = AdamskiClass(nucleotide)
 
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
 
-print genomeClass.get_BW_transform(list_str[0])
+
+"""
+list = genomeClass.fill_matrix_BWT(list_str[0])
+new_list = ['a','b','a','c','a','d']
+print genomeClass.get_x_elem(new_list,'a',3)
+"""
