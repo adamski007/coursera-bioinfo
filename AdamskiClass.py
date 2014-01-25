@@ -39,6 +39,9 @@ class AdamskiClass:
         # Variables needed for the suffix tree structure.
         self.num_letter_down_tree = 0
         # END : Variables needed for the suffix tree structure
+        # Variables needed for the BW transform.
+        self.idx_character_last_column = {}
+        # END : Variables needed for the BW transform.
 
     def buildAllMassValue(self):
         """
@@ -2664,14 +2667,12 @@ class AdamskiClass:
             idx_y+=1
         # Pre-process the matrix, to known in advance when we got the character from the first column,
         # if it is the first, second, or third, ... a char in this list.
-        print 'First and last column are initialized : ',time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
         self.pre_process_first_column_BW_matrix(matrix_BW)
-        print 'Processing the first column of the BW matrix has been done @ : ',time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
         # Now the real re-construction of the full matrix will begin.
         # and finally getting the original string.
-        print 'Just before the main processing...'
+        # Adaption has been done on get_x_elem, to use now a dictionnary, instead of always going through the list each time.
+        self.pre_process_last_column_BW_matrix( matrix_BW)
         self.fill_first_row_matrix(matrix_BW)
-        print 'Main processing done...'
         return matrix_BW
 
     def get_inverse_BW_transform(self, text):
@@ -2710,12 +2711,46 @@ class AdamskiClass:
         matrix_BW[1][0] = char_first_column
         # matrix_BW is a square matrix, we could have choose len(matrix_BW[1])...
         for idx_row in range(2, len(matrix_BW[0])):
-            print 'Processed character : ',idx_row, ' out of : ',len(matrix_BW[0]), ' in total '
             index_char = self.get_x_elem(matrix_BW[idx_last_column_BW], char_first_column, count_char)
             tup = matrix_BW[0][index_char]
             char_first_column = tup[0]
             count_char = tup[1]
             matrix_BW[idx_row][0] = char_first_column
+
+    def pre_process_last_column_BW_matrix(self, matrix_BW):
+        """
+            As the function get_x_elem is executed each times we need an elem from the last column and moreover,
+            as there is more than 10.000 element. The total run time is way too much...
+            So, we will build a dictionnary containing the index where a character and his count is located on the last column.
+            By instance :
+                dic[(a, 3)] = 4
+                meaning that the third 'a' character in the last column of the matrix is located at index 4.
+        """
+        count_A = 1
+        count_T = 1
+        count_C = 1
+        count_G = 1
+        idx = 0
+        # strange way to get the last idx, but it is working...
+        idx_last_column = len(matrix_BW[0])-1
+        for char in matrix_BW[idx_last_column]:
+            if self.idx_character_last_column.get((char, 1)) == None:
+                self.idx_character_last_column[(char, 1)] = idx
+            else:
+                if char == 'A':
+                    count_A+=1
+                    self.idx_character_last_column[(char, count_A)] = idx
+                elif char == 'T':
+                    count_T+=1
+                    self.idx_character_last_column[(char, count_T)] = idx
+                elif char == 'C':
+                    count_C+=1
+                    self.idx_character_last_column[(char, count_C)] = idx
+                elif char == 'G':
+                    count_G+=1
+                    self.idx_character_last_column[(char, count_G)] = idx
+            idx+=1
+
 
     def pre_process_first_column_BW_matrix(self, matrix_BW):
         """
@@ -2740,21 +2775,11 @@ class AdamskiClass:
 
     def get_x_elem(self, list, character, number):
         """
-        If a list contain a more than one of the same character, this function will return the index
-        where the X is located in the list.
-        number represent which character we need, if it is the first 'a' , the second 'a' or even more in the list.
+        We now use a dictionnary, to known where the Xth character is located on the last column.
+        Previously, we were searching through the list [ list ] , but as there was more than 10.000 in the list,
+        and we needed to do a lot of search, it took too much time...
         """
-        # number_elem = list.count(character)
-        shifting = 0
-        if number == 1:
-             return list.index(character)
-        else:
-            index = list.index(character)
-            shifting = index + 1
-            new_list = list[index+1:]
-            last_index = self.get_x_elem(new_list, character, number-1)
-            shifting = shifting + last_index
-            return shifting
+        return self.idx_character_last_column[(character, number)]
 
 
     def transform_text_to_list_sorted(self, text):
