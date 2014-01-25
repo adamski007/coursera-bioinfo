@@ -1,6 +1,7 @@
 import sys
 import numpy
 import datetime
+import time
 import itertools
 import pprint
 import os
@@ -2649,7 +2650,7 @@ class AdamskiClass:
             idx+=1
         # Initializing the last column of the matrix with the BWT.
         idx_y = 0
-        idx_x = len(text)
+        idx_x = len(text)-1
         for char in text:
             matrix_BW[idx_x][idx_y] = char
             idx_y+=1
@@ -2661,16 +2662,99 @@ class AdamskiClass:
         for char in sorted_text:
             matrix_BW[idx_x][idx_y] = char
             idx_y+=1
+        # Pre-process the matrix, to known in advance when we got the character from the first column,
+        # if it is the first, second, or third, ... a char in this list.
+        print 'First and last column are initialized : ',time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        self.pre_process_first_column_BW_matrix(matrix_BW)
+        print 'Processing the first column of the BW matrix has been done @ : ',time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
         # Now the real re-construction of the full matrix will begin.
         # and finally getting the original string.
+        print 'Just before the main processing...'
+        self.fill_first_row_matrix(matrix_BW)
+        print 'Main processing done...'
         return matrix_BW
 
-    def get_x_elem(self, list, character):
+    def get_inverse_BW_transform(self, text):
+        """
+            As input we get the string, which is the BW transform of orig_text, and we need to
+            find this orig_text which did generate the text.
+        """
+        # Fill the first and last column of the matrix, and also the first row of the matrix, which is
+        # our original text with $ in front.
+        matrix_BW = self.fill_matrix_BWT( text)
+        # Re-building the string from the first row.
+        orig_text = ''
+        # starting from 1, this way the '$' is not in front of the text, we will add it at the end.
+        idx = 1
+        while idx < len(matrix_BW[0]):
+            orig_text = orig_text + matrix_BW[idx][0]
+            idx+=1
+        orig_text = orig_text + '$'
+        return orig_text
+
+    def fill_first_row_matrix(self, matrix_BW):
+        """
+            Now that the last and first column of the matrix BW is filled, we should be able
+            to re-construct the first row, which is actually, the string that did make the matrix.
+        """
+        idx_last_column_BW = len(matrix_BW[0])-1
+        index_char = matrix_BW[idx_last_column_BW].index('$')
+        # tup will represent the tuple which are present in the first column of the matrix.
+        tup = matrix_BW[0][index_char]
+        char_first_column = tup[0]
+        # If this char is not the first on the column...
+        count_char = tup[1]
+        # Re-setting the first char of the matrix, to a single char and not a tuple, it will be
+        # easier afterwards, to re-compose the string which made the matrix.
+        matrix_BW[0][0] = '$'
+        matrix_BW[1][0] = char_first_column
+        # matrix_BW is a square matrix, we could have choose len(matrix_BW[1])...
+        for idx_row in range(2, len(matrix_BW[0])):
+            print 'Processed character : ',idx_row, ' out of : ',len(matrix_BW[0]), ' in total '
+            index_char = self.get_x_elem(matrix_BW[idx_last_column_BW], char_first_column, count_char)
+            tup = matrix_BW[0][index_char]
+            char_first_column = tup[0]
+            count_char = tup[1]
+            matrix_BW[idx_row][0] = char_first_column
+
+    def pre_process_first_column_BW_matrix(self, matrix_BW):
+        """
+        Instead of just placing the character in the first column of the matrix BW, we will put a tuple,
+        which contains, the character it-self, and if it is the first, second, third, ... character of this list.
+        It makes our life easier, when we have to find the match on the last column of matrix BW.
+        """
+        dic_count_character = {}
+        idx = 0
+        for char in matrix_BW[0]:
+            if dic_count_character.get(char) == None:
+                # We got a new character, inserting in the dictionnary, and replacing this item in the matrix.
+                dic_count_character[char] = 1
+                matrix_BW[0][idx] = (char, 1)
+            else:
+                # There was already one of the current char in the dic
+                count_char = dic_count_character[char]
+                count_char+=1
+                dic_count_character[char] = count_char
+                matrix_BW[0][idx] = (char, count_char)
+            idx+=1
+
+    def get_x_elem(self, list, character, number):
         """
         If a list contain a more than one of the same character, this function will return the index
         where the X is located in the list.
+        number represent which character we need, if it is the first 'a' , the second 'a' or even more in the list.
         """
-        number_elem = list.count(character)
+        # number_elem = list.count(character)
+        shifting = 0
+        if number == 1:
+             return list.index(character)
+        else:
+            index = list.index(character)
+            shifting = index + 1
+            new_list = list[index+1:]
+            last_index = self.get_x_elem(new_list, character, number-1)
+            shifting = shifting + last_index
+            return shifting
 
 
     def transform_text_to_list_sorted(self, text):
@@ -2681,4 +2765,5 @@ class AdamskiClass:
         list = []
         for x in text:
             list.append(x)
-        return list.sort()
+        list.sort()
+        return list
