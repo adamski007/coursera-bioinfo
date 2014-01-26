@@ -2584,8 +2584,6 @@ class AdamskiClass:
             else:
                 print "We should never PRINT THIS LINE !!!!!!!!!!!"
 
-
-
     def get_longest_prefixe_match(self, pattern1, pattern2):
         """
         We return the longest commumn prefixe betwwen the two patter [ str ]
@@ -2637,7 +2635,6 @@ class AdamskiClass:
         """
         list_cyclic_rotation_text = self.get_cyclic_rotation(text)
         return self.get_BWT( list_cyclic_rotation_text )
-
 
     def fill_matrix_BWT(self , text):
         """
@@ -2751,7 +2748,6 @@ class AdamskiClass:
                     self.idx_character_last_column[(char, count_G)] = idx
             idx+=1
 
-
     def pre_process_first_column_BW_matrix(self, matrix_BW):
         """
         Instead of just placing the character in the first column of the matrix BW, we will put a tuple,
@@ -2781,7 +2777,6 @@ class AdamskiClass:
         """
         return self.idx_character_last_column[(character, number)]
 
-
     def transform_text_to_list_sorted(self, text):
         """
         As we cannot sort directly a string, we will first put all the string
@@ -2792,3 +2787,38 @@ class AdamskiClass:
             list.append(x)
         list.sort()
         return list
+
+    def build_suffixe_array(self, text):
+        """
+            Building a suffixe array.
+            We will implement it with a list, where each elem if the list, is a tuple which containt
+                1. the suffixe it-self
+                2. the index where this suffixe is located in the text.
+        """
+        # TO DO build the suffixe list inside the loop while , because otherwise take too much memory.
+        idx = 0
+        suffixe_array = []
+        suffixe = ''
+        while idx < len(text):
+            # using buffer method is way much faster on big string.
+            suffixe = buffer(text, idx, len(text))
+            #suffixe = text[idx:]
+            # Creating a new tuple with suffixe, and position where this suffixe is located in original text.
+            new_tup = (suffixe, idx)
+            suffixe_array.append(new_tup)
+            idx+=1
+        suffixe_array.sort()
+        return suffixe_array
+
+    def sort_list_suffixe_array(self, new_list):
+        """
+            The function will sort all the tuple present in the list.
+        """
+        return 1
+
+    def print_idx_suffixe_array(self, list):
+        """
+            The function will only print the location of
+        """
+        for elem in list:
+            print str(elem[1])+',',
