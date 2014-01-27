@@ -15,6 +15,6 @@ nucleotide = nucleotide.replace('\n','')
 genomeClass = AdamskiClass(nucleotide)
 
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
-
-suffixe_array = genomeClass.build_suffixe_array(list_str[0])
-genomeClass.print_idx_suffixe_array(suffixe_array)
+bw = genomeClass.fill_matrix_BWT(list_str[0], False, True)
+pprint.pprint(bw)
+print genomeClass.last_to_first(bw)

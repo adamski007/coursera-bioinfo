@@ -2636,7 +2636,7 @@ class AdamskiClass:
         list_cyclic_rotation_text = self.get_cyclic_rotation(text)
         return self.get_BWT( list_cyclic_rotation_text )
 
-    def fill_matrix_BWT(self , text):
+    def fill_matrix_BWT(self , text, fill_first_row=True, do_preprocessing=True):
         """
         With the BW transform of a text, we can fill a matrix, and find back the original
         text, as described on coursera.org
@@ -2662,14 +2662,17 @@ class AdamskiClass:
         for char in sorted_text:
             matrix_BW[idx_x][idx_y] = char
             idx_y+=1
-        # Pre-process the matrix, to known in advance when we got the character from the first column,
-        # if it is the first, second, or third, ... a char in this list.
-        self.pre_process_first_column_BW_matrix(matrix_BW)
-        # Now the real re-construction of the full matrix will begin.
-        # and finally getting the original string.
-        # Adaption has been done on get_x_elem, to use now a dictionnary, instead of always going through the list each time.
-        self.pre_process_last_column_BW_matrix( matrix_BW)
-        self.fill_first_row_matrix(matrix_BW)
+        if do_preprocessing == True:
+            # Pre-process the matrix, to known in advance when we got the character from the first column,
+            # if it is the first, second, or third, ... a char in this list.
+            self.pre_process_first_column_BW_matrix(matrix_BW)
+            # Now the real re-construction of the full matrix will begin.
+            # and finally getting the original string.
+            # Adaption has been done on get_x_elem, to use now a dictionnary, instead of always going through
+            # the list each time.
+            self.pre_process_last_column_BW_matrix( matrix_BW)
+        if fill_first_row == True:
+            self.fill_first_row_matrix(matrix_BW)
         return matrix_BW
 
     def get_inverse_BW_transform(self, text):
@@ -2822,3 +2825,76 @@ class AdamskiClass:
         """
         for elem in list:
             print str(elem[1])+',',
+
+    def last_to_first(self, matrix_bw):
+        """
+            Function used for BW_Matching. Will the return the index on the first column,
+                A1 ... B1
+                B1 ... A1
+                B2 ... B2
+                A2 ... B1
+            -> By instance , last_to_first(0) = 1 , because char on line 0 of last column is B1, and this B1
+                can be find in the first column at index 1
+        """
+        list_last_column = matrix_bw[len(matrix_bw[0])-1]
+        list_first_column = matrix_bw[0]
+        list_last_to_first = []
+        count_A = 1
+        count_T = 1
+        count_C = 1
+        count_G = 1
+        for char in list_last_column:
+            if char == 'A':
+                idx_mapping_to_first_column = list_first_column.index(( char, count_A))
+                count_A+=1
+            elif char == 'T':
+                idx_mapping_to_first_column = list_first_column.index(( char, count_T))
+                count_T+=1
+            elif char == 'C':
+                idx_mapping_to_first_column = list_first_column.index(( char, count_C))
+                count_C+=1
+            elif char == 'G':
+                idx_mapping_to_first_column = list_first_column.index(( char, count_G))
+                count_G+=1
+            list_last_to_first.append(idx_mapping_to_first_column)
+        return list_last_to_first
+
+    def transform_list_to_string(self, list):
+        """
+            Self-explanatory.
+        """
+        text = ''
+        for x in list:
+            text = text + str(x)
+        return text
+
+    def BW_Matching(self, first_column, last_column, pattern, last_to_first):
+        """
+            Implement the algo defined on coursera.org
+            Number of pattern present in a big string.
+            last_column should be first converted into a string, because findint the first and last occurence
+            is easier with a string.
+        """
+        last_column_text = self.transform_list_to_string(last_column)
+        top = 0
+        # To get the relative position [ comparing with orig text ] of first occurence of symbol.
+        total_count_top = 0
+        bottom = len(last_column_text)-1
+        while top <= bottom:
+            if len(pattern) > 0:
+                idx_last_letter = len(pattern)-1
+                symbol = pattern[idx_last_letter]
+                pattern = pattern[0:idx_last_letter-1]
+                if symbol in last_column_text[top:bottom]:
+                    # The position should always be in comparison to the all list, that's why we add
+                    # top , at start it is 0 -> no prob !
+                    top_index = ( last_column_text.find(symbol, top, bottom) ) + total_count_top
+                    bottom_index = last_column_text.rfind(symbol, top, bottom)
+                    total_count_top = total_count_top + top
+                    top = last_to_first[top_index]
+                    bottom = last_to_first[bottom_index]
+                else:
+                    return 0
+            else:
+                return bottom-top+1
+
