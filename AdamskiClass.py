@@ -2881,16 +2881,22 @@ class AdamskiClass:
         total_count_top = 0
         bottom = len(last_column_text)-1
         while top <= bottom:
+            print 'Top : ',top,' and bottom : ',bottom
+            print 'The search occured in this string : ',last_column_text[top:bottom]
             if len(pattern) > 0:
                 idx_last_letter = len(pattern)-1
                 symbol = pattern[idx_last_letter]
-                pattern = pattern[0:idx_last_letter-1]
+                pattern = pattern[0:idx_last_letter]
+                print 'The new pattern is : ',pattern
+                print 'symbol searched is : ',symbol
                 if symbol in last_column_text[top:bottom]:
                     # The position should always be in comparison to the all list, that's why we add
                     # top , at start it is 0 -> no prob !
-                    top_index = ( last_column_text.find(symbol, top, bottom) ) + total_count_top
+                    #top_index = ( last_column_text.find(symbol, top, bottom) ) + total_count_top
+                    top_index = ( last_column_text.find(symbol, top, bottom) )
+                    print 'Top index is : ',top_index,'and total_count_top : ', total_count_top
                     bottom_index = last_column_text.rfind(symbol, top, bottom)
-                    total_count_top = total_count_top + top
+                    total_count_top = total_count_top + top_index
                     top = last_to_first[top_index]
                     bottom = last_to_first[bottom_index]
                 else:
@@ -2898,3 +2904,13 @@ class AdamskiClass:
             else:
                 return bottom-top+1
 
+
+    def first_occurence(self, bw):
+        """
+            As defined on coursera.org, our first column in our matrix is such as :
+                ('$', 1),
+                ('A', 1),
+                ('A', 2),
+                ...
+            This way we can quickly locate each time the first character of an occurence.
+        """
