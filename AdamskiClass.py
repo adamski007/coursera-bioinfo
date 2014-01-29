@@ -2677,7 +2677,7 @@ class AdamskiClass:
 
     def get_inverse_BW_transform(self, text):
         """
-            As input we get the string, which is the BW transform of orig_text, and we need to
+            As input we get the string, which< is the BW transform of orig_text, and we need to
             find this orig_text which did generate the text.
         """
         # Fill the first and last column of the matrix, and also the first row of the matrix, which is
@@ -2879,30 +2879,30 @@ class AdamskiClass:
         top = 0
         # To get the relative position [ comparing with orig text ] of first occurence of symbol.
         total_count_top = 0
-        bottom = len(last_column_text)-1
+        bottom = len(last_column_text)
         while top <= bottom:
-            print 'Top : ',top,' and bottom : ',bottom
-            print 'The search occured in this string : ',last_column_text[top:bottom]
             if len(pattern) > 0:
                 idx_last_letter = len(pattern)-1
                 symbol = pattern[idx_last_letter]
                 pattern = pattern[0:idx_last_letter]
-                print 'The new pattern is : ',pattern
-                print 'symbol searched is : ',symbol
                 if symbol in last_column_text[top:bottom]:
                     # The position should always be in comparison to the all list, that's why we add
                     # top , at start it is 0 -> no prob !
                     #top_index = ( last_column_text.find(symbol, top, bottom) ) + total_count_top
                     top_index = ( last_column_text.find(symbol, top, bottom) )
-                    print 'Top index is : ',top_index,'and total_count_top : ', total_count_top
                     bottom_index = last_column_text.rfind(symbol, top, bottom)
                     total_count_top = total_count_top + top_index
                     top = last_to_first[top_index]
-                    bottom = last_to_first[bottom_index]
+                    # we put a +1, otherwise, the search does not take into account this last character for the
+                    # next search which will be [top , bottom ] , bottom previously represented the last
+                    # character, but if a search with slicing, it does not take it !
+                    bottom = last_to_first[bottom_index] + 1
                 else:
                     return 0
             else:
-                return bottom-top+1
+                # -1 removed, does not give the good result with that, except with 0
+                #return bottom-top+1
+                return bottom-top
 
 
     def first_occurence(self, bw):
