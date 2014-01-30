@@ -42,6 +42,9 @@ class AdamskiClass:
         # Variables needed for the BW transform.
         self.idx_character_last_column = {}
         # END : Variables needed for the BW transform.
+        # Variables needed for better BW_matching .
+        self.bw_count = numpy.zeros( (1,1) )
+        self.count_char = [0,0,0,0,0]
 
     def buildAllMassValue(self):
         """
@@ -2774,16 +2777,16 @@ class AdamskiClass:
 
     def get_x_elem(self, list, character, number):
         """
-        We now use a dictionnary, to known where the Xth character is located on the last column.
-        Previously, we were searching through the list [ list ] , but as there was more than 10.000 in the list,
-        and we needed to do a lot of search, it took too much time...
+            We now use a dictionnary, to known where the Xth character is located on the last column.
+            Previously, we were searching through the list [ list ] , but as there was more than 10.000 in the list,
+            and we needed to do a lot of search, it took too much time...
         """
         return self.idx_character_last_column[(character, number)]
 
     def transform_text_to_list_sorted(self, text):
         """
-        As we cannot sort directly a string, we will first put all the string
-        in a list, and then sort this list.
+            As we cannot sort directly a string, we will first put all the string
+            in a list, and then sort this list.
         """
         list = []
         for x in text:
@@ -2791,7 +2794,7 @@ class AdamskiClass:
         list.sort()
         return list
 
-    def build_suffixe_array(self, text):
+    def build_suffixe_array(self, text, partial=False):
         """
             Building a suffixe array.
             We will implement it with a list, where each elem if the list, is a tuple which containt
@@ -2868,13 +2871,16 @@ class AdamskiClass:
             text = text + str(x)
         return text
 
-    def BW_Matching(self, first_column, last_column, pattern, last_to_first):
+    def bw_matching(self, first_column, last_column, pattern, last_to_first, better_bw_matching=False):
         """
             Implement the algo defined on coursera.org
             Number of pattern present in a big string.
             last_column should be first converted into a string, because findint the first and last occurence
             is easier with a string.
         """
+        if better_bw_matching == True:
+            self.build_matrix_BW_count(last_column)
+            first_occurence = self.first_occurence_first_column( first_column)
         last_column_text = self.transform_list_to_string(last_column)
         top = 0
         # To get the relative position [ comparing with orig text ] of first occurence of symbol.
@@ -2884,19 +2890,26 @@ class AdamskiClass:
             if len(pattern) > 0:
                 idx_last_letter = len(pattern)-1
                 symbol = pattern[idx_last_letter]
-                pattern = pattern[0:idx_last_letter]
+                #pattern = pattern[0:idx_last_letter]
+                pattern = buffer(pattern, 0, idx_last_letter)
                 if symbol in last_column_text[top:bottom]:
-                    # The position should always be in comparison to the all list, that's why we add
-                    # top , at start it is 0 -> no prob !
-                    #top_index = ( last_column_text.find(symbol, top, bottom) ) + total_count_top
-                    top_index = ( last_column_text.find(symbol, top, bottom) )
-                    bottom_index = last_column_text.rfind(symbol, top, bottom)
-                    total_count_top = total_count_top + top_index
-                    top = last_to_first[top_index]
-                    # we put a +1, otherwise, the search does not take into account this last character for the
-                    # next search which will be [top , bottom ] , bottom previously represented the last
-                    # character, but if a search with slicing, it does not take it !
-                    bottom = last_to_first[bottom_index] + 1
+                    if better_bw_matching == False:
+                        # The position should always be in comparison to the all list, that's why we add
+                        # top , at start it is 0 -> no prob !
+                        #top_index = ( last_column_text.find(symbol, top, bottom) ) + total_count_top
+                        top_index = ( last_column_text.find(symbol, top, bottom) )
+                        bottom_index = last_column_text.rfind(symbol, top, bottom)
+                        total_count_top = total_count_top + top_index
+                        top = last_to_first[top_index]
+                        # we put a +1, otherwise, the search does not take into account this last character for the
+                        # next search which will be [top , bottom ] , bottom previously represented the last
+                        # character, but if a search with slicing, it does not take it !
+                        bottom = last_to_first[bottom_index] + 1
+                    else:
+                        # implementing with the method of the better BW matching.
+                        idx_symbol = self.get_idx_character( symbol)
+                        top = first_occurence[idx_symbol] + 1
+                        bottom = 1
                 else:
                     return 0
             else:
@@ -2904,13 +2917,71 @@ class AdamskiClass:
                 #return bottom-top+1
                 return bottom-top
 
+    def get_idx_character(self, character):
+        """
+            Function just used to translate a character to a numeric value,
+            which correspond to an index in a matrices.
+        """
+        if character == '$':
+            return 0
+        elif character == 'A':
+            return 1
+        elif character == 'T':
+            return 2
+        elif character == 'C':
+            return 3
+        elif character == 'G':
+            return 4
 
-    def first_occurence(self, bw):
+    def increment_count_char( self, character):
         """
-            As defined on coursera.org, our first column in our matrix is such as :
-                ('$', 1),
-                ('A', 1),
-                ('A', 2),
-                ...
-            This way we can quickly locate each time the first character of an occurence.
+            Function use to update the count of the character seen in a list.
+            We define idx column for character as : $=0, A=1, T=2, C=3, G=4
         """
+        idx = self.get_idx_character(character)
+        current_count_char = self.count_char[idx]
+        current_count_char+=1
+        self.count_char[idx] = current_count_char
+        return self.count_char[idx]
+
+    def get_count_character(self, idx):
+        """
+            Function used to get the current count of character seen so far in a list.
+            possible character are : $,A,T,C,G -> 5
+        """
+        return self.count_char[idx]
+
+    def build_matrix_BW_count(self, list_last_column_matrix):
+        """
+            Function used in BW matching to be faster; as said in coursera.org.
+            Instead of searchning each time for a symbol in the last column, we
+            construct a matrix. count will return the number of symbol so far seen until
+             idx in the last column.
+        """
+        # 5 for the matrix, because : $ A T C G
+        # len + 1 , because at position 0 nothing is seen -> all is zero.
+        self.bw_count = numpy.zeros( (len(list_last_column_matrix)+1,5) )
+        # Beginning filling the matrix from idx 1 because on first row, all should be 0.
+        idx = 1
+        # we define idx column for character as : $=0, A=1, T=2, C=3, G=4
+        for char in list_last_column_matrix:
+            idx_column = self.get_idx_character(char)
+            new_count_char = self.increment_count_char( char)
+            self.bw_count[idx][idx_column] = new_count_char
+            idx+=1
+
+    def first_occurence_first_column(self, list):
+        """
+            Create list with the position of first occurence of a char in a list.
+            Possible char are : $ A T C G
+            # 5 for the list , because : $ A T C G , respectively idx are 0 1 2 3 4
+        """
+        list_first_occurence = []
+        list_nucleotide.append('$')
+        list_nucleotide.extend(['A','T','C','G'])
+        for nucleotide in list_nucleotide:
+            # We should pay attention to the fact, that may be one nucleotide is not present ( may be... )
+            # ATTENTION !
+            idx_char = self.get_idx_character(nucleotide)
+            list_first_occurence[idx_char] = list.index(nucleotide)
+        return list_first_occurence

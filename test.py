@@ -17,7 +17,14 @@ genomeClass = AdamskiClass(nucleotide)
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
 bw = genomeClass.fill_matrix_BWT(list_str[0], False, True)
 last_column = bw[len(bw[0])-1]
+first_column = bw[0]
 last_to_first = genomeClass.last_to_first(bw)
 list_pattern = list_str[1].split(' ')
+
 for pattern in list_pattern:
-    print genomeClass.BW_Matching([], last_column, pattern, last_to_first),
+    print genomeClass.bw_matching([], last_column, pattern, last_to_first),
+
+"""
+for pattern in list_pattern:
+    print genomeClass.bw_matching(first_column, last_column, pattern, last_to_first, True),
+"""
