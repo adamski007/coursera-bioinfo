@@ -2794,7 +2794,7 @@ class AdamskiClass:
         list.sort()
         return list
 
-    def build_suffixe_array(self, text, partial=False):
+    def build_suffixe_array(self, text, partial=False, k=0):
         """
             Building a suffixe array.
             We will implement it with a list, where each elem if the list, is a tuple which containt
@@ -2814,6 +2814,17 @@ class AdamskiClass:
             suffixe_array.append(new_tup)
             idx+=1
         suffixe_array.sort()
+        partial_suffixe_array = []
+        if partial == True:
+            idx = 0
+            for elem in suffixe_array:
+                if elem[1]%k == 0:
+                    # We got a multiple of k, inserting this elem in the array.
+                    # idx represent position from the original suffixe array, and elem[1] is the position
+                    # of the suffixe in the orignal text.
+                    partial_suffixe_array.append((idx,elem[1]))
+                idx+=1
+            return partial_suffixe_array
         return suffixe_array
 
     def sort_list_suffixe_array(self, new_list):
@@ -2822,12 +2833,15 @@ class AdamskiClass:
         """
         return 1
 
-    def print_idx_suffixe_array(self, list):
+    def print_idx_suffixe_array(self, list, partial=False):
         """
             The function will only print the location of
         """
         for elem in list:
-            print str(elem[1])+',',
+            if partial == False:
+                print str(elem[1])+',',
+            else:
+                print str(elem[0])+','+str(elem[1])
 
     def last_to_first(self, matrix_bw):
         """
@@ -2985,3 +2999,22 @@ class AdamskiClass:
             idx_char = self.get_idx_character(nucleotide)
             list_first_occurence[idx_char] = list.index(nucleotide)
         return list_first_occurence
+
+    def build_checkpoint_array(self, last_column, k):
+        """
+            We will be a matrix containing only the idx of the multiple K.
+            Each row will contains the number of character so far seen in the list last_column.
+            Each column is a count of these char, idx respectively : $,A,T,C,G -> 0,1,2,3,4
+        """
+        checkpoint_array = numpy.zeros( (len(last_column),5) )
+        # The first row of the matrix should be filled with 0 as said in coursera.org [ stepic.org ]
+        # That's why we start with 1
+        idx = 1
+        # Re-initializing the list with the total count of each char so far seen in the list.
+        # Because this list is also used for another function.
+        self.count_char = [0,0,0,0,0]
+        for char in last_column:
+            idx_column = self.get_idx_character(char)
+            current_count = self.increment_count_char(char)
+            checkpoint_array[idx][idx_column] = current_count
+            idx+=1
