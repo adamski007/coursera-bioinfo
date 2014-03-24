@@ -101,6 +101,36 @@ class AdamskiClass:
             idx = idx + 1;
         return count;
 
+    def findMostFrequentKMers_WithCount(self, length1):
+        """
+            Input   :   1. a genome
+                        2. length of a kmers
+            Output  :   a list containing all the kmers with a specific size in the genome.
+            Re-implementation of the method to take into account, when returning the list
+            of the kmers, their respectif count of presence.
+        """
+        # For historic reasons...
+        len_kmers = length1
+        idx = 0
+        list_kmers = []
+        most_present_kmers = 0
+        max_count = 0
+        while idx <= ( (len(self.genome)) - len_kmers ):
+            str_kmers = self.genome[idx:(idx + len_kmers)]
+            count = self.find_x_kmers(str_kmers, len_kmers)
+            if ( count > max_count ):
+                # Re-init the list as we got more a bigger k-mers in this attempt.
+                list_kmers = []
+                list_kmers.append((str_kmers,count))
+                max_count = count
+            elif ( count == max_count ):
+                if not str_kmers in list_kmers:
+                    list_kmers.append((str_kmers,count))
+                    # Next line probably not needed. TO DO [ to check actually. ]
+                    max_count = count
+            idx = idx + 1
+        return list_kmers
+
     def findMostFrequentKMers(self, length1):
         """
             Input   :   1. a genome
@@ -130,7 +160,7 @@ class AdamskiClass:
         return list_kmers
 
 
-    def findClump(self, size_window, size_kmers, number):
+    def findClump(self, size_kmers, size_window, number):
         """
             Input   :   1. a genome
                         2. a size of window where to find the number of kmers
@@ -157,6 +187,34 @@ class AdamskiClass:
             self.genome = globalGenome
         return list_kmers
 
+
+    def findClump_new(self, size_kmers, size_window, number):
+        """
+            Input   :   1. a genome
+                        2. a size of window where to find the number of kmers
+                        3. the length of the kmers
+                        4. the number of kmers we need to find the specified window.
+            Output  :   The list of kmers found in the window.
+        """
+        idx = 0
+        list_kmers = []
+        globalGenome = self.genome
+        while idx <= ( len(globalGenome) - size_window ):
+            window = self.genome[idx:(idx + size_window)]
+            self.genome = window
+            # Doing the computation temporarily
+
+            list_kmers_in_window = self.findMostFrequentKMers_WithCount( size_kmers)
+            # Checking if these kmers are present enough in the window.
+            for kmers, count in list_kmers_in_window:
+                if count >= number:
+                    # It does means that we found at least the requested number of kmers in
+                    # the specified window. We got one candidate for the the kmers.
+                    if not kmers in list_kmers:
+                        list_kmers.append(kmers)
+            idx = idx + 1
+            self.genome = globalGenome
+        return list_kmers
 
     def computeSkewGC(self):
         """
