@@ -137,7 +137,7 @@ class AdamskiClass:
         return list_kmers
 
 
-    def findClump(self, size_window, size_kmers, number):
+    def findClump(self, size_kmers, size_window, number):
         """
             Input   :   1. a genome
                         2. a size of window where to find the number of kmers
@@ -163,6 +163,29 @@ class AdamskiClass:
             idx = idx + 1
             self.genome = globalGenome
         return list_kmers
+
+    @staticmethod
+    def nucleotide_count(dna_string):
+        """
+            The function will output the count of each nucleotide [ A , C , G , T ] present in a DNA string.
+        """
+        # First element in the following list will count the number of nucleotide for A, second for C , ...
+        # in the DNA string.
+        nucleotide_count = [0,0,0,0]
+        # We are only working with capital character...
+        dna_string_upper = dna_string.upper()
+        for nucleotide in dna_string_upper:
+            if nucleotide == 'A':
+                nucleotide_count[0] = nucleotide_count[0] + 1
+            elif nucleotide == 'C':
+                nucleotide_count[1] = nucleotide_count[1] + 1
+            elif nucleotide == 'G':
+                nucleotide_count[2] = nucleotide_count[2] + 1
+            elif nucleotide == 'T':
+                nucleotide_count[3] = nucleotide_count[3] + 1
+            else:
+                print "We should not see this lines -> ERROR"
+        return nucleotide_count
 
 
     def computeSkewGC(self):
@@ -342,13 +365,7 @@ class AdamskiClass:
                 Input   :   1. the genome it-self.
                 Output  :   The transcription of this genome [ DNA ] into is equivalent RNA.
             """
-        rna = ""
-        for char in self.genome:
-            if char == 'T':
-                rna = rna + 'U'
-            else:
-                rna = rna + char
-        return rna
+        return self.genome.replace('T','U')
 
 
     def checkSubStr(self, subStr, acido):
