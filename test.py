@@ -13,7 +13,7 @@ dna_string = infile.readline()
 dna_string = dna_string.replace('\n','')
 dna = AdamskiClass(dna_string)
 print dna.buildReverseComplement()
-
+print 'toto'
 sys.exit()
 
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
