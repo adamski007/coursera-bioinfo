@@ -3,12 +3,13 @@ import datetime
 import sys
 import numpy
 import pprint
+import time
 from AdamskiClass import AdamskiClass
-
 
 sys.setrecursionlimit(20000)
 infile = open(sys.argv[1],'r')
 #infile = open("data.txt",'r')
+
 
 nucleotide = infile.readline()
 nucleotide = nucleotide.replace('\n','')
@@ -21,11 +22,9 @@ dna = AdamskiClass(dna_string)
 print dna.buildReverseComplement()
 
 
+
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
 
 
-"""
-list = genomeClass.fill_matrix_BWT(list_str[0])
-new_list = ['a','b','a','c','a','d']
-print genomeClass.get_x_elem(new_list,'a',3)
-"""
+partial_suffixe_array = genomeClass.build_suffixe_array(list_str[0], True, 7)
+genomeClass.print_idx_suffixe_array( partial_suffixe_array, True)
