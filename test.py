@@ -16,7 +16,7 @@ print dna.buildReverseComplement()
 print 2
 print 4
 print 5
-
+print 6
 sys.exit()
 
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')
