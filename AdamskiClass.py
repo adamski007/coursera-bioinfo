@@ -2365,6 +2365,61 @@ class AdamskiClass:
         # Inverting sign of all number in the list
         return (matrix*-1).tolist()
 
+    @staticmethod
+    def compute_GC_content( dna):
+        """
+            As defined on rosalind.org , the GC content of a DNA, is the ratio of C or G over
+            the whole dna string.
+            GC Ratio for :
+            ATCG        -> 50.0
+            ACG         -> 66.6
+            AATTCG      -> 33.3
+        """
+        return ((dna.count('C')+dna.count('G'))/float(len(dna)))*100
+
+
+    @staticmethod
+    def load_fasta_files(input_file, unix_file=True):
+        """
+            The function will return a dictionnary containing all the data in the file.
+            The key will be the FASTA ID, and the content his DNA associated.
+            Example :
+                >Rosalind_6404
+                CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCC
+                TCCCACTAATAATTCTGAGG
+
+                -> key          : Rosalind_6404
+                   key content  :    CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCC
+                                     TCCCACTAATAATTCTGAGG
+        """
+        last_id_fasta = ''
+        id_fasta = ''
+        dic_fasta = {}
+        current_dna = ''
+        infile = open( input_file,'r')
+        for line in infile:
+            if unix_file:
+                line = line.replace('\n', '')
+            else:
+                print '### TO DO ###'
+                print 'Need to check what is the char end of line for another OS...'
+            if line[0] == '>':
+                id_fasta = line[1:]
+                if current_dna != '':
+                    # Inserting a new key + value into the dictionnary.
+                    # We don t use id_fasta because it just has been overwriten with
+                    # current reading line. That s why keeping the last reference.
+                    dic_fasta[last_id_fasta] = current_dna
+                    # Re-initializing the dna for the next entry.
+                    current_dna = ''
+            else:
+                last_id_fasta = id_fasta
+                # This is the dna string, continuing building it...
+                current_dna = current_dna + line
+        # Inserting the last dna and fasta id into the dic.
+        dic_fasta[id_fasta] = current_dna
+        return dic_fasta
+
     def compute_breakpoint_number(self,list_permutation):
         """
         Finding the number of breakpoint present in the list.
