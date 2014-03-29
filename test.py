@@ -6,7 +6,7 @@ import pprint
 import time
 from AdamskiClass import AdamskiClass
 
-def main()
+def main():
     sys.setrecursionlimit(20000)
     infile = open(sys.argv[1],'r')
     nucleotide = infile.readline()
