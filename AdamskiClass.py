@@ -441,16 +441,27 @@ class AdamskiClass:
             idx = 0
         return listSubPep
 
-    def computeMassSpectrum(self,listSubPep):
+    def computeMassSpectrum(self, listsubpep):
+        """
+            From the list as input [ listsubpep ], we will build for each of them [ elem of the list ]
+            their respectif mass according to the masstable monoisotopic.
+            The function will return as output a list, where each element his the mass of each
+            corresponding element in the list listsubpep.
+            Example :
+            Input   : [ SKADYEK ]
+            Output  : [ 821.392 ]
+            The monoisotopic masstable can be found on wikipedia :
+            - http://en.wikipedia.org/wiki/Proteinogenic_amino_acid#Mass_spectrometry
+        """
         listMassSpectrum = []
-        currentMass = 0
+        currentMass = 0.0
         # We always need to add a mass of zero in the spectrum.
         listMassSpectrum.append(currentMass)
-        for subPep in listSubPep:
+        for subPep in listsubpep:
             # compute the mass spectrum of each elem of the list.
             for char in subPep:
                 massElem    =   self.massTable[char]
-                currentMass =   currentMass + int(massElem)
+                currentMass =   currentMass + float(massElem)
             listMassSpectrum.append(currentMass)
             currentMass = 0
         listMassSpectrum.sort()
@@ -467,7 +478,7 @@ class AdamskiClass:
         listToken = []
         for line in infile:
             line = line.replace('\n', '')
-            listToken = line.split(' ')
+            listToken = line.split()
             if len(listToken) > 1:
                 # We got an amino acids for the codon
                 # inserting into the hash table.
