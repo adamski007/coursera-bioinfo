@@ -12,9 +12,9 @@ def main():
     nucleotide = infile.readline()
     nucleotide = nucleotide.replace('\n','')
     genomeClass = AdamskiClass(nucleotide)
-    genomeClass.loadTableSpectrum(sys.argv[2])
-    list = genomeClass.computeMassSpectrum( [genomeClass.genome])
-    print list[1]
+    dna     = genomeClass.genome
+    kmers   = 'ATAT'
+    print genomeClass.find_motif(dna, kmers)
 
 
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')

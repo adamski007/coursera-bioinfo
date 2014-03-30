@@ -641,6 +641,29 @@ class AdamskiClass:
         return newList
 
     @staticmethod
+    def find_motif(self, dna='', kmers=''):
+        """
+            The function will return a list where each element is the index where we can find [ kmers ]
+            in the dna it-self.
+            Example :
+            Input   : ACTTGCT , CT
+            Output  : [ 2 , 6 ]
+        """
+        list_idx_kmers = []
+        idx = dna.find(kmers) + 1  # +1 because starting number in a string is 0 in python.
+        if idx != 0:
+            list_idx_kmers.append(idx)
+            list_sub_idx = AdamskiClass.find_motif(dna[idx+1:], kmers)
+            if len(list_sub_idx) == 0:
+                return list_idx_kmers
+            else:
+                list_idx_kmers.extend(list_sub_idx)
+                return list_idx_kmers
+        else:
+            return []
+
+
+    @staticmethod
     def findMotif(pattern,DNA):
         """
             The hamming distance is the number of different nucleotide between pattern and any kmers
