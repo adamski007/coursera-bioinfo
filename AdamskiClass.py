@@ -1,5 +1,4 @@
 import sys
-import numpy
 import datetime
 import time
 import itertools
@@ -184,7 +183,7 @@ class AdamskiClass:
             elif nucleotide == 'T':
                 nucleotide_count[3] = nucleotide_count[3] + 1
             else:
-                print "We should not see this lines -> ERROR"
+                print("We should not see this lines -> ERROR")
         return nucleotide_count
 
 
@@ -268,7 +267,7 @@ class AdamskiClass:
         while idx <= len(self.genome)-len_kmers:
             currentKMers    = self.genome[idx:idx+len_kmers]
             listIdx = self.approxPatternMatching(currentKMers,xmissMatches)
-            print currentKMers,len(listIdx),listIdx
+            print(currentKMers,len(listIdx),listIdx)
             if len(listIdx) > countKMersPresent:
                 # We got a new record for the most present kmers.
                 listKmersMostPresent = []
@@ -293,11 +292,11 @@ class AdamskiClass:
         """
         # This version will take into account the kmers that even not present in the DNA it-self.
         all_kmers = self.gene
-        print all_kmers[0]
-        print 'Generation of all the kmers done.'
+        print(all_kmers[0])
+        print('Generation of all the kmers done.')
         countKMersPresent = 0
         listKmersMostPresent = []
-        print len(all_kmers)
+        print(len(all_kmers))
         for kmers in all_kmers:
             #print kmers
             listIdx = self.approxPatternMatching(kmers,xMissMatches)
@@ -520,7 +519,7 @@ class AdamskiClass:
         firstList   =   self.findOneMers(spectrum)
         firstList.append(0)
         while len(firstList) > 0:
-            print 'toto'
+            print('toto')
         return 0
 
     def findOneMers(self,spectrum):
@@ -1235,7 +1234,7 @@ class AdamskiClass:
                 # the white-space at the end , give error in stepic answer ?
                 all_kmers_values_str = kmers
             # We now got all the value of a particular keys in a simple string
-            print key,'->',all_kmers_values_str
+            print(key,'->',all_kmers_values_str)
 
     def print_edge_debruijn_graph(self):
         """
@@ -1265,7 +1264,7 @@ class AdamskiClass:
                     # still some elem to be printed.
                     output_string = output_string + kmers + ','
                 idx+=1
-            print output_string
+            print(output_string)
 
     def build_List_Decomposition_DNA_Sequential(self,lengthkmers):
         """
@@ -1353,18 +1352,18 @@ class AdamskiClass:
         else:
             self.build_Overlap_Graph(list_kmers)
         end_time   = datetime.datetime.now()
-        print 'Overlap graph has been build in                      : ',end_time-start_time
+        print('Overlap graph has been build in                      : ',end_time-start_time)
         list_kmers_processed = []
         # Just to prevent any collision if deBruijn graph already initialized,
         # we re-set it to empty.
         self.de_bruijn_grapth.clear()
-        print 'Length of the overlap graph : ',len(self.overlap_graph)
+        print('Length of the overlap graph : ',len(self.overlap_graph))
         idx_overlap_graph = 0
-        print 'Current date is : ',datetime.datetime.now().isoformat()
+        print('Current date is : ',datetime.datetime.now().isoformat())
         for (key,value) in self.overlap_graph.items():
             if idx_overlap_graph == 10000 or idx_overlap_graph == 20000 or idx_overlap_graph == 30000 or idx_overlap_graph == 40000 or idx_overlap_graph == 50000 or idx_overlap_graph == 100000 :
-                print 'Current date is : ',datetime.datetime.now().isoformat()
-                print 'idx value for overlap graph is ',idx_overlap_graph,'and the length total is : ',len(self.overlap_graph)
+                print('Current date is : ',datetime.datetime.now().isoformat())
+                print('idx value for overlap graph is ',idx_overlap_graph,'and the length total is : ',len(self.overlap_graph))
             idx_overlap_graph+=1
             # For each key , value pair, we will build the edges of both side.
             # value can be a list of kmers.
@@ -1510,7 +1509,7 @@ class AdamskiClass:
         eulerian_path = ''
         for item in eulerian_list:
             eulerian_path = eulerian_path + '->' + item
-        print eulerian_path
+        print(eulerian_path)
 
     def add_one_in_edges(self,list_nodes):
         """
@@ -1763,7 +1762,7 @@ class AdamskiClass:
         idx_column = 0
         idx_row = 0
         for line in infile:
-            print 0
+            print(0)
 
     @staticmethod
     def initialize_matrix_edges(namefile,row,column):
@@ -1833,7 +1832,7 @@ class AdamskiClass:
                 down_path = matrix_weigth[i-1][j] + matrix_down_edges[idx_down_path][j]
                 right_path= matrix_weigth[i][j-1] + matrix_right_edges[i][idx_right_path]
                 matrix_weigth[i][j] = max(down_path,right_path)
-        print matrix_weigth
+        print(matrix_weigth)
         return matrix_weigth[n][m]
 
     def score_edit_distance(self,str_v,str_w,indel_penalty=0):
@@ -1939,7 +1938,7 @@ class AdamskiClass:
         else:
             if self.matrix_backtracking_multiple[idx_i][idx_j][idx_k] == 1:
                 self.backtrack_multiple_alignment(list_str,idx_i-1,idx_j,idx_k,num_str)
-                print str_v[idx_i-1]
+                print(str_v[idx_i-1])
 
 
 
@@ -2088,27 +2087,27 @@ class AdamskiClass:
             self.output_lcs(matrix_backtrack,str_v,i - 1,j,global_alignement,first_str,fitting_alignment)
             if global_alignement == True:
                 if first_str == True:
-                    print str_v[i-1],
+                    print(str_v[i-1],)
                 else:
-                    print '-',
+                    print('-',)
         elif matrix_backtrack[i][j] == 0:
             self.output_lcs(matrix_backtrack,str_v,i,j-1,global_alignement,first_str,fitting_alignment)
             if global_alignement == True:
                 if first_str == True:
-                    print '-',
+                    print('-',)
                 else:
-                    print str_v[j-1],
+                    print(str_v[j-1],)
         else:
             self.output_lcs(matrix_backtrack,str_v,i-1,j-1,global_alignement,first_str,fitting_alignment)
             # Start printing from i-1 instead of i, because the string start
             # at position 1, and the matrix start at position 0
             if global_alignement == True:
                 if first_str == True:
-                    print str_v[i-1],
+                    print(str_v[i-1],)
                 else:
-                    print str_v[j-1],
+                    print(str_v[j-1],)
             else:
-                print str_v[j-1],
+                print(str_v[j-1],)
 
     def test_and_insert_predecessor_node(self,node,predecessor,weight):
         if self.predecessor_nodes.get(node) == None:
@@ -2174,7 +2173,7 @@ class AdamskiClass:
                     break
             self.weight_nodes[node] = (max_node_weight,path_max_node)
             self.node_used.append(path_max_node)
-            print 'For node : ',node,' The max value is : ', max_node_weight ,'which goes throught node : ',path_max_node
+            print('For node : ',node,' The max value is : ', max_node_weight ,'which goes throught node : ',path_max_node)
             return max_node_weight
         else:
             return self.weight_nodes[node][0]
@@ -2273,25 +2272,25 @@ class AdamskiClass:
             if matrix_score[idx_i][idx_j] == matrix_score[idx_i-1][idx_j] - indel_penalty:
                 self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j,str_v,str_w,indel_penalty,matrix_score_matches,first_str)
                 if first_str == True:
-                    print str_v[idx_i-1],
+                    print(str_v[idx_i-1],)
                 else:
-                    print '-',
+                    print('-',)
             elif matrix_score[idx_i][idx_j] == matrix_score[idx_i][idx_j-1] - indel_penalty:
                 self.backtrack_local_alignement(matrix_score,idx_i,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches,first_str)
                 if first_str == True:
-                    print '-',
+                    print('-',)
                 else:
-                    print str_w[idx_j-1],
+                    print(str_w[idx_j-1],)
             elif matrix_score[idx_i][idx_j] == previous_i_j_diag:
                 self.backtrack_local_alignement(matrix_score,idx_i-1,idx_j-1,str_v,str_w,indel_penalty,matrix_score_matches,first_str)
                 if str_v[idx_i-1] == str_w[idx_j-1]:
                     # This is a match, we can print whatever character of both string, str_v or str_w
-                    print str_v[idx_i-1],
+                    print(str_v[idx_i-1],)
                 else:
                     if first_str == True:
-                        print str_v[idx_i-1],
+                        print(str_v[idx_i-1],)
                     else:
-                        print str_w[idx_j-1],
+                        print(str_w[idx_j-1],)
 
     @staticmethod
     def get_idx_max_value_last_column_matrix(matrix):
@@ -2368,8 +2367,8 @@ class AdamskiClass:
             elif rebuilded_list.count(-x) > 0:
                 num_to_handle = -x
             else:
-                print "Number not found in the list, not GOOD"
-                print 'The number is : ',x
+                print("Number not found in the list, not GOOD")
+                print('The number is : ',x)
                 sys.exit()
             # doing processing on a positive number
             # We can make an improvement, by searching only from x -> till end of list, and not always all the list.
@@ -2408,7 +2407,7 @@ class AdamskiClass:
         # Removing the last whitespace inserted.
         str_whithout_last_space = str_to_print.rstrip()
         str_whithout_last_space = str_whithout_last_space+')'
-        print str_whithout_last_space
+        print(str_whithout_last_space)
 
     def sorting_reversal(self,list_num):
         """
@@ -2457,8 +2456,8 @@ class AdamskiClass:
             if unix_file:
                 line = line.replace('\n', '')
             else:
-                print '### TO DO ###'
-                print 'Need to check what is the char end of line for another OS...'
+                print('### TO DO ###')
+                print('Need to check what is the char end of line for another OS...')
             if line[0] == '>':
                 id_fasta = line[1:]
                 if current_dna != '':
@@ -2590,7 +2589,7 @@ class AdamskiClass:
             # Iterating over all node of the tries structure.
             for elem in self.tries_construction[key]:
                 # Iterating over each letter present in the current node of the tries.
-                print key, elem[0], elem[1]
+                print(key, elem[0], elem[1])
 
     def prefix_trie_matching(self, text, idx_match_search):
         """
@@ -2617,7 +2616,7 @@ class AdamskiClass:
             elif self.tries_construction.get(v) == None:
                 # print pattern_spelled, idx_match_search,
                 # We only need the idx where the pattern does exist in the string...
-                print idx_match_search,
+                print(idx_match_search,)
                 return
             else:
                 # print 'Not match found'
@@ -2711,9 +2710,9 @@ class AdamskiClass:
                 self.merge_non_branching_path(node[0], reference_node_number, pattern)
             elif len(list_sub_nodes) > 1:
                 # Rebuilding a non-branching path.
-                print 0
+                print(0)
             else:
-                print "We should never PRINT THIS LINE !!!!!!!!!!!"
+                print("We should never PRINT THIS LINE !!!!!!!!!!!")
 
     def get_longest_prefixe_match(self, pattern1, pattern2):
         """
@@ -2967,9 +2966,9 @@ class AdamskiClass:
         """
         for elem in list:
             if partial == False:
-                print str(elem[1])+',',
+                print(str(elem[1])+',',)
             else:
-                print str(elem[0])+','+str(elem[1])
+                print(str(elem[0])+','+str(elem[1]))
 
     def last_to_first(self, matrix_bw):
         """
