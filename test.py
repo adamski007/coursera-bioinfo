@@ -14,7 +14,7 @@ def main():
     genomeClass = AdamskiClass(nucleotide)
     dna     = genomeClass.genome
     kmers   = 'ATAT'
-    print genomeClass.find_motif(dna, kmers)
+    print AdamskiClass.compute_fibonacci_rabbit(40,5,[1,1])
 
 
 list_str = AdamskiClass.readAndBuildListFromFile('listDNA.txt')

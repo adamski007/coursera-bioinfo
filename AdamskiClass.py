@@ -544,6 +544,28 @@ class AdamskiClass:
         return newListMass
 
     @staticmethod
+    def compute_fibonacci_rabbit(month_needed, multiple_rabbit, list_relation_recurrence):
+        """
+            Fn  = Fn-1 + Fn-2
+            The number of rabbit in generation n is the number of rabbit at generation n-1
+            plus a multiple of the rabbit present in the generation -2.
+            Example :
+            +++++++++
+            F1	F2	F3	F4	F5	F6	F7	F8
+            1	1	2	2	4	6	10	16      where n = 8 and k = 1
+            1	1	4	7	19	40	97	217     where n = 8 and k = 3
+            Example call function : compute_fibonacci_rabbit(5,3,[1,1]) will produce : 19
+        """
+        if len(list_relation_recurrence) == month_needed:
+            return list_relation_recurrence[-1]
+        else:
+            # Computing the next month number of rabbit needed.
+            new_rabbit_count = list_relation_recurrence[-1] + multiple_rabbit * list_relation_recurrence[-2]
+            list_relation_recurrence.append(new_rabbit_count)
+            return AdamskiClass.compute_fibonacci_rabbit(month_needed, multiple_rabbit, list_relation_recurrence)
+
+
+    @staticmethod
     def generateAllKmers(length):
         """
         Will generate a list containing all the kmers of length LENGTH.
