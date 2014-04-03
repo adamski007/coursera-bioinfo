@@ -5,6 +5,7 @@ import numbers
 import pprint
 import time
 from AdamskiClass import AdamskiClass
+import tkinter
 
 def main():
     sys.setrecursionlimit(20000)
