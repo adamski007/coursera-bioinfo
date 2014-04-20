@@ -3,6 +3,7 @@ import datetime
 import time
 import itertools
 import pprint
+import numpy
 import os
 
 class AdamskiClass:
@@ -1011,6 +1012,57 @@ class AdamskiClass:
             counter_nucleotide.clear()
             idx_vert+=1
         return matrix_count
+
+    @staticmethod
+    def get_consensus_profile( dic_fasta):
+        """
+        All the dna will be stocked in a FASTA file. The file has already been parsed, and put
+        in a dictionnary. What we need to do is to re-execute the method above :
+        [ get_Count_Matrix_Motifs ] and transpose the matrix, to get it the way the instructor want.
+        And then checking which index got the max number, and according to that printing the proper
+        nucleotide.
+        0 -> A ; 1 -> C ; 2 -> G ; 3 -> T.
+        One sample dataset [ FASTA FILE ] :
+                >Rosalind_1
+                ATCCAGCT
+                >Rosalind_2
+                GGGCAACT
+                >Rosalind_3
+                ATGGATCT
+                >Rosalind_4
+                AAGCAACC
+                >Rosalind_5
+                TTGGAACT
+                >Rosalind_6
+                ATGCCATT
+                >Rosalind_7
+                ATGGCACT
+        will output :
+                ATGCAACT
+                A: 5 1 0 0 5 5 0 0
+                C: 0 0 1 4 2 0 6 1
+                G: 1 1 6 3 0 1 0 0
+                T: 1 5 0 0 0 1 1 6
+        """
+        matrix_count = AdamskiClass.get_Count_Matrix_Motifs( dic_fasta.values())
+        matrix_transposed = matrix_count.transpose()
+        idx_dna = matrix_transposed.argmax(0)
+        consensus_dna = ''
+        for idx in idx_dna:
+            if idx == 0:
+                consensus_dna = consensus_dna + 'A'
+            elif idx == 1:
+                consensus_dna = consensus_dna + 'C'
+            elif idx == 2:
+                consensus_dna = consensus_dna + 'G'
+            elif idx == 3:
+                consensus_dna = consensus_dna + 'T'
+        print(consensus_dna)
+        print('A: ', matrix_transposed[0])
+        print('C: ', matrix_transposed[1])
+        print('G: ', matrix_transposed[2])
+        print('T: ', matrix_transposed[3])
+
 
     @staticmethod
     def get_Profil_Matrix_Motifs(matrix_count):
