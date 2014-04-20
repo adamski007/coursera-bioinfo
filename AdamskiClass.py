@@ -965,7 +965,6 @@ class AdamskiClass:
             idx+=1
         return bestkmers
 
-
     @staticmethod
     def get_Count_Matrix_Motifs(list_kmers):
         """
